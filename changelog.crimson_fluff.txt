@@ -36,10 +36,10 @@ Chests/Barrels can be broken without opening them first
 Vein mine produces XP after level 2 and now costs hunger. Update your descriptions !
 Vault Crate/Arena Crates have opening sounds
 Obelisks now have particles, visually pleasing, easy to spot in vaults
-Obelisk is now 2 blocks tall, so you can activate by clicking the top part. Added voxel. Technically the boss rooms need re-editing to account for the 2nd block
+Obelisk is now 2 blocks tall, so you can activate by clicking the top part. Added voxel
 Reduced number of "Twerker" particles. Only show particles if successfully bone-mealed something
 In peaceful mode mobs no longer try to spawn in the vault
-Skellington Key, add keys to tags, recipes
+Skellington Key, added keys to tags
 Vault Ore loot tables based on Diamond drops now
 Vault Altar requires blackstone not purpur now
 
@@ -56,7 +56,6 @@ when killed by robot it says simply "Killed by" (no name), also show serverwide 
 
 TODO: Modpack...
 Super Gift Bomb loot table is empty?
-Add relics to Curio's slots?
 
 
 BONNe - Implemented various commits from BONNe:
@@ -64,7 +63,7 @@ Implement an option to set different Vault Fighters                    #271
 Fixes bug with Star Core recipe                                        #287
 Fixes missing Mystery Stew Recipe in JEI and Crafting Books            #288
 Fixes missing unidentified relic recipe                                #292
-Fixes broken Twitch Relic Statute                                      #293
+Fixes broken Twitch Relic Statue                                       #293
 This change allows to see Relic Statue recipe in JEI                   #294
 Add proper crystal upgrade recipes                                     #295
 Add Vault Plugin Anvil recipes to JEI                                  #296
