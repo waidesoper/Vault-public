@@ -2,7 +2,6 @@ package iskallia.vault.event;
 
 import iskallia.vault.Vault;
 import iskallia.vault.block.item.LootStatueBlockItem;
-import iskallia.vault.block.item.PlayerStatueBlockItem;
 import iskallia.vault.util.EntityHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

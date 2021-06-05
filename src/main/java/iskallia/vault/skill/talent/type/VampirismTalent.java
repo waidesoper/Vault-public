@@ -35,16 +35,17 @@ public class VampirismTalent extends PlayerTalent {
         return this.leechRatio;
     }
 
-    public void onDamagedEntity(PlayerEntity player, LivingHurtEvent event) {
-        player.heal(event.getAmount() * this.getLeechRatio());
-
-        if (player.getRNG().nextFloat() <= 0.2) {
-            float pitch = MathUtilities.randomFloat(1f, 1.5f);
-            player.world.playSound(player, player.getPosX(), player.getPosY(), player.getPosZ(),
-                    ModSounds.VAMPIRE_HISSING_SFX, SoundCategory.MASTER, 0.2f * 0.1f, pitch);
-            player.playSound(ModSounds.VAMPIRE_HISSING_SFX, SoundCategory.MASTER, 0.2f * 0.1f, pitch);
-        }
-    }
+    // #Crimson_Fluff, duplicated method ?
+//    public void onDamagedEntity(PlayerEntity player, LivingHurtEvent event) {
+//        player.heal(event.getAmount() * this.getLeechRatio());
+//
+//        if (player.getRNG().nextFloat() <= 0.2) {
+//            float pitch = MathUtilities.randomFloat(1f, 1.5f);
+//            player.world.playSound(player, player.getPosX(), player.getPosY(), player.getPosZ(),
+//                    ModSounds.VAMPIRE_HISSING_SFX, SoundCategory.MASTER, 0.2f * 0.1f, pitch);
+//            player.playSound(ModSounds.VAMPIRE_HISSING_SFX, SoundCategory.MASTER, 0.2f * 0.1f, pitch);
+//        }
+//    }
 
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
@@ -80,6 +81,9 @@ public class VampirismTalent extends PlayerTalent {
 
     private static void onDamagedEntity(LivingHurtEvent event, ServerPlayerEntity player, float leech) {
         player.heal(event.getAmount() * leech);
+
+        // #Crimson_Fluff, addStat
+        player.addStat(Vault.STAT_DAMAGE_VAMPIRED, (int)(event.getAmount() * leech));
 
         if (player.getRNG().nextFloat() <= 0.2) {
             float pitch = MathUtilities.randomFloat(1f, 1.5f);

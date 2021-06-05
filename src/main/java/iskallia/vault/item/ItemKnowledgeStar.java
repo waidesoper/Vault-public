@@ -2,12 +2,13 @@ package iskallia.vault.item;
 
 import iskallia.vault.Vault;
 import iskallia.vault.world.data.PlayerVaultStatsData;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.ItemParticleData;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -19,9 +20,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 public class ItemKnowledgeStar extends Item {
 
@@ -38,12 +36,15 @@ public class ItemKnowledgeStar extends Item {
         ItemStack heldItemStack = player.getHeldItem(hand);
 
         world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(),
-                SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.NEUTRAL,
+                SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS,
                 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
 
         if (!world.isRemote) {
             PlayerVaultStatsData statsData = PlayerVaultStatsData.get((ServerWorld) world);
             statsData.addKnowledgePoints(((ServerPlayerEntity) player), 1);
+
+            // #Crimson_Fluff
+            ((ServerWorld) world).spawnParticle(new ItemParticleData(ParticleTypes.ITEM, heldItemStack), player.getPosX(),player.getPosY() + 1, player.getPosZ(), 250, 1D, 1D , 1D, 0d);
         }
 
         player.addStat(Stats.ITEM_USED.get(this));
@@ -60,9 +61,9 @@ public class ItemKnowledgeStar extends Item {
                 .setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_40d7b1)));
     }
 
-    @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
-    }
+//    @Override
+//    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+//        super.addInformation(stack, worldIn, tooltip, flagIn);
+//    }
 
 }

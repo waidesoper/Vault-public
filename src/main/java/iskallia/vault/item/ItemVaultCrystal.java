@@ -20,6 +20,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ItemVaultCrystal extends Item {
 
@@ -94,18 +95,22 @@ public class ItemVaultCrystal extends Item {
 
                 context.getItem().shrink(1);
 
+            // #Crimson_Fluff
+            // Added Translations. Added vowel check like in VaultRaid.java
                 IFormattableTextComponent text = new StringTextComponent("");
                 text.append(new StringTextComponent(context.getPlayer().getName().getString()).mergeStyle(TextFormatting.GREEN));
-                text.append(new StringTextComponent(" has created a "));
-                String rarityName = crystal.getRarity().name().toLowerCase();
-                rarityName = rarityName.substring(0, 1).toUpperCase() + rarityName.substring(1);
+
+                String rarityName = crystal.getRarity().name();//.toLowerCase();
+                char c = rarityName.charAt(0);
+                AtomicBoolean startsWithVowel = new AtomicBoolean(false);
+                startsWithVowel.set(c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U');
+                text.append(new TranslationTextComponent(startsWithVowel.get() ? "tip.the_vault.created_an" : "tip.the_vault.created_a"));
 
                 text.append(new StringTextComponent(rarityName).mergeStyle(crystal.getRarity().color));
-                text.append(new StringTextComponent(" Vault!"));
+                text.append(new TranslationTextComponent("tip.the_vault.vault"));
+            // #Crimson_Fluff END
 
-                context.getWorld().getServer().getPlayerList().func_232641_a_(
-                        text, ChatType.CHAT, context.getPlayer().getUniqueID()
-                );
+                context.getWorld().getServer().getPlayerList().func_232641_a_(text, ChatType.CHAT, context.getPlayer().getUniqueID());
 
                 return ActionResultType.SUCCESS;
             }
@@ -115,6 +120,8 @@ public class ItemVaultCrystal extends Item {
     }
 
     private boolean tryCreatePortal(ItemVaultCrystal crystal, World world, BlockPos pos, Direction facing, String playerBossName, CrystalData data) {
+        if (world.getDimensionKey() != World.OVERWORLD) return false;
+
         Optional<VaultPortalSize> optional = VaultPortalSize.getPortalSize(world, pos.offset(facing), Direction.Axis.X);
         if (optional.isPresent()) {
             optional.get().placePortalBlocks(crystal, playerBossName, data);
@@ -130,18 +137,20 @@ public class ItemVaultCrystal extends Item {
 
             CompoundNBT tag = stack.getOrCreateTag();
             if (tag.keySet().contains("playerBossName")) {
-                return new StringTextComponent(item.getRarity().color + "Vault Crystal (" + tag.getString("playerBossName") + ")");
+                return new TranslationTextComponent("tip.the_vault.crystal")
+                    .mergeStyle(item.getRarity().color)
+                    .append(new StringTextComponent(" (" + tag.getString("playerBossName") + ")"));
             }
 
             switch (item.getRarity()) {
                 case COMMON:
-                    return new StringTextComponent(item.getRarity().color + "Vault Crystal (common)");
+                    return new TranslationTextComponent("tip.the_vault.crystal_common").mergeStyle(item.getRarity().color);
                 case RARE:
-                    return new StringTextComponent(item.getRarity().color + "Vault Crystal (rare)");
+                    return new TranslationTextComponent("tip.the_vault.crystal_rare").mergeStyle(item.getRarity().color);
                 case EPIC:
-                    return new StringTextComponent(item.getRarity().color + "Vault Crystal (epic)");
+                    return new TranslationTextComponent("tip.the_vault.crystal_epic").mergeStyle(item.getRarity().color);
                 case OMEGA:
-                    return new StringTextComponent(item.getRarity().color + "Vault crystal (omega)");
+                    return new TranslationTextComponent("tip.the_vault.crystal_omega").mergeStyle(item.getRarity().color);
             }
         }
 

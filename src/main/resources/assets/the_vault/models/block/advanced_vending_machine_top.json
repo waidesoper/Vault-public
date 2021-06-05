@@ -1,6 +1,1 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "the_vault:block/transparent"
-  }
-}
+{"credit":"Made with Blockbench","parent":"the_vault:block/vending_machine_top_template","textures":{"1":"the_vault:block/advanced_vending_machine_top_front","3":"the_vault:block/advanced_vending_machine_top","4":"the_vault:block/advanced_vending_machine_top_side","particle":"the_vault:block/advanced_vending_machine_top_front"}}

@@ -20,9 +20,7 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
@@ -79,6 +77,7 @@ public class VaultCrateBlock extends Block {
 
                     @Override
                     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+                        world.playSound(null, pos, SoundEvents.BLOCK_BARREL_OPEN, SoundCategory.BLOCKS, 1f, 1f);       // #Crimson_Fluff
                         return new VaultCrateContainer(i, world, pos, playerInventory, playerEntity);
                     }
                 };

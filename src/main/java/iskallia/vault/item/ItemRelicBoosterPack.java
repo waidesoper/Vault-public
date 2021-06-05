@@ -11,6 +11,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.ItemParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -56,7 +57,8 @@ public class ItemRelicBoosterPack extends Item {
                 int exp = ModConfigs.PLAYER_EXP.getRelicBoosterPackExp();
                 float coef = MathUtilities.randomFloat(0.1f, 0.5f);
                 PlayerVaultStatsData.get(serverWorld).addVaultExp(serverPlayer, (int) (exp * coef));
-                failureEffects(world, player.getPositionVec());
+
+                failureEffectsAsItem(world, player.getPositionVec(), heldStack);
             }
 
             if (stackToDrop != null)
@@ -67,10 +69,10 @@ public class ItemRelicBoosterPack extends Item {
         return super.onItemRightClick(world, player, hand);
     }
 
-    @Override
-    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, world, tooltip, flagIn);
-    }
+//    @Override
+//    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+//        super.addInformation(stack, world, tooltip, flagIn);
+//    }
 
     public static void successEffects(World world, Vector3d position) {
         world.playSound(
@@ -84,12 +86,12 @@ public class ItemRelicBoosterPack extends Item {
         );
 
         ((ServerWorld) world).spawnParticle(ParticleTypes.DRAGON_BREATH,
-                position.x,
-                position.y,
-                position.z,
-                500,
-                1, 1, 1,
-                0.5
+            position.x,
+            position.y,
+            position.z,
+            500,
+            1, 1, 1,
+            0.5
         );
     }
 
@@ -113,5 +115,44 @@ public class ItemRelicBoosterPack extends Item {
                 0.5
         );
     }
+
+    // #CrimsonFluff
+    // use item as particles, visually better
+    public static void failureEffectsAsItem(World world, Vector3d position, ItemStack stack) {
+        world.playSound(
+            null,
+            position.x,
+            position.y,
+            position.z,
+            ModSounds.BOOSTER_PACK_FAIL_SFX,
+            SoundCategory.PLAYERS,
+            1f, 1f
+        );
+
+        ((ServerWorld) world).spawnParticle(new ItemParticleData(ParticleTypes.ITEM, stack),
+            position.x,
+            position.y + 1,
+            position.z,
+            250, 1D, 1D , 1D, 0d);
+    }
+
+    public static void successEffectsAsItem(World world, Vector3d position, ItemStack stack) {
+        world.playSound(
+            null,
+            position.x,
+            position.y,
+            position.z,
+            ModSounds.BOOSTER_PACK_SUCCESS_SFX,
+            SoundCategory.PLAYERS,
+            1f, 1f
+        );
+
+        ((ServerWorld) world).spawnParticle(new ItemParticleData(ParticleTypes.ITEM, stack),
+            position.x,
+            position.y + 1,
+            position.z,
+            250, 1D, 1D , 1D, 0d);
+    }
+    // Crimson_Fluff END
 
 }

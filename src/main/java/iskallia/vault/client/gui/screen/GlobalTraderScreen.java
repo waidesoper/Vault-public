@@ -29,10 +29,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.Color;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
+import net.minecraft.util.text.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -45,7 +42,7 @@ public class GlobalTraderScreen extends ContainerScreen<GlobalTraderContainer> {
     public List<GlobalTradeWidget> tradeWidgets;
 
     public GlobalTraderScreen(GlobalTraderContainer screenContainer, PlayerInventory inv, ITextComponent title) {
-        super(screenContainer, inv, new StringTextComponent("Global Trader"));
+        super(screenContainer, inv, new TranslationTextComponent("tip.the_vault.global"));
 
         tradesContainer = new ScrollableContainer(this::renderTrades);
         tradeWidgets = new LinkedList<>();
@@ -224,7 +221,7 @@ public class GlobalTraderScreen extends ContainerScreen<GlobalTraderContainer> {
                     ItemStack sellStack = trade.getSell().toStack();
                     renderTooltip(matrixStack, sellStack, mouseX, mouseY);
                 } else {
-                    StringTextComponent text = new StringTextComponent("Sold out, sorry!");
+                    TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.trader_soldout");
                     text.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_FF0000)));
                     renderTooltip(matrixStack, text, mouseX, mouseY);
                 }

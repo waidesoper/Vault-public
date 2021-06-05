@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import iskallia.vault.Vault;
 import iskallia.vault.init.ModItems;
 import iskallia.vault.item.ItemBit;
 import iskallia.vault.util.EntityHelper;
@@ -55,21 +56,23 @@ public class GiveBitsCommand extends Command {
     public static void dropBits(ServerPlayerEntity player, int bitsInput) {
         if (BIT_ITEMS == null) initializeBits(); // <-- Lazy init to prevent any registry order errors
 
-        List<ItemStack> itemsToGive = new LinkedList<>();
+//        List<ItemStack> itemsToGive = new LinkedList<>();
 
         for (ItemBit bitItem : BIT_ITEMS) {
             if (bitsInput < bitItem.getValue()) continue;
 
             int amount = bitsInput / bitItem.getValue();
 
-            itemsToGive.add(new ItemStack(bitItem, amount));
+//            itemsToGive.add(new ItemStack(bitItem, amount));
+            EntityHelper.giveItem(player, new ItemStack(bitItem, amount));
+            player.addStat(Vault.STAT_GIVEN_BITS, amount * bitItem.getValue());    // #Crimson_Fluff, AddStat
 
             bitsInput %= bitItem.getValue();
         }
 
-        for (ItemStack itemStack : itemsToGive) {
-            EntityHelper.giveItem(player, itemStack);
-        }
+//        for (ItemStack itemStack : itemsToGive) {
+//            EntityHelper.giveItem(player, itemStack);
+//        }
     }
 
     @Override

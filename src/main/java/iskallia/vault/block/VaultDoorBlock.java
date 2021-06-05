@@ -1,5 +1,6 @@
 package iskallia.vault.block;
 
+import iskallia.vault.init.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
@@ -52,9 +53,11 @@ public class VaultDoorBlock extends DoorBlock {
         ItemStack heldStack = player.getHeldItem(hand);
         Boolean isOpen = state.get(OPEN);
 
-        if (!isOpen && heldStack.getItem() == getKeyItem()) {
-            heldStack.shrink(1);
-            return super.onBlockActivated(state, world, pos, player, hand, hit);
+        if (!isOpen) {
+            if (heldStack.getItem() == getKeyItem() || heldStack.getItem() == ModItems.SKELLY_KEY) {
+                if (! player.abilities.isCreativeMode) heldStack.shrink(1);
+                return super.onBlockActivated(state, world, pos, player, hand, hit);
+            }
         }
 
         return ActionResultType.PASS;

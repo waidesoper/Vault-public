@@ -5,7 +5,10 @@ import iskallia.vault.block.VaultCrateBlock;
 import iskallia.vault.block.VaultDoorBlock;
 import iskallia.vault.block.item.LootStatueBlockItem;
 import iskallia.vault.entity.*;
-import iskallia.vault.init.*;
+import iskallia.vault.init.ModAttributes;
+import iskallia.vault.init.ModBlocks;
+import iskallia.vault.init.ModItems;
+import iskallia.vault.init.ModSounds;
 import iskallia.vault.item.ItemTraderCore;
 import iskallia.vault.item.gear.VaultGear;
 import iskallia.vault.util.StatueType;
@@ -154,9 +157,16 @@ public class EntityEvents {
         ) return;
 
         event.getEntityLiving().world.setBlockState(event.getEntityLiving().getPosition(), ModBlocks.OBELISK.getDefaultState());
-        event.getEntityLiving().remove();
+        
+		// #Crimson_Fluff, obelisk is 2 blocks now
+        event.getEntityLiving().world.setBlockState(event.getEntityLiving().getPosition().above(),
+            ModBlocks.OBELISK.defaultBlockState().setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER));
+
+		event.getEntityLiving().remove();
     }
 
+
+    // #Crimson_Fluff, if a VaultBoss dies then....
     @SubscribeEvent
     public static void onEntityDeath(LivingDeathEvent event) {
         if (event.getEntity().world.isRemote
@@ -224,7 +234,7 @@ public class EntityEvents {
 				raid.ticksLeft = 20 * 20;
 				world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, 1.0F, 1.0F);
 
-				StringTextComponent title = new StringTextComponent("Vault Cleared!");
+                TranslationTextComponent title = new TranslationTextComponent("tip.the_vault.win_cleared");
 				title.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ddd01e)));
 
 				Entity entity = event.getEntity();
@@ -232,10 +242,10 @@ public class EntityEvents {
 				IFormattableTextComponent entityName = entity instanceof FighterEntity
 						? entity.getName().deepCopy() : entity.getType().getName().deepCopy();
 				entityName.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_dd711e)));
-				IFormattableTextComponent subtitle = new StringTextComponent(" is defeated.");
+				IFormattableTextComponent subtitle = new TranslationTextComponent("tip.the_vault.win_defeated");
 				subtitle.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ddd01e)));
 
-				StringTextComponent actionBar = new StringTextComponent("You'll be teleported back soon...");
+                TranslationTextComponent actionBar = new TranslationTextComponent("tip.the_vault.win_teleport");
 				actionBar.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ddd01e)));
 
 				STitlePacket titlePacket = new STitlePacket(STitlePacket.Type.TITLE, title);
@@ -248,10 +258,10 @@ public class EntityEvents {
 				IFormattableTextComponent playerName = player.getDisplayName().deepCopy();
 				playerName.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_983198)));
 
-				StringTextComponent text = new StringTextComponent(" cleared a Vault by defeating ");
+                TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.win_clear");
 				text.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ffffff)));
 
-				StringTextComponent punctuation = new StringTextComponent("!");
+				StringTextComponent punctuation = new StringTextComponent(" !");
 				punctuation.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ffffff)));
 
 				world.getServer().getPlayerList().func_232641_a_(
@@ -259,10 +269,14 @@ public class EntityEvents {
 						ChatType.CHAT,
 						player.getUniqueID()
 				);
+
+			    // #Crimson_Fluff, AddStat
+                player.addStat(Vault.STAT_VAULTS_BOSSKILL, 1);
 			});
 		}
 	}
 
+	// #Crimson_Fluff, Don't drop anything from regular mobs if inside the vault
     @SubscribeEvent
     public static void onEntityDrops(LivingDropsEvent event) {
         if (event.getEntity().world.isRemote) return;
@@ -272,6 +286,8 @@ public class EntityEvents {
         event.setCanceled(true);
     }
 
+    // TODO:
+    // #Crimson_Fluff, Does vault allow natural mob spawns? if so then remove them from biome for efficiency
     @SubscribeEvent
     public static void onEntitySpawn(LivingSpawnEvent.CheckSpawn event) {
         if (event.getEntity().getEntityWorld().getDimensionKey() == Vault.VAULT_KEY && !event.isSpawner()) {
@@ -295,6 +311,10 @@ public class EntityEvents {
 		VaultRaid raid = VaultRaidData.get((ServerWorld)event.getEntity().world).getAt(player.getPosition());
 		if(raid == null)return;
 		raid.finished = true;
+
+        // #Crimson_Fluff, AddStat
+        // because Out-Of-Time causes death, so distinguish between that and being killed
+        if (event.getSource() != Vault.VAULT_FAILED) player.addStat(Vault.STAT_VAULTS_KILLED, 1);
 	}
 
 	@SubscribeEvent
@@ -305,6 +325,7 @@ public class EntityEvents {
 		VaultRaid raid = VaultRaidData.get((ServerWorld) event.getEntity().world).getAt(player.getPosition());
 		if(raid == null) return;
 
+		// #Crimson_Fluff, or just set player to invulnerable ?
 		if(raid.won) {
 			event.setCanceled(true);
 		}
@@ -320,8 +341,10 @@ public class EntityEvents {
 				text.append(new StringTextComponent(" has fallen, F."));
 				player.getServer().getPlayerList().func_232641_a_(text, ChatType.CHAT, player.getUniqueID());
 
-
 				raid.addSpectator(player);
+
+                // #Crimson_Fluff, AddStat
+                player.addStat(Vault.STAT_VAULTS_KILLED, 1);
 			}
 		}
 	}

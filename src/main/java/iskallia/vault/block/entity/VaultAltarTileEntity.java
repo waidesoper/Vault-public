@@ -14,9 +14,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
@@ -104,11 +107,16 @@ public class VaultAltarTileEntity extends TileEntity implements ITickableTileEnt
         double z = this.getPos().getZ() + 0.5d;
 
         PlayerVaultAltarData data = PlayerVaultAltarData.get((ServerWorld) world);
-
-
         pullNearbyItems(world, data, x, y, z, ModConfigs.VAULT_ALTAR.ITEM_RANGE_CHECK);
 
-        if (infusing) infusionTimer--;
+        if (infusing) {
+            infusionTimer--;
+
+            // #Crimson_Fluff, visually pleasing
+            // particles will decrease 2 seconds before end of timer, showing its nearing completion
+            if (infusionTimer>40)
+                ((ServerWorld) world).spawnParticle(ParticleTypes.DRAGON_BREATH, x, y, z, 20, 0.5d,3d,0.5d,0d);
+        }
 
         if (infusionTimer == 0) {
             completeInfusion(world);
@@ -118,6 +126,7 @@ public class VaultAltarTileEntity extends TileEntity implements ITickableTileEnt
         // update recipe for client to receive
         this.recipe = data.getRecipe(this.owner);
 
+        // #Crimson_Fluff, whats this ? Protection against no recipes ?
         if (this.containsVaultRock && this.recipe == null && !infusing) {
             this.containsVaultRock = false;
             world.addEntity(new ItemEntity(world, getPos().getX() + .5d, pos.getY() + 1.5d, pos.getZ() + .5d, new ItemStack(ModItems.VAULT_ROCK)));
@@ -135,6 +144,9 @@ public class VaultAltarTileEntity extends TileEntity implements ITickableTileEnt
         ItemStack crystal = ItemVaultCrystal.getRandomCrystal();
 
         world.addEntity(new ItemEntity(world, getPos().getX() + .5d, pos.getY() + 1.5d, pos.getZ() + .5d, crystal));
+
+        // #Crimson_Fluff
+        world.playSound(null, pos, SoundEvents.ENTITY_CHICKEN_EGG, SoundCategory.BLOCKS, 1f, 1f);
     }
 
     public void startInfusionTimer(int seconds) {

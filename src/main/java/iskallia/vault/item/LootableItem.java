@@ -23,7 +23,7 @@ public class LootableItem extends BasicItem {
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
         if (!world.isRemote) {
             ItemStack heldStack = player.getHeldItem(hand);
-            ItemRelicBoosterPack.successEffects(world, player.getPositionVec());
+            ItemRelicBoosterPack.successEffectsAsItem(world, player.getPositionVec(), heldStack);
 
             ItemStack randomLoot = this.supplier.get();
             while (randomLoot.getCount() > 0) {

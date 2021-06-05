@@ -59,10 +59,10 @@ public class AbilitiesConfig extends Config {
 
         this.VEIN_MINER = new AbilityGroup<>("Vein Miner",
                 new VeinMinerAbility(1, 4),
+                new VeinMinerAbility(1, 4),
                 new VeinMinerAbility(1, 8),
-                new VeinMinerAbility(1, 16),
-                new VeinMinerAbility(2, 32),
-                new VeinMinerAbility(2, 64)
+                new VeinMinerAbility(2, 8),
+                new VeinMinerAbility(2, 16)
         );
 
         this.SELF_SUSTAIN = new AbilityGroup<>("Self Sustain",

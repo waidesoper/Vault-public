@@ -23,7 +23,7 @@ public class BreadcrumbFeature extends Feature<NoFeatureConfig> {
 	}
 
 	@Override
-	public boolean func_241855_a(ISeedReader world, ChunkGenerator gen, Random rand, BlockPos pos, NoFeatureConfig config) {
+	public boolean generate(ISeedReader world, ChunkGenerator gen, Random rand, BlockPos pos, NoFeatureConfig config) {
 		for(int i = 0; i < 128; i++) {
 			int x = rand.nextInt(16);
 			int z = rand.nextInt(16);

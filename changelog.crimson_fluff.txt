@@ -1,0 +1,72 @@
+Updated to 1.16.4 mappings
+Works with Forge 1.16.5 - 36.1.17
+Optifine does NOT work
+Does NOT run in DEV environment, but does as part of Official VH modpack
+
+
+TODO: Make a playable pack...
+Remove Z-fighting from Vending Machine walls - Some of the trim is missing. 1.16.5 in Dev its fine. Don't know why
+Remove Z-fighting from Vault Arena Crate
+Reverted Andesite name change
+Added missing localisations (en_us) for existing vault items, eg: Vault Portal, Dragon Statue
+Added missing localisations (en_us) for screen messages, eg: "Time has run out !"
+Standardise "COMMON", "RARE", "EPIC", "OMEGA" capitalisation in item names
+Crystal names are in keeping with gift bomb names, "OMEGA Vault Crystal", not "Vault Crystal (OMEGA)"
+Relic Booster Pack/Legendary/Pandora/Trader Core/Knowledge Star items show item-as-particles instead of black/dragon particles, visually pleasing
+Remove duplicate "Trader" name from Trader Core tooltip - added translations
+Reposition Vault XP Bar when in Creative and allow for font height
+Inserting/Removing Trader Cores from Vending Machines now make a sound
+Vending Machine tooltip now uses Trader Core tooltip
+Vending Machines now use a common model template
+Vending Machine makes a sound when buy an item
+Rename GUI is taller to allow for "Confirm" button to be drawn completely (bottom was missing)
+Minimised a lot of model files to save file size
+Skill Screen uses translation files, "unspent points" now line up with VaultBarOverlay
+Remove pixelation from Relic Booster texture
+Added Stats: Vaults entered/ Vaults killed in/ Vault bosses killed/ Vaults bailed/ Vaults time run out
+Added Stats: Total gifts given, Total bits given, Total Booster Packs given
+Added Stats: Total damage Parried (Parry'd), Total damage absorbed by Vampirism
+Added command to increase stats
+Moved "Entered an..." message to before the lag starts when generating vault
+Added an "Expect lag" warning to all players upon a player entering vault
+Vault Altar, with completed items, can be activated by right click
+Vault Altar, with Vault Rock, when right click will show remaining items
+Vault Altar has sounds and particles, visually pleasing
+Chests/Barrels can be broken without opening them first
+Vein mine produces XP after level 2 and now costs hunger. Update your descriptions !
+Vault Crate/Arena Crates have opening sounds
+Obelisks now have particles, visually pleasing, easy to spot in vaults
+Obelisk is now 2 blocks tall, so you can activate by clicking the top part. Added voxel. Technically the boss rooms need re-editing to account for the 2nd block
+Reduced number of "Twerker" particles. Only show particles if successfully bone-mealed something
+In peaceful mode mobs no longer try to spawn in the vault
+Skellington Key, add keys to tags, recipes
+Vault Ore loot tables based on Diamond drops now
+Vault Altar requires blackstone not purpur now
+
+
+TODO: Mod...
+Config to hide potion icons from main screen
+If Creative and in Vault stop the timer?
+Stop skellies/Pillagers from dual wielding
+Entered crowded AND lonely vault? what are the chances?
+Stop spider spawning in walls
+Spawn vault robot with a name?
+when killed by robot it says simply "Killed by" (no name), also show serverwide message?
+
+
+TODO: Modpack...
+Super Gift Bomb loot table is empty?
+Add relics to Curio's slots?
+
+
+BONNe - Implemented various commits from BONNe:
+Implement an option to set different Vault Fighters                    #271
+Fixes bug with Star Core recipe                                        #287
+Fixes missing Mystery Stew Recipe in JEI and Crafting Books            #288
+Fixes missing unidentified relic recipe                                #292
+Fixes broken Twitch Relic Statute                                      #293
+This change allows to see Relic Statue recipe in JEI                   #294
+Add proper crystal upgrade recipes                                     #295
+Add Vault Plugin Anvil recipes to JEI                                  #296
+Fixes broken step-up talent                                            #297
+Fix a bug that allowed creating portals in any dimension               #298

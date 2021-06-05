@@ -1,7 +1,6 @@
 package iskallia.vault.recipe;
 
 import iskallia.vault.block.item.RelicStatueBlockItem;
-import iskallia.vault.init.ModRecipes;
 import iskallia.vault.item.RelicPartItem;
 import iskallia.vault.util.RelicSet;
 import net.minecraft.inventory.CraftingInventory;
@@ -67,7 +66,7 @@ public class RelicSetRecipe extends SpecialRecipe {
 
 	@Override
 	public IRecipeSerializer<?> getSerializer() {
-		return ModRecipes.Serializer.CRAFTING_SPECIAL_RELIC_SET;
+		return null;
 	}
 
 }

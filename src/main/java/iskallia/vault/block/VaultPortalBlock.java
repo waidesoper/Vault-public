@@ -28,6 +28,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.GameType;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
@@ -155,7 +156,7 @@ public class VaultPortalBlock extends NetherPortalBlock {
                     VaultRaid raid = VaultRaidData.get(destination).getActiveFor(playerEntity);
 
                     if(raid != null && raid.cannotExit) {
-                        StringTextComponent text = new StringTextComponent("You cannot exit this Vault!");
+                        TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.no_exit");
                         text.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_FF0000)));
                         playerEntity.sendStatusMessage(text, true);
                         return;
@@ -202,7 +203,7 @@ public class VaultPortalBlock extends NetherPortalBlock {
     private void moveToSpawn(ServerWorld world, ServerPlayerEntity player) {
         BlockPos blockpos = world.getSpawnPoint();
 
-        if (world.getDimensionType().hasSkyLight() && world.getServer().func_240793_aU_().getGameType() != GameType.ADVENTURE) {
+        if (world.getDimensionType().hasSkyLight() && world.getServer().getServerConfiguration().getGameType() != GameType.ADVENTURE) {
             int i = Math.max(0, world.getServer().getSpawnRadius(world));
             int j = MathHelper.floor(world.getWorldBorder().getClosestDistance(blockpos.getX(), blockpos.getZ()));
             if (j < i) {

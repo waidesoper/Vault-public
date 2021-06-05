@@ -24,6 +24,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -225,7 +226,7 @@ public class SkillTreeScreen extends ContainerScreen<SkillTreeContainer> {
 
         Rectangle containerBounds = getContainerBounds();
 
-        if (VaultBarOverlay.unspentSkillPoints > 0) {
+/*        if (VaultBarOverlay.unspentSkillPoints > 0) {
             getMinecraft().getTextureManager().bindTexture(HUD_RESOURCE);
             int toastWidth = 160;
             int right = getMinecraft().getMainWindow().getScaledWidth();
@@ -271,7 +272,54 @@ public class SkillTreeScreen extends ContainerScreen<SkillTreeContainer> {
                     0xFF_ffffff
             );
             matrixStack.pop();
+        }*/
+
+
+        // #Crimson_Fluff, common code, make it match VaultBarOverlay
+        int right = minecraft.getMainWindow().getScaledWidth() - 5;
+        int yOffset = 18;
+
+        if (VaultBarOverlay.unspentSkillPoints > 0) {
+            String unspentText = new TranslationTextComponent(VaultBarOverlay.unspentSkillPoints == 1
+                ? "tip.the_vault.skill_unspent"
+                : "tip.the_vault.skill_unspents").getString();
+            String unspentPointsText = VaultBarOverlay.unspentSkillPoints + " ";
+            int unspentPointsWidth = minecraft.fontRenderer.getStringWidth(unspentPointsText);
+            int unspentWidth = minecraft.fontRenderer.getStringWidth(unspentText);
+
+            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentPointsText,
+                right - unspentWidth - unspentPointsWidth, yOffset,
+                0xFF_ffd800
+            );
+            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentText,
+                right - unspentWidth, yOffset,
+                0xFF_ffffff
+            );
+
+            yOffset += minecraft.fontRenderer.FONT_HEIGHT + 3;      // # Crimson_Fluff, can't assume font height
+            // increase yOffset in case we have unspentKnowledgePoints
         }
+
+        if (VaultBarOverlay.unspentKnowledgePoints > 0) {
+            String unspentText = new TranslationTextComponent(VaultBarOverlay.unspentKnowledgePoints == 1
+                ? "tip.the_vault.res_unspent"
+                : "tip.the_vault.res_unspents").getString();
+            String unspentPointsText = VaultBarOverlay.unspentKnowledgePoints + " ";
+            int unspentPointsWidth = minecraft.fontRenderer.getStringWidth(unspentPointsText);
+            int unspentWidth = minecraft.fontRenderer.getStringWidth(unspentText);
+
+            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentPointsText,
+                right - unspentWidth - unspentPointsWidth, yOffset,
+                0xFF_40d7b1
+            );
+            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentText,
+                right - unspentWidth, yOffset,
+                0xFF_ffffff
+            );
+        }
+
+
+
 
         renderContainerBorders(matrixStack);
         renderContainerTabs(matrixStack);
@@ -339,15 +387,15 @@ public class SkillTreeScreen extends ContainerScreen<SkillTreeContainer> {
         Minecraft minecraft = getMinecraft();
 
         if (activeTab instanceof AbilitiesTab) {
-            minecraft.fontRenderer.drawString(matrixStack, "Abilities",
+            minecraft.fontRenderer.drawString(matrixStack, new TranslationTextComponent("tip.the_vault.abilities").getString(),
                     containerBounds.x0, containerBounds.y0 - 12, 0xFF_3f3f3f);
 
         } else if (activeTab instanceof TalentsTab) {
-            minecraft.fontRenderer.drawString(matrixStack, "Talents",
+            minecraft.fontRenderer.drawString(matrixStack, new TranslationTextComponent("tip.the_vault.talents").getString(),
                     containerBounds.x0, containerBounds.y0 - 12, 0xFF_3f3f3f);
 
         } else if (activeTab instanceof ResearchesTab) {
-            minecraft.fontRenderer.drawString(matrixStack, "Researches",
+            minecraft.fontRenderer.drawString(matrixStack, new TranslationTextComponent("tip.the_vault.researches").getString(),
                     containerBounds.x0, containerBounds.y0 - 12, 0xFF_3f3f3f);
         }
 

@@ -25,7 +25,7 @@ public class RegionOreFeature extends OreFeature {
 	}
 
 	@Override
-	public boolean func_241855_a(ISeedReader view, ChunkGenerator gen, Random random, BlockPos pos, OreFeatureConfig config) {
+	public boolean generate(ISeedReader view, ChunkGenerator gen, Random random, BlockPos pos, OreFeatureConfig config) {
 		VaultOreConfig.Ore[] pool = ModConfigs.VAULT_ORES.getPool(view.getSeed(), pos.getX() >> 4, pos.getZ() >> 4, new SharedSeedRandom());
 		boolean result = false;
 
@@ -36,7 +36,7 @@ public class RegionOreFeature extends OreFeature {
 				int z = random.nextInt(16);
 
 				if(this.isNearTunnel(view, pos.add(x, y, z))) {
-					result |= super.func_241855_a(view, gen, random, pos.add(x, y, z), ore.toConfig());
+					result |= super.generate(view, gen, random, pos.add(x, y, z), ore.toConfig());
 				}
 			}
 		}
@@ -60,7 +60,7 @@ public class RegionOreFeature extends OreFeature {
 	}
 
 	public static void register(RegistryEvent.Register<Feature<?>> event) {
-		INSTANCE = new RegionOreFeature(OreFeatureConfig.field_236566_a_);
+		INSTANCE = new RegionOreFeature(OreFeatureConfig.CODEC);
 		INSTANCE.setRegistryName(Vault.id("vault_ore"));
 		event.getRegistry().register(INSTANCE);
 	}

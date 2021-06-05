@@ -22,6 +22,7 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class RenameScreen extends ContainerScreen<RenamingContainer> {
 
@@ -38,11 +39,11 @@ public class RenameScreen extends ContainerScreen<RenamingContainer> {
 
 
     public RenameScreen(RenamingContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
-        super(screenContainer, inv, new StringTextComponent("Rename Player"));
+        super(screenContainer, inv, new TranslationTextComponent("tip.the_vault.rename"));
 
         font = Minecraft.getInstance().fontRenderer;
         xSize = 118;
-        ySize = 61;
+        ySize = 65;  // #Crimson_Fluff, was 61
 
         titleX = 59;
         titleY = 7;
@@ -89,7 +90,7 @@ public class RenameScreen extends ContainerScreen<RenamingContainer> {
         this.setFocusedDefault(this.nameField);
         this.nameField.setText(name);
 
-        this.renameButton = new Button(i + 4, j + 41, 110, 16, new StringTextComponent("Confirm"), this::confirmPressed);
+        this.renameButton = new Button(i + 4, j + 41, 110, 16+4, new TranslationTextComponent("tip.the_vault.confirm"), this::confirmPressed);
         this.addButton(renameButton);
     }
 
@@ -169,7 +170,7 @@ public class RenameScreen extends ContainerScreen<RenamingContainer> {
     private void renderTitle(MatrixStack matrixStack) {
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
-        float startX = (i + this.titleX) - (this.font.getStringWidth("Rename Player") / 2);
+        float startX = (i + this.titleX) - (this.font.getStringWidth(new TranslationTextComponent("tip.the_vault.rename").getString()) / 2);
         float startY = j + (float) this.titleY;
         this.font.func_243248_b(matrixStack, this.title, startX, startY, 4210752);
 

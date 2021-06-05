@@ -7,6 +7,9 @@ import iskallia.vault.world.data.PlayerResearchesData;
 import iskallia.vault.world.data.PlayerVaultStatsData;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.stats.IStatFormatter;
+import net.minecraft.stats.Stats;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
@@ -30,12 +33,37 @@ public class Vault {
 
     public static RegistryKey<World> VAULT_KEY = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, Vault.id("vault"));
 
+    // #Crimson_Fluff
+    public static final DamageSource VAULT_FAILED = new DamageSource("vault_failed").setDamageBypassesArmor().setDamageAllowedInCreativeMode();
+
+    public static final ResourceLocation STAT_VAULTS_ENTERED = registerCustomStat("vaults_entered");
+    public static final ResourceLocation STAT_VAULTS_NOTIME = registerCustomStat("vaults_notime");
+    public static final ResourceLocation STAT_VAULTS_BOSSKILL = registerCustomStat("vaults_bosskill");
+    public static final ResourceLocation STAT_VAULTS_KILLED = registerCustomStat("vaults_killed");
+    public static final ResourceLocation STAT_VAULTS_BAILED = registerCustomStat("vaults_bailed");
+    public static final ResourceLocation STAT_GIVEN_BOOSTERS = registerCustomStat("given_boosters");
+    public static final ResourceLocation STAT_GIVEN_BITS = registerCustomStat("given_bits");
+    public static final ResourceLocation STAT_GIVEN_TRADERS = registerCustomStat("given_traders");
+    public static final ResourceLocation STAT_GIVEN_GIFTS = registerCustomStat("given_gifts");
+    public static final ResourceLocation STAT_DAMAGE_PARRYD = registerCustomStat("parryd");         // change to DECIMAL_FORMAT ?
+    public static final ResourceLocation STAT_DAMAGE_VAMPIRED = registerCustomStat("vampired");      // change to DECIMAL_FORMAT ?
+    // #Crimson_Fluff END
+
     public Vault() {
         MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, this::onCommandRegister);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, this::onBiomeLoad);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, this::onPlayerLoggedIn);
     }
-    
+
+    // #Crimson_Fluff
+    private static ResourceLocation registerCustomStat(String name) {
+        ResourceLocation resourcelocation = new ResourceLocation(MOD_ID, name);
+        Registry.register(Registry.CUSTOM_STAT, name, resourcelocation);
+        Stats.CUSTOM.get(resourcelocation, IStatFormatter.DEFAULT);
+        return resourcelocation;
+    }
+    // #Crimson_Fluff END
+
     public void onCommandRegister(RegisterCommandsEvent event) {
         ModCommands.registerCommands(event.getDispatcher(), event.getEnvironment());
     }

@@ -33,7 +33,7 @@ public class ModConfigs {
     public static GiftBombConfig GIFT_BOMB;
     public static StatueLootConfig STATUE_LOOT;
     public static CryoChamberConfig CRYO_CHAMBER;
-    public static KeyPressRecipesConfig KEY_PRESS;
+//    public static KeyPressRecipesConfig KEY_PRESS;
     public static OverLevelEnchantConfig OVERLEVEL_ENCHANT;
     public static VaultStewConfig VAULT_STEW;
     public static MysteryBoxConfig MYSTERY_BOX;
@@ -56,6 +56,8 @@ public class ModConfigs {
     public static GlobalTraderConfig GLOBAL_TRADER;
     public static PlayerExpConfig PLAYER_EXP;
     public static FinalVaultGeneralConfig FINAL_VAULT_GENERAL;
+
+    public static VaultFightersConfig VAULT_FIGHTERS;
 
     public static void register() {
         ABILITIES = (AbilitiesConfig) new AbilitiesConfig().readConfig();
@@ -83,7 +85,7 @@ public class ModConfigs {
         GIFT_BOMB = (GiftBombConfig) new GiftBombConfig().readConfig();
         STATUE_LOOT = (StatueLootConfig) new StatueLootConfig().readConfig();
         CRYO_CHAMBER = (CryoChamberConfig) new CryoChamberConfig().readConfig();
-        KEY_PRESS = (KeyPressRecipesConfig) new KeyPressRecipesConfig().readConfig();
+//        KEY_PRESS = (KeyPressRecipesConfig) new KeyPressRecipesConfig().readConfig();
         OVERLEVEL_ENCHANT = (OverLevelEnchantConfig) new OverLevelEnchantConfig().readConfig();
         VAULT_STEW = (VaultStewConfig) new VaultStewConfig().readConfig();
         MYSTERY_BOX = (MysteryBoxConfig) new MysteryBoxConfig().readConfig();
@@ -106,6 +108,9 @@ public class ModConfigs {
         GLOBAL_TRADER = (GlobalTraderConfig) new GlobalTraderConfig().readConfig();
         PLAYER_EXP = (PlayerExpConfig) new PlayerExpConfig().readConfig();
         FINAL_VAULT_GENERAL = (FinalVaultGeneralConfig) new FinalVaultGeneralConfig().readConfig();
+
+        VAULT_FIGHTERS = (VaultFightersConfig) new VaultFightersConfig().readConfig();
+
         Vault.LOGGER.info("Vault Configs are loaded successfully!");
     }
 

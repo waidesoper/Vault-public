@@ -39,6 +39,7 @@ public abstract class MixinItemStack {
 
 	/**
 	 * @author Vault (Iskallia)
+	 * @reason Crimson_Fluff to remove the warning, add @reason tag
 	 */
 	@Overwrite
 	public boolean attemptDamageItem(int amount, Random rand, @Nullable ServerPlayerEntity damager) {

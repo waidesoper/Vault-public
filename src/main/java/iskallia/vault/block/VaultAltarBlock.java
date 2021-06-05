@@ -20,11 +20,10 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -73,7 +72,33 @@ public class VaultAltarBlock extends Block {
             return onRemoveVaultRock(player, altar);
         }
 
-        if (heldItem.getItem() != ModItems.VAULT_ROCK) return ActionResultType.SUCCESS;
+        if (heldItem.getItem() != ModItems.VAULT_ROCK) {
+            if (altar.containsVaultRock()) {
+                PlayerVaultAltarData data = PlayerVaultAltarData.get((ServerWorld) worldIn);
+                if (data.hasRecipe(altar.getOwner())) {
+                    AltarInfusionRecipe recipe = data.getRecipe(altar.getOwner());
+
+                    // #Crimson_Fluff, added sound, right click activation and right click to show recipe
+                    if (recipe.isComplete()) {
+                        data = data.remove(altar.getOwner());
+                        altar.startInfusionTimer(ModConfigs.VAULT_ALTAR.INFUSION_TIME);
+                        altar.setInfusing(true);
+
+                        player.playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 1f, 1f);
+
+                    } else {
+                        player.sendMessage(new StringTextComponent(""), player.getUniqueID());
+                        player.sendMessage(new StringTextComponent("Vault Altar requires:"), player.getUniqueID());
+                        recipe.getRequiredItems().forEach(lst -> {
+                            player.sendMessage(new StringTextComponent("  " + (lst.getAmountRequired() - lst.getCurrentAmount()) + " x " + lst.getItem().getDisplayName().getString()), player.getUniqueID());
+                        });
+                        player.sendMessage(new StringTextComponent(""), player.getUniqueID());
+                    }
+                }
+            }
+
+            return ActionResultType.SUCCESS;
+        }
 
         PlayerVaultAltarData data = PlayerVaultAltarData.get((ServerWorld) worldIn);
 
@@ -87,7 +112,8 @@ public class VaultAltarBlock extends Block {
         altar.setRecipe(recipe);
         altar.setContainsVaultRock(true);
 
-        if (!player.isCreative()) heldItem.setCount(heldItem.getCount() - 1);
+//        if (!player.isCreative()) heldItem.setCount(heldItem.getCount() - 1);
+        if (!player.abilities.isCreativeMode) heldItem.shrink(1);
         altar.sendUpdates();
         return ActionResultType.SUCCESS;
     }

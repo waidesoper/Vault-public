@@ -10,7 +10,6 @@ import iskallia.vault.network.message.VaultInfoMessage;
 import iskallia.vault.network.message.VaultRaidTickMessage;
 import iskallia.vault.skill.PlayerVaultStats;
 import iskallia.vault.util.NetcodeUtils;
-import iskallia.vault.util.VaultRarity;
 import iskallia.vault.world.data.PlayerVaultStatsData;
 import iskallia.vault.world.data.VaultSetsData;
 import iskallia.vault.world.gen.PortalPlacer;
@@ -37,7 +36,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableBoundingBox;
 import net.minecraft.util.text.*;
-import net.minecraft.util.text.event.HoverEvent;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -49,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -77,7 +75,6 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
         return blocks[random.nextInt(blocks.length)].getDefaultState();
     });
 
-    public static final DamageSource VAULT_FAILED = new DamageSource("vaultFailed").setDamageBypassesArmor().setDamageAllowedInCreativeMode();
 
     public static final int REGION_SIZE = 1 << 11;
 
@@ -169,12 +166,19 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
                 this.onFinishRaid(world);
             } else {
                 this.runForAll(world.getServer(), player -> {
-                    player.sendMessage(new StringTextComponent("Time has run out!").mergeStyle(TextFormatting.GREEN), player.getUniqueID());
+//                    player.sendMessage(new TranslationTextComponent("tip.the_vault.no_time").mergeStyle(TextFormatting.GREEN), player.getUniqueID());
+                    player.sendMessage(new StringTextComponent(player.getDisplayName().getString() + " ").mergeStyle(TextFormatting.GREEN).
+                        append(new TranslationTextComponent("tip.the_vault.no_time").mergeStyle(TextFormatting.WHITE)), player.getUniqueID());
                     player.inventory.func_234564_a_(stack -> true, -1, player.container.func_234641_j_());
                     player.openContainer.detectAndSendChanges();
                     player.container.onCraftMatrixChanged(player.inventory);
                     player.updateHeldItem();
-                    player.attackEntityFrom(VAULT_FAILED, 100000000.0F);
+
+                    // TODO: Don't kill player, just /tp them out ??
+                    player.attackEntityFrom(Vault.VAULT_FAILED, Integer.MAX_VALUE);
+
+                    // #Crimson_Fluff, AddStat
+                    player.addStat(Vault.STAT_VAULTS_NOTIME, 1);
                 });
 
                 this.onFinishRaid(world);
@@ -185,13 +189,21 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
                 if (this.ticksLeft + 20 < this.sTickLeft
                         && player.world.getDimensionKey() != Vault.VAULT_KEY) {
                     if (player.world.getDimensionKey() == World.OVERWORLD) {
+
+                        // #Crimson_Fluff, AddStat
+                        player.addStat(Vault.STAT_VAULTS_BAILED, 1);
+                        // TODO: msg server that player bailed?  Play a sound or something
+                        player.sendMessage(new StringTextComponent(player.getDisplayName().getString() + " ").mergeStyle(TextFormatting.GREEN).
+                            append(new TranslationTextComponent("tip.the_vault.bailed").mergeStyle(TextFormatting.WHITE)), player.getUniqueID());
+
                         //This triggers when you go through the portal or TP out.
                         this.onFinishRaid(world);
                     } else {
                         this.ticksLeft = 1;
                     }
                 } else {
-                    this.spawner.tick(player);
+                    //minecraftserver.getServerConfiguration().getDifficulty()
+                    if (world.getServer().getServerConfiguration().getDifficulty() != Difficulty.PEACEFUL) this.spawner.tick(player);
                 }
             });
         }
@@ -383,6 +395,9 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
                 this.facing == null ? world.getRandom().nextFloat() * 360.0F : this.facing.rotateY().getHorizontalAngle(), 0.0F);
 
         player.setOnGround(true);
+
+        // #Crimson_Fluff, AddStat
+        player.addStat(Vault.STAT_VAULTS_ENTERED, 1);
     }
 
     public void start(ServerWorld world, ChunkPos chunkPos, CrystalData data) {
@@ -429,27 +444,31 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
             ScoreObjective objective = getOrCreateObjective(scoreboard, "VaultRarity", ScoreCriteria.DUMMY, ScoreCriteria.RenderType.INTEGER);
             scoreboard.getOrCreateScore(player.getName().getString(), objective).setScorePoints(this.rarity);
 
-            long seconds = (this.ticksLeft / 20) % 60;
-            long minutes = ((this.ticksLeft / 20) / 60) % 60;
-            String duration = String.format("%02d:%02d", minutes, seconds);
+//            long seconds = (this.ticksLeft / 20) % 60;
+//            long minutes = ((this.ticksLeft / 20) / 60) % 60;
+//            String duration = String.format("%02d:%02d", minutes, seconds);
 
-            StringTextComponent title = new StringTextComponent("The Vault");
+        // #Crimson_Fluff
+        // Added Translations
+            TranslationTextComponent title = new TranslationTextComponent("itemGroup.the_vault");
             title.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ddd01e)));
 
             IFormattableTextComponent subtitle = this.cannotExit
-                    ? new StringTextComponent("No exit this time, ").append(player.getName()).append(new StringTextComponent("!"))
-                    : new StringTextComponent("Good luck, ").append(player.getName()).append(new StringTextComponent("!"));
+                    ? new TranslationTextComponent("tip.the_vault.no_exit", player.getName().getString())
+                    : new TranslationTextComponent("tip.the_vault.luck", player.getName().getString());
             subtitle.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ddd01e)));
 
-            StringTextComponent actionBar = new StringTextComponent("You have " + duration + " minutes to complete the raid.");
-            actionBar.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ddd01e)));
+// why?
+//            TranslationTextComponent actionBar = new TranslationTextComponent("tip.the_vault.time_left", duration);
+//            actionBar.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ddd01e)));
+        // #Crimson_Fluff END
 
             STitlePacket titlePacket = new STitlePacket(STitlePacket.Type.TITLE, title);
             STitlePacket subtitlePacket = new STitlePacket(STitlePacket.Type.SUBTITLE, subtitle);
 
             player.connection.sendPacket(titlePacket);
             player.connection.sendPacket(subtitlePacket);
-            player.sendStatusMessage(actionBar, true);
+//            player.sendStatusMessage(actionBar, true);
 
             //ModNetwork.CHANNEL.sendTo(
             //        new VaultBeginMessage(this.cannotExit),
@@ -457,9 +476,11 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
             //        NetworkDirection.PLAY_TO_CLIENT
             //);
 
-            this.modifiers.generate(world.getRandom(), this.level, this.playerBossName != null && !this.playerBossName.isEmpty());
-            data.apply(this, world.getRandom());
-            this.modifiers.apply();
+
+            // #Crimson_Fluff, Moved to VaultRaidData.startNew
+//            this.modifiers.generate(world.getRandom(), this.level, this.playerBossName != null && !this.playerBossName.isEmpty());
+//            data.apply(this, world.getRandom());
+//            this.modifiers.apply();
 
             ModNetwork.CHANNEL.sendTo(
                     new VaultInfoMessage(this),
@@ -467,6 +488,8 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
                     NetworkDirection.PLAY_TO_CLIENT
             );
 
+            // #Crimson_Fluff, moved to VaultRaidData.startNew
+/*
             StringTextComponent text = new StringTextComponent("");
             AtomicBoolean startsWithVowel = new AtomicBoolean(false);
 
@@ -479,8 +502,8 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
                 text.append(s);
 
                 if (i == 0) {
-                    char c = modifier.getName().toLowerCase().charAt(0);
-                    startsWithVowel.set(c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u');
+                    char c = modifier.getName().charAt(0);  // Rarity is UpperCase
+                    startsWithVowel.set(c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U');
                 }
 
                 if (i != this.modifiers.size() - 1) {
@@ -488,14 +511,15 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
                 }
             });
 
-            StringTextComponent prefix = new StringTextComponent(startsWithVowel.get() ? " entered an " : " entered a ");
+            StringTextComponent prefix = new StringTextComponent(new TranslationTextComponent(startsWithVowel.get() ? "tip.the_vault.entered_an" : "tip.the_vault.entered_a").getString());
             if (this.modifiers.size() != 0) text.append(new StringTextComponent(" "));
 
-            String rarityName = VaultRarity.values()[this.rarity].name().toLowerCase();
-            rarityName = rarityName.substring(0, 1).toUpperCase() + rarityName.substring(1);
+            // Crimson_Fluff - isn't there a string sentence case method ?
+            // keep name default, Rarity is uppercase
+            String rarityName = VaultRarity.values()[this.rarity].name();
 
             text.append(new StringTextComponent(rarityName).mergeStyle(VaultRarity.values()[this.rarity].color));
-            text.append(new StringTextComponent(" Vault!"));
+            text.append(new TranslationTextComponent("tip.the_vault.vault"));
             prefix.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ffffff)));
             text.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ffffff)));
 
@@ -503,6 +527,8 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
             playerName.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_983198)));
 
             world.getServer().getPlayerList().func_232641_a_(playerName.append(prefix).append(text), ChatType.CHAT, player.getUniqueID());
+            world.getServer().getPlayerList().func_232641_a_(new TranslationTextComponent("tip.the_vault.laggy"), ChatType.CHAT, player.getUniqueID());  // #Crimson_Fluff
+*/
             Advancement advancement = player.getServer().getAdvancementManager().getAdvancement(Vault.id("root"));
             player.getAdvancements().grantCriterion(advancement, "entered_vault");
         });

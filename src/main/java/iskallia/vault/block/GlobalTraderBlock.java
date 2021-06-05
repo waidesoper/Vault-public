@@ -21,7 +21,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -56,7 +56,7 @@ public class GlobalTraderBlock extends VendingMachineBlock {
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         if (world.isRemote) {
-            playOpenSound();
+//                playOpenSound();      // #Crimson_Fluff Don't be silly we don't need an opening sound
             return ActionResultType.SUCCESS;
         }
 
@@ -67,7 +67,7 @@ public class GlobalTraderBlock extends VendingMachineBlock {
                 new INamedContainerProvider() {
                     @Override
                     public ITextComponent getDisplayName() {
-                        return new StringTextComponent("Global Trader");
+                        return new TranslationTextComponent("tip.the_vault.global");
                     }
 
                     @Nullable

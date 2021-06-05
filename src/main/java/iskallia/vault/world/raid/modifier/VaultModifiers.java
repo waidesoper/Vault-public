@@ -100,4 +100,6 @@ public class VaultModifiers implements INBTSerializable<CompoundNBT> {
 		this.modifiers.removeIf(modifier -> modifier.getName().equals(name));
 	}
 
+	// #Crimson_Fluff
+	public VaultModifier get(int a) { return this.modifiers.get(a); }
 }

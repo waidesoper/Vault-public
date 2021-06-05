@@ -32,7 +32,7 @@ import java.util.*;
 public class JigsawGenerator {
 
 	public static void func_242837_a(DynamicRegistries p_242837_0_, VillageConfig p_242837_1_, JigsawManager.IPieceFactory p_242837_2_, ChunkGenerator p_242837_3_, TemplateManager p_242837_4_, BlockPos p_242837_5_, List<? super AbstractVillagePiece> p_242837_6_, Random p_242837_7_, boolean p_242837_8_, boolean p_242837_9_) {
-		Structure.func_236397_g_();
+		Structure.init();
 		MutableRegistry<JigsawPattern> mutableregistry = p_242837_0_.getRegistry(Registry.JIGSAW_POOL_KEY);
 		Rotation rotation = Rotation.randomRotation(p_242837_7_);
 		JigsawPattern jigsawpattern = p_242837_1_.func_242810_c().get();

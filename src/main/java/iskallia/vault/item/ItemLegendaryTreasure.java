@@ -13,6 +13,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -53,9 +54,10 @@ public class ItemLegendaryTreasure extends Item {
                     toDrop = ModConfigs.LEGENDARY_TREASURE_OMEGA.getRandom();
                     break;
             }
+
             playerIn.dropItem(toDrop, false);
+            ItemRelicBoosterPack.successEffectsAsItem(worldIn, playerIn.getPositionVec(), stack);
             stack.shrink(1);
-            ItemRelicBoosterPack.successEffects(worldIn, playerIn.getPositionVec());
         }
 
         return super.onItemRightClick(worldIn, playerIn, handIn);
@@ -65,8 +67,8 @@ public class ItemLegendaryTreasure extends Item {
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         if (stack.getItem() instanceof ItemLegendaryTreasure) {
             ItemLegendaryTreasure item = (ItemLegendaryTreasure) stack.getItem();
-            tooltip.add(new StringTextComponent(TextFormatting.GOLD + "Right-Click to identify..."));
-            tooltip.add(new StringTextComponent("Rarity: " + item.getRarity().color + item.getRarity()));
+            tooltip.add(new TranslationTextComponent("tip.the_vault.artifact_identify").mergeStyle(TextFormatting.GOLD));
+            tooltip.add(new TranslationTextComponent("tip.the_vault.rarity", new StringTextComponent(item.getRarity().name()).mergeStyle(item.getRarity().color)));
         }
         super.addInformation(stack, worldIn, tooltip, flagIn);
     }

@@ -13,9 +13,9 @@ import iskallia.vault.container.VendingMachineContainer;
 import iskallia.vault.entity.model.StatuePlayerModel;
 import iskallia.vault.event.InputEvents;
 import iskallia.vault.init.ModNetwork;
+import iskallia.vault.item.ItemTraderCore;
 import iskallia.vault.network.message.VendingUIMessage;
 import iskallia.vault.util.SkinProfile;
-import iskallia.vault.vending.Trade;
 import iskallia.vault.vending.TraderCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
@@ -25,16 +25,15 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TranslationTextComponent;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class VendingMachineScreen extends ContainerScreen<VendingMachineContaine
     public List<TradeWidget> tradeWidgets;
 
     public VendingMachineScreen(VendingMachineContainer screenContainer, PlayerInventory inv, ITextComponent title) {
-        super(screenContainer, inv, new StringTextComponent("Vending Machine"));
+        super(screenContainer, inv, new TranslationTextComponent("block.the_vault.vending_machine"));
 
         tradesContainer = new ScrollableContainer(this::renderTrades);
         tradeWidgets = new LinkedList<>();
@@ -198,10 +197,10 @@ public class VendingMachineScreen extends ContainerScreen<VendingMachineContaine
         }
 
         minecraft.fontRenderer.drawString(matrixStack,
-                "Trades", midX - 108, midY - 77, 0xFF_3f3f3f);
+                new TranslationTextComponent("tip.the_vault.vending_trades").getString(), midX - 108, midY - 77, 0xFF_3f3f3f);
 
         if (lastCore != null) {
-            String name = "Vendor - " + lastCore.getName();
+            String name = new TranslationTextComponent("tip.the_vault.vending_vendor", lastCore.getName()).getString();
             int nameWidth = minecraft.fontRenderer.getStringWidth(name);
             minecraft.fontRenderer.drawString(matrixStack,
                     name,
@@ -233,15 +232,24 @@ public class VendingMachineScreen extends ContainerScreen<VendingMachineContaine
 
         for (TradeWidget tradeWidget : tradeWidgets) {
             if (tradeWidget.isHovered(tradeContainerX, tradeContainerY)) {
-                Trade trade = tradeWidget.getTraderCode().getTrade();
-                if (trade.getTradesLeft() != 0) {
-                    ItemStack sellStack = trade.getSell().toStack();
-                    renderTooltip(matrixStack, sellStack, mouseX, mouseY);
-                } else {
-                    StringTextComponent text = new StringTextComponent("Sold out, sorry!");
-                    text.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_FF0000)));
-                    renderTooltip(matrixStack, text, mouseX, mouseY);
-                }
+//                Trade trade = tradeWidget.getTraderCode().getTrade();
+//                if (trade.getTradesLeft() != 0) {
+                    //ItemStack sellStack = trade.getSell().toStack();
+                    //renderTooltip(matrixStack, sellStack, mouseX, mouseY);
+
+                    // #Crimson_Fluff, match Trader Core tooltip, saves hastle of having to remove Trader Core to see
+                    // number of trades left or trader name
+                    List<ITextComponent> tooltip = new ArrayList<>();
+                    tooltip.add(new StringTextComponent(tradeWidget.getTraderCode().getName()));
+                    ItemTraderCore.makeTooltip(tradeWidget.getTraderCode(), tooltip);
+                    func_243308_b(matrixStack, tooltip, mouseX, mouseY);
+                    break;
+
+//                } else {
+//                    TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.trader_soldout");
+//                    text.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_FF0000)));
+//                    renderTooltip(matrixStack, text, mouseX, mouseY);
+//                }
             }
         }
 

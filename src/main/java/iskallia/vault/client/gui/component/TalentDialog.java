@@ -23,6 +23,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class TalentDialog extends AbstractGui {
 
@@ -48,9 +49,11 @@ public class TalentDialog extends AbstractGui {
 
             TalentNode<?> talentNode = talentTree.getNodeOf(talentGroup);
 
-            String buttonText = !talentNode.isLearned() ? "Learn (" + talentGroup.learningCost() + ")" :
-                    talentNode.getLevel() >= talentGroup.getMaxLevel() ? "Fully Learned"
-                            : "Upgrade (" + talentGroup.cost(talentNode.getLevel() + 1) + ")";
+            String buttonText = !talentNode.isLearned()
+                ? new TranslationTextComponent("tip.the_vault.learn","(" + talentGroup.learningCost() + ")").getString()
+                : talentNode.getLevel() >= talentGroup.getMaxLevel()
+                ? new TranslationTextComponent("tip.the_vault.learnt").getString()
+                : new TranslationTextComponent("tip.the_vault.learn_upgrade","(" + talentGroup.cost(talentNode.getLevel() + 1) + ")").getString();
 
             this.abilityUpgradeButton = new Button(
                     10, bounds.getHeight() - 40,
@@ -230,13 +233,13 @@ public class TalentDialog extends AbstractGui {
                 ? talentNode.getGroup().getName(1)
                 : talentNode.getName();
 
-        String subText = talentNode.getLevel() == 0
-                ? "Not Learned Yet"
-                : "Learned";
+//        String subText = talentNode.getLevel() == 0
+//                ? "Not Learned Yet"
+//                : "Learned";
 
         int gap = 5;
-        int contentWidth = abilityBounds.getWidth() + gap
-                + Math.max(fontRenderer.getStringWidth(abilityName), fontRenderer.getStringWidth(subText));
+//        int contentWidth = abilityBounds.getWidth() + gap
+//                + Math.max(fontRenderer.getStringWidth(abilityName), fontRenderer.getStringWidth(subText));
 
         matrixStack.push();
         matrixStack.translate(10, 0, 0);
@@ -246,11 +249,11 @@ public class TalentDialog extends AbstractGui {
                 talentNode.getLevel() == 0 ? 0xFF_FFFFFF : 0xFF_fff8c7,
                 talentNode.getLevel() == 0 ? 0xFF_000000 : 0xFF_3b3300);
 
-        FontHelper.drawStringWithBorder(matrixStack,
-                subText,
-                abilityBounds.getWidth() + gap, 23,
-                talentNode.getLevel() == 0 ? 0xFF_FFFFFF : 0xFF_fff8c7,
-                talentNode.getLevel() == 0 ? 0xFF_000000 : 0xFF_3b3300);
+//        FontHelper.drawStringWithBorder(matrixStack,
+//                subText,
+//                abilityBounds.getWidth() + gap, 23,
+//                talentNode.getLevel() == 0 ? 0xFF_FFFFFF : 0xFF_fff8c7,
+//                talentNode.getLevel() == 0 ? 0xFF_000000 : 0xFF_3b3300);
 
 //        FontHelper.drawStringWithBorder(matrixStack,
 //                abilityGroup.getMaxLevel() + " Max Level(s)",

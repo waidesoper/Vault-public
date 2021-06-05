@@ -8,7 +8,6 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import java.util.List;
 import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Function;

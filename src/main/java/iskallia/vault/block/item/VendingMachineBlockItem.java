@@ -12,8 +12,8 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -39,7 +39,7 @@ public class VendingMachineBlockItem extends BlockItem {
                 TraderCore core;
                 try {
                     core = NBTSerializer.deserialize(TraderCore.class, (CompoundNBT) tag);
-                    StringTextComponent text = new StringTextComponent(" Vendor: " + core.getName());
+                    TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.vending_vendor", core.getName());
                     text.setStyle(Style.EMPTY.setColor(Color.fromInt(0xFF_ff9966)));
                     tooltip.add(text);
                     return;

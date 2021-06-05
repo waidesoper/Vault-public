@@ -33,7 +33,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -160,6 +160,7 @@ public class AdvancedVendingBlock extends Block {
 
         if (!world.isRemote() && player.isSneaking()) {
             ItemStack core = machine.getTraderCoreStack();
+            playOpenSound();    // #Crimson_Fluff a sound indication that trader card is inserted/removed
             if (!player.addItemStackToInventory(core)) {
                 player.dropItem(core, false);
             }
@@ -171,12 +172,13 @@ public class AdvancedVendingBlock extends Block {
             TraderCore coreToInsert = ItemTraderCore.getCoreFromStack(heldStack);
 
             machine.addCore(coreToInsert);
-            heldStack.shrink(1);
+            playOpenSound();                    // #Crimson_Fluff a sound indication that trader card is inserted/removed
+            heldStack.shrink(1);        // #Crimson_Fluff TODO: Not in Creative ?
 
             return ActionResultType.SUCCESS;
         } else {
             if (world.isRemote) {
-                playOpenSound();
+//                playOpenSound();      // #Crimson_Fluff Don't be silly we don't need an opening sound
                 return ActionResultType.SUCCESS;
             }
 
@@ -185,7 +187,7 @@ public class AdvancedVendingBlock extends Block {
                     new INamedContainerProvider() {
                         @Override
                         public ITextComponent getDisplayName() {
-                            return new StringTextComponent("Advanced Vending Machine");
+                            return new TranslationTextComponent("block.the_vault.advanced_vending_machine");
                         }
 
                         @Nullable

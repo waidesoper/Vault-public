@@ -7,6 +7,8 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -98,4 +100,14 @@ public class VaultCrateContainer extends Container {
         }
         return index;
     }
+
+    // #Crimson_Fluff
+// TODO: this is also called when containers close when in JEI, find a better way of playing close sound
+//    @Override
+//    public void onContainerClosed(PlayerEntity playerIn) {
+//        playerIn.playSound(SoundEvents.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 1f, 1f);
+//
+//        super.onContainerClosed(playerIn);
+//    }
 }
+

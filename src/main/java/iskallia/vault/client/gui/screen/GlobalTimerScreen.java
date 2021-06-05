@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.time.Instant;
 
@@ -19,7 +19,7 @@ public class GlobalTimerScreen extends Screen {
     protected long endUnix;
 
     public GlobalTimerScreen(long endUnix) {
-        super(new StringTextComponent("Global Timer"));
+        super(new TranslationTextComponent("tip.the_vault.timer_big"));
         this.endUnix = endUnix;
     }
 
@@ -52,7 +52,7 @@ public class GlobalTimerScreen extends Screen {
         String formattedSeconds = formatSecondsLeft(secondsLeft);
         int formattedSecondsLength = minecraft.fontRenderer.getStringWidth(formattedSeconds);
 
-        String label = "Time left until the end...";
+        String label = new TranslationTextComponent("tip.the_vault.remain").getString();
         int labelWidth = minecraft.fontRenderer.getStringWidth(label);
         minecraft.fontRenderer.drawString(matrixStack, label,
                 midX - labelWidth / 2f, midY - 20, 0xFF_3f3f3f);

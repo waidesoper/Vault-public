@@ -1,6 +1,7 @@
 package iskallia.vault.skill.talent.type;
 
 import com.google.gson.annotations.Expose;
+import iskallia.vault.Vault;
 import iskallia.vault.init.ModAttributes;
 import iskallia.vault.skill.set.AssassinSet;
 import iskallia.vault.skill.set.NinjaSet;
@@ -38,7 +39,7 @@ public class ParryTalent extends PlayerTalent {
     public static void onPlayerDamage(LivingAttackEvent event) {
         if(event.getEntityLiving().world.isRemote)return;
         if(!(event.getEntityLiving() instanceof ServerPlayerEntity))return;
-        if(event.getSource() == VaultRaid.VAULT_FAILED)return;
+        if(event.getSource() == Vault.VAULT_FAILED)return;
 
         ServerPlayerEntity player = (ServerPlayerEntity) event.getEntityLiving();
         float totalParryChance = 0.0F;
@@ -78,6 +79,9 @@ public class ParryTalent extends PlayerTalent {
                     SoundCategory.MASTER,
                     1F, 1F
             );
+
+            // #Crimson_Fluff, add Parry damage stat
+            player.addStat(Vault.STAT_DAMAGE_PARRYD, (int) event.getAmount());
 
             event.setCanceled(true);
         }

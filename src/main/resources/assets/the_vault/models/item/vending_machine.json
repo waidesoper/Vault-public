@@ -1,3 +1,11 @@
 {
-  "parent": "the_vault:block/vending_machine"
+  "parent": "the_vault:item/vending_template",
+  	"textures": {
+		"0": "the_vault:block/vending_machine_bottom_front",
+		"1": "the_vault:block/vending_machine_bottom_side",
+		"2": "the_vault:block/vending_machine_top",
+		"3": "the_vault:block/vending_machine_top_front",
+		"4": "the_vault:block/vending_machine_top_side",
+		"particle": "the_vault:block/vending_machine_bottom_front"
+	}
 }

@@ -1,7 +1,6 @@
 package iskallia.vault.recipe;
 
 import iskallia.vault.init.ModItems;
-import iskallia.vault.init.ModRecipes;
 import iskallia.vault.item.RelicPartItem;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
@@ -49,7 +48,7 @@ public class UnidentifiedRelicRecipe extends SpecialRecipe {
 
 	@Override
 	public IRecipeSerializer<?> getSerializer() {
-		return ModRecipes.Serializer.CRAFTING_SPECIAL_UNIDENTIFIED_RELIC;
+		return null;
 	}
 
 }

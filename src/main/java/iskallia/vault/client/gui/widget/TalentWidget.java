@@ -11,7 +11,7 @@ import iskallia.vault.util.ResourceBoundary;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class TalentWidget extends Widget {
 
@@ -34,7 +34,7 @@ public class TalentWidget extends Widget {
         super(style.x, style.y,
                 5 * PIP_SIZE + 4 * GAP_SIZE,
                 pipRowCount(talentTree.getNodeOf(talentGroup).getLevel()) * (PIP_SIZE + GAP_SIZE) - GAP_SIZE,
-                new StringTextComponent("the_vault.widgets.talent"));
+                new TranslationTextComponent("the_vault.widgets.talent"));      // TOO: This doesn't exist in en-us
         this.style = style;
         this.talentGroup = talentGroup;
         this.talentTree = talentTree;

@@ -22,6 +22,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class ResearchDialog extends AbstractGui {
 
@@ -49,8 +50,9 @@ public class ResearchDialog extends AbstractGui {
 
             Research research = ModConfigs.RESEARCHES.getByName(researchName);
 
-            String buttonText = researchTree.isResearched(researchName) ? "Researched"
-                    : "Research (" + research.getCost() + ")";
+            String buttonText = researchTree.isResearched(researchName)
+                ? new TranslationTextComponent("tip.the_vault.resd").getString()
+                : new TranslationTextComponent("tip.the_vault.res", "(" + research.getCost() + ")").getString();
 
             this.researchButton = new Button(
                     10, bounds.getHeight() - 40,
@@ -230,13 +232,14 @@ public class ResearchDialog extends AbstractGui {
 
         boolean researched = researchTree.getResearchesDone().contains(researchName);
 
-        String subText = !researched
-                ? "Not Researched"
-                : "Researched";
+// #Crimson_Fluff, no need for this, as "Learn" button will be active/non-active
+//        String subText = !researched
+//                ? "Not Researched"
+//                : "Researched";
 
         int gap = 5;
-        int contentWidth = abilityBounds.getWidth() + gap
-                + Math.max(fontRenderer.getStringWidth(researchName), fontRenderer.getStringWidth(subText));
+//        int contentWidth = abilityBounds.getWidth() + gap
+//                + Math.max(fontRenderer.getStringWidth(researchName), fontRenderer.getStringWidth(subText));
 
         matrixStack.push();
         matrixStack.translate(10, 0, 0);
@@ -246,11 +249,11 @@ public class ResearchDialog extends AbstractGui {
                 !researched ? 0xFF_FFFFFF : 0xFF_fff8c7,
                 !researched ? 0xFF_000000 : 0xFF_3b3300);
 
-        FontHelper.drawStringWithBorder(matrixStack,
-                subText,
-                abilityBounds.getWidth() + gap, 23,
-                !researched ? 0xFF_FFFFFF : 0xFF_fff8c7,
-                !researched ? 0xFF_000000 : 0xFF_3b3300);
+//        FontHelper.drawStringWithBorder(matrixStack,
+//                subText,
+//                abilityBounds.getWidth() + gap, 23,
+//                !researched ? 0xFF_FFFFFF : 0xFF_fff8c7,
+//                !researched ? 0xFF_000000 : 0xFF_3b3300);
 
         matrixStack.translate(-abilityStyle.x, -abilityStyle.y, 0); // Nullify the viewport style
         matrixStack.translate(abilityBounds.getWidth() / 2f, 0, 0);

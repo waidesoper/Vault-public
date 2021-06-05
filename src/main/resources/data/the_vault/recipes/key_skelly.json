@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " # ",
+    "#n#",
+    " # "
+  ],
+  "key": {
+    "#": {
+      "tag": "the_vault:keys"
+    },
+    "n": {
+      "item": "the_vault:blank_key"
+    }
+  },
+  "result": {
+    "item": "the_vault:key_skelly",
+    "count": 1
+  }
+}

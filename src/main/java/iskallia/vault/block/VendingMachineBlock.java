@@ -34,8 +34,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -68,10 +68,7 @@ public class VendingMachineBlock extends Block {
 
     @Override
     public boolean hasTileEntity(BlockState state) {
-        if (state.get(HALF) == DoubleBlockHalf.LOWER)
-            return true;
-
-        return false;
+        return state.get(HALF) == DoubleBlockHalf.LOWER;
     }
 
     @Override
@@ -167,6 +164,7 @@ public class VendingMachineBlock extends Block {
 
         if (!world.isRemote() && player.isSneaking()) {
             ItemStack core = machine.getTraderCoreStack();
+            playOpenSound();    // #Crimson_Fluff a sound indication that trader card is inserted/removed
             if (!player.addItemStackToInventory(core)) {
                 player.dropItem(core, false);
             }
@@ -180,9 +178,10 @@ public class VendingMachineBlock extends Block {
             if(coreToInsert == null || coreToInsert.getTrade() == null) return ActionResultType.FAIL;
             if (lastCore == null || lastCore.getName().equalsIgnoreCase(coreToInsert.getName())) {
                 machine.addCore(coreToInsert);
-                heldStack.shrink(1);
+                playOpenSound();                    // #Crimson_Fluff a sound indication that trader card is inserted/removed
+                heldStack.shrink(1);        // #Crimson_Fluff TODO: Not in Creative ?
             } else {
-                StringTextComponent text = new StringTextComponent("This vending machine is already occupied.");
+                TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.vending_occupied");
                 text.setStyle(Style.EMPTY.setColor(Color.fromInt(0xFF_ffd800)));
                 player.sendStatusMessage(text, true);
             }
@@ -191,7 +190,7 @@ public class VendingMachineBlock extends Block {
 
         } else {
             if (world.isRemote) {
-                playOpenSound();
+//                playOpenSound();      // #Crimson_Fluff Don't be silly we don't need an opening sound
                 return ActionResultType.SUCCESS;
             }
 
@@ -200,7 +199,7 @@ public class VendingMachineBlock extends Block {
                     new INamedContainerProvider() {
                         @Override
                         public ITextComponent getDisplayName() {
-                            return new StringTextComponent("Vending Machine");
+                            return new TranslationTextComponent("block.the_vault.vending_machine");
                         }
 
                         @Nullable
@@ -236,9 +235,7 @@ public class VendingMachineBlock extends Block {
     public static TileEntity getBlockTileEntity(World world, BlockPos pos, BlockState state) {
         BlockPos vendingMachinePos = getTileEntityPos(state, pos);
 
-        TileEntity tileEntity = world.getTileEntity(vendingMachinePos);
-
-        return tileEntity;
+        return world.getTileEntity(vendingMachinePos);
     }
 
 }

@@ -11,8 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -28,15 +28,15 @@ public class LootStatueBlockItem extends BlockItem {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        CompoundNBT nbt = stack.getTag();
-
-        if (nbt != null) {
-            CompoundNBT blockEntityTag = nbt.getCompound("BlockEntityTag");
+        if (stack.hasTag()) {
+            CompoundNBT blockEntityTag = stack.getTag().getCompound("BlockEntityTag");
             String nickname = blockEntityTag.getString("PlayerNickname");
 
-            StringTextComponent text = new StringTextComponent(" Nickname: " + nickname);
-            text.setStyle(Style.EMPTY.setColor(Color.fromInt(0xFF_ff9966)));
-            tooltip.add(text);
+            if (nickname.length() > 0) {
+                TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.nickname", nickname);
+                text.setStyle(Style.EMPTY.setColor(Color.fromInt(0xFF_ff9966)));
+                tooltip.add(text);
+            }
         }
 
         super.addInformation(stack, worldIn, tooltip, flagIn);

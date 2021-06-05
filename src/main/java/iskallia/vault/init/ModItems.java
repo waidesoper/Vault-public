@@ -55,6 +55,7 @@ public class ModItems {
     public static ItemVaultKey GORGINITE_KEY = new ItemVaultKey(VAULT_MOD_GROUP, Vault.id("key_gorginite"));
     public static ItemVaultKey SPARKLETINE_KEY = new ItemVaultKey(VAULT_MOD_GROUP, Vault.id("key_sparkletine"));
     public static ItemVaultKey WUTODIE_KEY = new ItemVaultKey(VAULT_MOD_GROUP, Vault.id("key_wutodie"));
+    public static ItemSkellingtonKey SKELLY_KEY = new ItemSkellingtonKey(VAULT_MOD_GROUP, Vault.id("key_skelly"));        // #Crimson_Fluff, Skelly Key
     public static ItemBit BIT_100 = new ItemBit(VAULT_MOD_GROUP, Vault.id("bit_100"), 100);
     public static ItemBit BIT_500 = new ItemBit(VAULT_MOD_GROUP, Vault.id("bit_500"), 500);
     public static ItemBit BIT_1000 = new ItemBit(VAULT_MOD_GROUP, Vault.id("bit_1000"), 1000);
@@ -235,6 +236,7 @@ public class ModItems {
         registry.register(GORGINITE_KEY);
         registry.register(SPARKLETINE_KEY);
         registry.register(WUTODIE_KEY);
+        registry.register(SKELLY_KEY);     // #Crimson_Fluff
         registry.register(BIT_100);
         registry.register(BIT_500);
         registry.register(BIT_1000);

@@ -47,7 +47,7 @@ public class AdvancedVendingMachineScreen extends ContainerScreen<AdvancedVendin
     public SkinProfile skin = new SkinProfile();
 
     public AdvancedVendingMachineScreen(AdvancedVendingContainer screenContainer, PlayerInventory inv, ITextComponent title) {
-        super(screenContainer, inv, new StringTextComponent("Advanced Vending Machine"));
+        super(screenContainer, inv, new TranslationTextComponent("block.the_vault.advanced_vending_machine"));
 
         tradesContainer = new ScrollableContainer(this::renderTrades);
         tradeWidgets = new LinkedList<>();
@@ -243,7 +243,7 @@ public class AdvancedVendingMachineScreen extends ContainerScreen<AdvancedVendin
                     ItemStack sellStack = trade.getSell().toStack();
                     renderTooltip(matrixStack, sellStack, mouseX, mouseY);
                 } else {
-                    StringTextComponent text = new StringTextComponent("Sold out, sorry!");
+                    StringTextComponent text = new TranslationTextComponent("tip.the_vault.trader_soldout");
                     text.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_FF0000)));
                     renderTooltip(matrixStack, text, mouseX, mouseY);
                 }

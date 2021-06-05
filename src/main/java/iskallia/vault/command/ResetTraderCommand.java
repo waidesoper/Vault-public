@@ -2,7 +2,6 @@ package iskallia.vault.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import iskallia.vault.Vault;
 import iskallia.vault.world.data.GlobalTraderData;
 import net.minecraft.command.CommandSource;
 

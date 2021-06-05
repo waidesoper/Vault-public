@@ -1,3 +1,11 @@
 {
-  "parent": "the_vault:block/global_trader"
+  "parent": "the_vault:item/vending_template",
+  	"textures": {
+		"0": "the_vault:block/global_trader_front_bottom",
+		"1": "the_vault:block/global_trader_side_bottom",
+		"2": "the_vault:block/global_trader_top",
+		"3": "the_vault:block/global_trader_front_top",
+		"4": "the_vault:block/global_trader_side_top",
+		"particle": "the_vault:block/global_trader_front_bottom"
+	}
 }

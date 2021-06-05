@@ -124,6 +124,9 @@ public class ModBlocks {
     public static final TileEntityType<GlobalTraderTileEntity> GLOBAL_TRADER_TILE_ENTITY =
             TileEntityType.Builder.create(GlobalTraderTileEntity::new, GLOBAL_TRADER).build(null);
 
+    // #Crimson_Fluff, all this for Tick() method !
+    public static final TileEntityType<ObeliskBlockTileEntity> OBELISK_TILE_ENTITY =
+        TileEntityType.Builder.create(ObeliskBlockTileEntity::new, OBELISK).build(null);
 
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         registerBlock(event, VAULT_PORTAL, Vault.id("vault_portal"));
@@ -204,6 +207,8 @@ public class ModBlocks {
         registerTileEntity(event, CRYO_CHAMBER_TILE_ENTITY, Vault.id("cryo_chamber_tile_entity"));
         registerTileEntity(event, CAPACITOR_TILE_ENTITY, Vault.id("capacitor_tile_entity"));
         registerTileEntity(event, GLOBAL_TRADER_TILE_ENTITY, Vault.id("global_trader_tile_entity"));
+
+        registerTileEntity(event, OBELISK_TILE_ENTITY, Vault.id("obelisk_tile_entity"));        // #Crimson_Fluff
     }
 
     public static void registerTileEntityRenderers() {

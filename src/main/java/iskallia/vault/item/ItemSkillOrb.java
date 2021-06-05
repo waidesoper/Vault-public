@@ -7,6 +7,8 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.ItemParticleData;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -36,6 +38,9 @@ public class ItemSkillOrb extends Item {
         if (!world.isRemote) {
             PlayerVaultStatsData statsData = PlayerVaultStatsData.get((ServerWorld) world);
             statsData.addSkillPoint(((ServerPlayerEntity) player), 1);
+
+            // #Crimson_Fluff
+            ((ServerWorld) world).spawnParticle(new ItemParticleData(ParticleTypes.ITEM, heldItemStack), player.getPosX(),player.getPosY() + 1, player.getPosZ(), 250, 1D, 1D , 1D, 0d);
         }
 
         player.addStat(Stats.ITEM_USED.get(this));

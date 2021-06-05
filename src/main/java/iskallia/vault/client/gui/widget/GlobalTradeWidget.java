@@ -56,7 +56,7 @@ public class GlobalTradeWidget extends Widget {
         ItemRenderer itemRenderer = minecraft.getItemRenderer();
 
         Rectangle tradeBoundaries = parentScreen.getTradeBoundaries();
-        int yOFfset = parentScreen.tradesContainer.getyOffset();
+        int yOffset = parentScreen.tradesContainer.getyOffset();
 
         if (trade.getTradesLeft() == 0) {
             blit(matrixStack, x, y,
@@ -64,10 +64,10 @@ public class GlobalTradeWidget extends Widget {
             RenderSystem.disableDepthTest();
             itemRenderer.renderItemIntoGUI(buy,
                     5 + x + tradeBoundaries.x0,
-                    6 + y + tradeBoundaries.y0 - yOFfset);
+                    6 + y + tradeBoundaries.y0 - yOffset);
             itemRenderer.renderItemIntoGUI(sell,
                     55 + x + tradeBoundaries.x0,
-                    6 + y + tradeBoundaries.y0 - yOFfset);
+                    6 + y + tradeBoundaries.y0 - yOffset);
             return;
         }
 
@@ -81,10 +81,10 @@ public class GlobalTradeWidget extends Widget {
         RenderSystem.disableDepthTest();
         itemRenderer.renderItemIntoGUI(buy,
                 5 + x + tradeBoundaries.x0,
-                6 + y + tradeBoundaries.y0 - yOFfset);
+                6 + y + tradeBoundaries.y0 - yOffset);
         itemRenderer.renderItemIntoGUI(sell,
                 55 + x + tradeBoundaries.x0,
-                6 + y + tradeBoundaries.y0 - yOFfset);
+                6 + y + tradeBoundaries.y0 - yOffset);
 
         minecraft.fontRenderer.drawString(matrixStack,
                 buy.getCount() + "", x + 23, y + 10, 0xFF_FFFFFF);

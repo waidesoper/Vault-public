@@ -1,6 +1,8 @@
 package iskallia.vault.skill.talent.type;
 
 import com.google.gson.annotations.Expose;
+import iskallia.vault.skill.talent.TalentTree;
+import iskallia.vault.world.data.PlayerTalentsData;
 import net.minecraft.block.Block;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.block.SaplingBlock;
@@ -51,10 +53,15 @@ public class TwerkerTalent extends PlayerTalent {
 
             Block block = player.world.getBlockState(pos).getBlock();
 
+            PlayerTalentsData playerTalentsData = PlayerTalentsData.get((ServerWorld) player.world);
+            TalentTree talentTree = playerTalentsData.getTalents(player);
+
+            //player.sendMessage(new StringTextComponent("LEVEL: " + talentTree.getNodeOf(ModConfigs.TALENTS.TWERKER).getLevel()), player.getUniqueID());
+
             if (block instanceof CropsBlock || block instanceof SaplingBlock) {
-                BoneMealItem.applyBonemeal(new ItemStack(Items.BONE_MEAL), player.world, pos, player);
-                ((ServerWorld) player.world).spawnParticle(ParticleTypes.HAPPY_VILLAGER, pos.getX(), pos.getY(), pos.getZ(),
-                        100, 1D, 0.5D, 1D, 0.0D);
+                if (BoneMealItem.applyBonemeal(new ItemStack(Items.BONE_MEAL), player.world, pos, player)) {
+                    ((ServerWorld) player.world).spawnParticle(ParticleTypes.HAPPY_VILLAGER, pos.getX(), pos.getY(), pos.getZ(), 25, 1D, 0.5D, 1D, 0.0D);
+                }
             }
         }
     }

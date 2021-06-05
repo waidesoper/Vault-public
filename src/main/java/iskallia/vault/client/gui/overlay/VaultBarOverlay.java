@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -40,69 +41,80 @@ public class VaultBarOverlay {
         Minecraft minecraft = Minecraft.getInstance();
         int midX = minecraft.getMainWindow().getScaledWidth() / 2;
         int bottom = minecraft.getMainWindow().getScaledHeight();
-        int right = minecraft.getMainWindow().getScaledWidth();
+        int right = minecraft.getMainWindow().getScaledWidth() - 5;
 
         String text = String.valueOf(vaultLevel);
         int textX = midX + 50 - (minecraft.fontRenderer.getStringWidth(text) / 2);
-        int textY = bottom - 54;
+        //int textY = bottom - 54;
         int barWidth = 85;
         float expPercentage = (float) vaultExp / tnl;
 
+        // #Crimson_Fluff Common Code + Translations
+        ClientPlayerEntity player = minecraft.player;
+        boolean iconsShowing = player != null && player.getActivePotionEffects().stream().anyMatch(EffectInstance::isShowIcon);
+        int yOffset = iconsShowing ? 28 : 18;
+        //minecraft.getTextureManager().bindTexture(RESOURCE);
+
         if (VaultBarOverlay.unspentSkillPoints > 0) {
-            ClientPlayerEntity player = minecraft.player;
-            boolean iconsShowing = player != null && player.getActivePotionEffects().stream()
-                    .anyMatch(EffectInstance::isShowIcon);
-            minecraft.getTextureManager().bindTexture(RESOURCE);
-            String unspentText = unspentSkillPoints == 1
-                    ? " unspent skill point"
-                    : " unspent skill points";
-            String unspentPointsText = unspentSkillPoints + "";
+//            ClientPlayerEntity player = minecraft.player;
+//            boolean iconsShowing = player != null && player.getActivePotionEffects().stream()
+//                    .anyMatch(EffectInstance::isShowIcon);
+//            minecraft.getTextureManager().bindTexture(RESOURCE);
+            String unspentText = new TranslationTextComponent(unspentSkillPoints == 1
+                ? "tip.the_vault.skill_unspent"
+                : "tip.the_vault.skill_unspents").getString();
+            String unspentPointsText = unspentSkillPoints + " ";
             int unspentPointsWidth = minecraft.fontRenderer.getStringWidth(unspentPointsText);
             int unspentWidth = minecraft.fontRenderer.getStringWidth(unspentText);
-            int gap = 5;
-            int yOffset = 18;
-            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentSkillPoints + "",
-                    right - unspentWidth - unspentPointsWidth - gap, iconsShowing ? yOffset + 10 : yOffset,
-                    0xFF_ffd800
+//            int gap = 5;
+//            int yOffset = 18;
+            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentPointsText,
+                right - unspentWidth - unspentPointsWidth, yOffset,
+                0xFF_ffd800
             );
             minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentText,
-                    right - unspentWidth - gap, iconsShowing ? yOffset + 10 : yOffset,
-                    0xFF_ffffff
+                right - unspentWidth, yOffset,
+                0xFF_ffffff
             );
+
+            yOffset += minecraft.fontRenderer.FONT_HEIGHT + 3;      // # Crimson_Fluff, can't assume font height
+                                                                    // increase yOffset in case we have unspentKnowledgePoints
         }
 
         if (VaultBarOverlay.unspentKnowledgePoints > 0) {
-            ClientPlayerEntity player = minecraft.player;
-            boolean iconsShowing = player != null && player.getActivePotionEffects().stream()
-                    .anyMatch(EffectInstance::isShowIcon);
-            minecraft.getTextureManager().bindTexture(RESOURCE);
-            String unspentText = unspentKnowledgePoints == 1
-                    ? " unspent knowledge point"
-                    : " unspent knowledge points";
-            String unspentPointsText = unspentKnowledgePoints + "";
+//            ClientPlayerEntity player = minecraft.player;
+//            boolean iconsShowing = player != null && player.getActivePotionEffects().stream()
+//                    .anyMatch(EffectInstance::isShowIcon);
+//            minecraft.getTextureManager().bindTexture(RESOURCE);
+            String unspentText = new TranslationTextComponent(unspentKnowledgePoints == 1
+                ? "tip.the_vault.res_unspent"
+                : "tip.the_vault.res_unspents").getString();
+            String unspentPointsText = unspentKnowledgePoints + " ";
             int unspentPointsWidth = minecraft.fontRenderer.getStringWidth(unspentPointsText);
             int unspentWidth = minecraft.fontRenderer.getStringWidth(unspentText);
-            int gap = 5;
-            int yOffset = 18;
-            matrixStack.push();
-            if (VaultBarOverlay.unspentSkillPoints > 0) {
-                matrixStack.translate(0, 12, 0);
-            }
-            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentKnowledgePoints + "",
-                    right - unspentWidth - unspentPointsWidth - gap, iconsShowing ? yOffset + 10 : yOffset,
+//            int gap = 5;
+//            int yOffset = 18;
+//           matrixStack.push();
+//            if (VaultBarOverlay.unspentSkillPoints > 0) {
+//                matrixStack.translate(0, 12, 0);
+//            }
+            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentPointsText,
+                    right - unspentWidth - unspentPointsWidth, yOffset,
                     0xFF_40d7b1
             );
             minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentText,
-                    right - unspentWidth - gap, iconsShowing ? yOffset + 10 : yOffset,
+                    right - unspentWidth, yOffset,
                     0xFF_ffffff
             );
-            matrixStack.pop();
+//            matrixStack.pop();
         }
 
         expGainedAnimation.tick((int) (now - previousTick));
         previousTick = now;
 
-        minecraft.getProfiler().startSection("vaultBar");
+        //minecraft.getProfiler().startSection("vaultBar");
+        if (player.isCreative()) bottom += 20;  // VaultXPBar appear above hotbar
+
         minecraft.getTextureManager().bindTexture(RESOURCE);
         RenderSystem.enableBlend();
         minecraft.ingameGUI.blit(matrixStack,
@@ -129,9 +141,9 @@ public class VaultBarOverlay {
 
         FontHelper.drawStringWithBorder(matrixStack,
                 text,
-                textX, textY,
+                textX, bottom - 45 - minecraft.fontRenderer.FONT_HEIGHT,
                 0xFF_ffe637, 0x3c3400);
-        minecraft.getProfiler().endSection();
+        //minecraft.getProfiler().endSection();
     }
 
 }

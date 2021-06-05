@@ -6,7 +6,6 @@ import iskallia.vault.Vault;
 import iskallia.vault.command.*;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
-import net.minecraft.command.impl.DebugCommand;
 
 import java.util.function.Supplier;
 
@@ -22,6 +21,8 @@ public class ModCommands {
     public static GearDebugCommand GEAR_DEBUG_COMMAND;
     public static ResetTraderCommand RESET_TRADER_COMMAND;
 
+    public static AddStatCommand ADD_STAT_COMMAND;     // #Crimson_Fluff, so we can call AddStat
+
     public static void registerCommands(CommandDispatcher<CommandSource> dispatcher, Commands.EnvironmentType env) {
         RELOAD_CONFIGS = registerCommand(ReloadConfigsCommand::new, dispatcher, env);
         RAID = registerCommand(RaidCommand::new, dispatcher, env);
@@ -30,6 +31,8 @@ public class ModCommands {
         GIVE_BITS = registerCommand(GiveBitsCommand::new, dispatcher, env);
         GEAR_DEBUG_COMMAND = registerCommand(GearDebugCommand::new, dispatcher, env);
         RESET_TRADER_COMMAND = registerCommand(ResetTraderCommand::new, dispatcher, env);
+
+        ADD_STAT_COMMAND = registerCommand(AddStatCommand::new, dispatcher, env);     // #Crimson_Fluff, so we can call AddStat
     }
 
     public static <T extends Command> T registerCommand(Supplier<T> supplier, CommandDispatcher<CommandSource> dispatcher, Commands.EnvironmentType env) {
