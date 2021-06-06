@@ -28,77 +28,86 @@ import java.util.Random;
 @Mixin(value = ItemStack.class, priority = 1001)
 public abstract class MixinItemStack {
 
-	@Shadow public abstract boolean isDamageable();
-	@Shadow public abstract int getDamage();
-	@Shadow public abstract void setDamage(int damage);
-	@Shadow public abstract int getMaxDamage();
+    @Shadow
+    public abstract boolean isDamageableItem();
 
-	@Shadow public abstract ItemStack copy();
+    @Shadow
+    public abstract int getDamageValue();
 
-	@Shadow public abstract Item getItem();
+    @Shadow
+    public abstract void setDamageValue(int damage);
 
-	/**
-	 * @author Vault (Iskallia)
-	 * @reason Crimson_Fluff to remove the warning, add @reason tag
-	 */
-	@Overwrite
-	public boolean attemptDamageItem(int amount, Random rand, @Nullable ServerPlayerEntity damager) {
-		if(!this.isDamageable()) return false;
+    @Shadow
+    public abstract int getMaxDamage();
 
-		if(amount > 0) {
-			int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.UNBREAKING, (ItemStack)(Object)this);
+    @Shadow
+    public abstract ItemStack copy();
 
-			if(damager != null) {
-				TalentTree abilities = PlayerTalentsData.get(damager.getServerWorld()).getTalents(damager);
+    @Shadow
+    public abstract Item getItem();
 
-				for(TalentNode<?> node: abilities.getNodes()) {
-					if(!(node.getTalent() instanceof UnbreakableTalent))continue;
-					UnbreakableTalent talent = (UnbreakableTalent)node.getTalent();
-					i += talent.getExtraUnbreaking();
-				}
-			}
+    /**
+     * @author Vault (Iskallia)
+     * @reason Because
+     */
+    @Overwrite
+    public boolean hurt(int amount, Random rand, @Nullable ServerPlayerEntity damager) {
+        if (! this.isDamageableItem()) return false;
 
-			int j = 0;
+        if (amount > 0) {
+            int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, (ItemStack) (Object) this);
 
-			for(int k = 0; i > 0 && k < amount; ++k) {
-				if(UnbreakingEnchantment.negateDamage((ItemStack)(Object)this, i, rand)) {
-					++j;
-				}
-			}
+            if (damager != null) {
+                TalentTree abilities = PlayerTalentsData.get(damager.getLevel()).getTalents(damager);
 
-			amount -= j;
+                for (TalentNode<?> node : abilities.getNodes()) {
+                    if (! (node.getTalent() instanceof UnbreakableTalent)) continue;
+                    UnbreakableTalent talent = (UnbreakableTalent) node.getTalent();
+                    i += talent.getExtraUnbreaking();
+                }
+            }
 
-			if(amount <= 0) {
-				return false;
-			}
-		}
+            int j = 0;
 
-		if(damager != null && amount != 0) {
-			CriteriaTriggers.ITEM_DURABILITY_CHANGED.trigger(damager, (ItemStack)(Object)this, this.getDamage() + amount);
-		}
+            for (int k = 0; i > 0 && k < amount; ++ k) {
+                if (UnbreakingEnchantment.shouldIgnoreDurabilityDrop((ItemStack) (Object) this, i, rand)) {
+                    ++ j;
+                }
+            }
 
-		int l = this.getDamage() + amount;
-		this.setDamage(l);
+            amount -= j;
 
-		return l >= this.getMaxDamage();
-	}
+            if (amount <= 0) {
+                return false;
+            }
+        }
 
-	@Inject(method = "getDisplayName", at = @At("RETURN"), cancellable = true)
-	public void useGearRarity(CallbackInfoReturnable<ITextComponent> ci) {
-		if (!(getItem() instanceof VaultGear<?>)) {
-			return;
-		}
+        if (damager != null && amount != 0) {
+            CriteriaTriggers.ITEM_DURABILITY_CHANGED.trigger(damager, (ItemStack) (Object) this, this.getDamageValue() + amount);
+        }
 
-		ItemStack itemStack = this.copy();
-		VaultGear.State state = ModAttributes.GEAR_STATE.getOrDefault(itemStack, VaultGear.State.UNIDENTIFIED).getValue(itemStack);
-		VaultGear.Rarity rarity = ModAttributes.GEAR_RARITY.getOrDefault(itemStack, VaultGear.Rarity.COMMON).getValue(itemStack);
+        int l = this.getDamageValue() + amount;
+        this.setDamageValue(l);
 
-		if (state == VaultGear.State.UNIDENTIFIED) {
-			return;
-		}
+        return l >= this.getMaxDamage();
+    }
 
-		IFormattableTextComponent returnValue = (IFormattableTextComponent) ci.getReturnValue();
-		ci.setReturnValue(returnValue.mergeStyle(rarity.color));
-	}
+    @Inject(method = "getDisplayName", at = @At("RETURN"), cancellable = true)
+    public void useGearRarity(CallbackInfoReturnable<ITextComponent> ci) {
+        if (! (getItem() instanceof VaultGear<?>)) {
+            return;
+        }
+
+        ItemStack itemStack = this.copy();
+        VaultGear.State state = ModAttributes.GEAR_STATE.getOrDefault(itemStack, VaultGear.State.UNIDENTIFIED).getValue(itemStack);
+        VaultGear.Rarity rarity = ModAttributes.GEAR_RARITY.getOrDefault(itemStack, VaultGear.Rarity.COMMON).getValue(itemStack);
+
+        if (state == VaultGear.State.UNIDENTIFIED) {
+            return;
+        }
+
+        IFormattableTextComponent returnValue = (IFormattableTextComponent) ci.getReturnValue();
+        ci.setReturnValue(returnValue.withStyle(rarity.color));
+    }
 
 }

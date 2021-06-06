@@ -39,19 +39,19 @@ public class VaultBarOverlay {
 
         MatrixStack matrixStack = event.getMatrixStack();
         Minecraft minecraft = Minecraft.getInstance();
-        int midX = minecraft.getMainWindow().getScaledWidth() / 2;
-        int bottom = minecraft.getMainWindow().getScaledHeight();
-        int right = minecraft.getMainWindow().getScaledWidth() - 5;
+        int midX = minecraft.getWindow().getGuiScaledWidth() / 2;
+        int bottom = minecraft.getWindow().getGuiScaledHeight();
+        int right = minecraft.getWindow().getGuiScaledWidth() - 5;
 
         String text = String.valueOf(vaultLevel);
-        int textX = midX + 50 - (minecraft.fontRenderer.getStringWidth(text) / 2);
+        int textX = midX + 51 - (minecraft.font.width(text) / 2);
         //int textY = bottom - 54;
         int barWidth = 85;
         float expPercentage = (float) vaultExp / tnl;
 
         // #Crimson_Fluff Common Code + Translations
         ClientPlayerEntity player = minecraft.player;
-        boolean iconsShowing = player != null && player.getActivePotionEffects().stream().anyMatch(EffectInstance::isShowIcon);
+        boolean iconsShowing = player != null && player.getActiveEffects().stream().anyMatch(EffectInstance::showIcon);
         int yOffset = iconsShowing ? 28 : 18;
         //minecraft.getTextureManager().bindTexture(RESOURCE);
 
@@ -64,21 +64,21 @@ public class VaultBarOverlay {
                 ? "tip.the_vault.skill_unspent"
                 : "tip.the_vault.skill_unspents").getString();
             String unspentPointsText = unspentSkillPoints + " ";
-            int unspentPointsWidth = minecraft.fontRenderer.getStringWidth(unspentPointsText);
-            int unspentWidth = minecraft.fontRenderer.getStringWidth(unspentText);
+            int unspentPointsWidth = minecraft.font.width(unspentPointsText);
+            int unspentWidth = minecraft.font.width(unspentText);
 //            int gap = 5;
 //            int yOffset = 18;
-            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentPointsText,
+            minecraft.font.drawShadow(matrixStack, unspentPointsText,
                 right - unspentWidth - unspentPointsWidth, yOffset,
                 0xFF_ffd800
             );
-            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentText,
+            minecraft.font.drawShadow(matrixStack, unspentText,
                 right - unspentWidth, yOffset,
                 0xFF_ffffff
             );
 
-            yOffset += minecraft.fontRenderer.FONT_HEIGHT + 3;      // # Crimson_Fluff, can't assume font height
-                                                                    // increase yOffset in case we have unspentKnowledgePoints
+            yOffset += minecraft.font.lineHeight + 3;      // #Crimson_Fluff, can't assume font height
+                                                           // increase yOffset in case we have unspentKnowledgePoints
         }
 
         if (VaultBarOverlay.unspentKnowledgePoints > 0) {
@@ -90,23 +90,23 @@ public class VaultBarOverlay {
                 ? "tip.the_vault.res_unspent"
                 : "tip.the_vault.res_unspents").getString();
             String unspentPointsText = unspentKnowledgePoints + " ";
-            int unspentPointsWidth = minecraft.fontRenderer.getStringWidth(unspentPointsText);
-            int unspentWidth = minecraft.fontRenderer.getStringWidth(unspentText);
+            int unspentPointsWidth = minecraft.font.width(unspentPointsText);
+            int unspentWidth = minecraft.font.width(unspentText);
 //            int gap = 5;
 //            int yOffset = 18;
-//           matrixStack.push();
+//           matrixStack.pushPose();
 //            if (VaultBarOverlay.unspentSkillPoints > 0) {
 //                matrixStack.translate(0, 12, 0);
 //            }
-            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentPointsText,
+            minecraft.font.drawShadow(matrixStack, unspentPointsText,
                     right - unspentWidth - unspentPointsWidth, yOffset,
                     0xFF_40d7b1
             );
-            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentText,
+            minecraft.font.drawShadow(matrixStack, unspentText,
                     right - unspentWidth, yOffset,
                     0xFF_ffffff
             );
-//            matrixStack.pop();
+//            matrixStack.popPose();
         }
 
         expGainedAnimation.tick((int) (now - previousTick));
@@ -115,33 +115,35 @@ public class VaultBarOverlay {
         //minecraft.getProfiler().startSection("vaultBar");
         if (player.isCreative()) bottom += 20;  // VaultXPBar appear above hotbar
 
-        minecraft.getTextureManager().bindTexture(RESOURCE);
+        minecraft.getTextureManager().bind(RESOURCE);
         RenderSystem.enableBlend();
-        minecraft.ingameGUI.blit(matrixStack,
-                midX + 9, bottom - 48,
+        minecraft.gui.blit(matrixStack,
+                midX + 10, bottom - 48,
                 1, 1, barWidth, 5);
+
         if (expGainedAnimation.getValue() != 0) {
-            GlStateManager.color4f(1, 1, 1, expGainedAnimation.getValue());
-            minecraft.ingameGUI.blit(matrixStack,
-                    midX + 8, bottom - 49,
+            GlStateManager._color4f(1, 1, 1, expGainedAnimation.getValue());
+            minecraft.gui.blit(matrixStack,
+                    midX + 9, bottom - 49,
                     62, 41, 84, 7);
-            GlStateManager.color4f(1, 1, 1, 1);
+            GlStateManager._color4f(1, 1, 1, 1);
         }
 
-        minecraft.ingameGUI.blit(matrixStack,
-                midX + 9, bottom - 48,
+        minecraft.gui.blit(matrixStack,
+                midX + 10, bottom - 48,
                 1, 7, (int) (barWidth * expPercentage), 5);
+
         if (expGainedAnimation.getValue() != 0) {
-            GlStateManager.color4f(1, 1, 1, expGainedAnimation.getValue());
-            minecraft.ingameGUI.blit(matrixStack,
-                    midX + 8, bottom - 49,
+            GlStateManager._color4f(1, 1, 1, expGainedAnimation.getValue());
+            minecraft.gui.blit(matrixStack,
+                    midX + 9, bottom - 49,
                     62, 49, (int) (barWidth * expPercentage), 7);
-            GlStateManager.color4f(1, 1, 1, 1);
+            GlStateManager._color4f(1, 1, 1, 1);
         }
 
         FontHelper.drawStringWithBorder(matrixStack,
                 text,
-                textX, bottom - 45 - minecraft.fontRenderer.FONT_HEIGHT,
+                textX, bottom - 45 - minecraft.font.lineHeight,
                 0xFF_ffe637, 0x3c3400);
         //minecraft.getProfiler().endSection();
     }

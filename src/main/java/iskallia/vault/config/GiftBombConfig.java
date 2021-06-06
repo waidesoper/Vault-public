@@ -16,10 +16,14 @@ import java.util.Random;
 
 public class GiftBombConfig extends Config {
 
-    @Expose private List<ItemEntry> GIFT_LOOTS;
-    @Expose private List<ItemEntry> SUPER_GIFT_LOOTS;
-    @Expose private List<ItemEntry> MEGA_GIFT_LOOTS;
-    @Expose private List<ItemEntry> OMEGA_GIFT_LOOTS;
+    @Expose
+    private List<ItemEntry> GIFT_LOOTS;
+    @Expose
+    private List<ItemEntry> SUPER_GIFT_LOOTS;
+    @Expose
+    private List<ItemEntry> MEGA_GIFT_LOOTS;
+    @Expose
+    private List<ItemEntry> OMEGA_GIFT_LOOTS;
 
     @Override
     public String getName() {
@@ -64,8 +68,8 @@ public class GiftBombConfig extends Config {
         try {
             Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(randomEntry.ITEM));
             stack = new ItemStack(item, randomEntry.AMOUNT);
-            if(randomEntry.NBT != null) {
-                CompoundNBT nbt = JsonToNBT.getTagFromJson(randomEntry.NBT);
+            if (randomEntry.NBT != null) {
+                CompoundNBT nbt = JsonToNBT.parseTag(randomEntry.NBT);
                 stack.setTag(nbt);
             }
 

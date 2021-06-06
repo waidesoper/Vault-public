@@ -7,7 +7,8 @@ import java.util.List;
 
 public class VaultLevelsConfig extends Config {
 
-    @Expose public List<VaultLevelMeta> levelMetas;
+    @Expose
+    public List<VaultLevelMeta> levelMetas;
 
     @Override
     public String getName() {
@@ -40,8 +41,10 @@ public class VaultLevelsConfig extends Config {
     }
 
     public static class VaultLevelMeta {
-        @Expose public int level;
-        @Expose public int tnl;
+        @Expose
+        public int level;
+        @Expose
+        public int tnl;
     }
 
 }

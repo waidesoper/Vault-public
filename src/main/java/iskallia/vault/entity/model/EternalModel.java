@@ -5,8 +5,8 @@ import net.minecraft.client.renderer.entity.model.PlayerModel;
 
 public class EternalModel extends PlayerModel<EternalEntity> {
 
-	public EternalModel(float modelSize, boolean smallArms) {
-		super(modelSize, smallArms);
-	}
+    public EternalModel(float modelSize, boolean smallArms) {
+        super(modelSize, smallArms);
+    }
 
 }

@@ -17,31 +17,33 @@ import java.util.stream.Collectors;
 @Mixin(BossOverlayGui.class)
 public abstract class MixinBossOverlayGui {
 
-	@Shadow @Final private Map<UUID, ClientBossInfo> mapBossInfos;
+    @Shadow
+    @Final
+    private Map<UUID, ClientBossInfo> events;
 
-	@Redirect(method = "func_238484_a_", at = @At(value = "INVOKE", target = "Ljava/util/Map;values()Ljava/util/Collection;"))
-	private Collection<ClientBossInfo> thing(Map<UUID, ClientBossInfo> map) {
-		Map<UUID, Entity> entities = new HashMap<>();
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Ljava/util/Map;values()Ljava/util/Collection;"))
+    private Collection<ClientBossInfo> render(Map<UUID, ClientBossInfo> map) {
+        Map<UUID, Entity> entities = new HashMap<>();
 
-		Minecraft.getInstance().world.getAllEntities().forEach(entity -> {
-			entities.put(entity.getUniqueID(), entity);
-		});
+        Minecraft.getInstance().level.entitiesForRendering().forEach(entity -> {
+            entities.put(entity.getUUID(), entity);
+        });
 
-		return this.mapBossInfos.entrySet().stream()
-				.sorted(Comparator.comparingDouble(o -> {
-					PlayerEntity player = Minecraft.getInstance().player;
-					Entity entity = entities.get(o.getKey());
+        return this.events.entrySet().stream()
+            .sorted(Comparator.comparingDouble(o -> {
+                PlayerEntity player = Minecraft.getInstance().player;
+                Entity entity = entities.get(o.getKey());
 
-					if(entity == null) {
-						return Integer.MAX_VALUE;
-					} else if(player.getName().getString().equals(entity.getCustomName().getString())) {
-						return Integer.MIN_VALUE;
-					}
+                if (entity == null) {
+                    return Integer.MAX_VALUE;
+                } else if (player.getName().getString().equals(entity.getCustomName().getString())) {
+                    return Integer.MIN_VALUE;
+                }
 
-					return player.getDistance(entity);
-				}))
-				.map(Map.Entry::getValue)
-				.collect(Collectors.toList());
-	}
+                return player.distanceTo(entity);
+            }))
+            .map(Map.Entry::getValue)
+            .collect(Collectors.toList());
+    }
 
 }

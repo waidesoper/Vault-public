@@ -17,62 +17,65 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class SummonEternalAbility extends PlayerAbility {
 
-	@Expose private int despawnTime;
-	@Expose private boolean vaultOnly;
-	@Expose private int count;
+    @Expose
+    private int despawnTime;
+    @Expose
+    private boolean vaultOnly;
+    @Expose
+    private int count;
 
-	public SummonEternalAbility(int cost, int cooldown, int despawnTime, boolean vaultOnly, int count) {
-		super(cost, Behavior.RELEASE_TO_PERFORM);
-		this.cooldown = cooldown;
-		this.despawnTime = despawnTime;
-		this.vaultOnly = vaultOnly;
-		this.count = count;
-	}
+    public SummonEternalAbility(int cost, int cooldown, int despawnTime, boolean vaultOnly, int count) {
+        super(cost, Behavior.RELEASE_TO_PERFORM);
+        this.cooldown = cooldown;
+        this.despawnTime = despawnTime;
+        this.vaultOnly = vaultOnly;
+        this.count = count;
+    }
 
-	public int getDespawnTime() {
-		return this.despawnTime;
-	}
+    public int getDespawnTime() {
+        return this.despawnTime;
+    }
 
-	public boolean isVaultOnly() {
-		return this.vaultOnly;
-	}
+    public boolean isVaultOnly() {
+        return this.vaultOnly;
+    }
 
-	public int getCount() {
-		return this.count;
-	}
+    public int getCount() {
+        return this.count;
+    }
 
-	@Override
-	public void onAction(PlayerEntity player, boolean active) {
-		if(player.getEntityWorld().isRemote)return;
-		EternalsData.EternalGroup eternals = EternalsData.get((ServerWorld)player.world).getEternals(player);
+    @Override
+    public void onAction(PlayerEntity player, boolean active) {
+        if (player.getCommandSenderWorld().isClientSide) return;
+        EternalsData.EternalGroup eternals = EternalsData.get((ServerWorld) player.level).getEternals(player);
 
-		if(eternals.getEternals().isEmpty()) {
-			player.sendMessage(new StringTextComponent(TextFormatting.RED + "You have no eternals to summon."), player.getUniqueID());
-		} else if(player.getEntityWorld().getDimensionKey() != Vault.VAULT_KEY && this.isVaultOnly()) {
-			player.sendMessage(new StringTextComponent(TextFormatting.RED + "You can only summon eternals in the Vault!"), player.getUniqueID());
-		} else {
-			for(int i = 0; i < this.getCount(); i++) {
-				EternalEntity eternal = eternals.getRandom(player.world.getRandom()).create(player.world);
-				eternal.setLocationAndAngles(player.getPosX(), player.getPosY(), player.getPosZ(), player.rotationYaw, player.rotationPitch);
-				eternal.setDespawnTime(player.getServer().getTickCounter() + this.getDespawnTime());
-				eternal.owner = player.getUniqueID();
-				eternal.setGlowing(true);
-				player.world.addEntity(eternal);
-			}
-		}
-	}
+        if (eternals.getEternals().isEmpty()) {
+            player.sendMessage(new StringTextComponent(TextFormatting.RED + "You have no eternals to summon."), player.getUUID());
+        } else if (player.getCommandSenderWorld().dimension() != Vault.VAULT_KEY && this.isVaultOnly()) {
+            player.sendMessage(new StringTextComponent(TextFormatting.RED + "You can only summon eternals in the Vault!"), player.getUUID());
+        } else {
+            for (int i = 0; i < this.getCount(); i++) {
+                EternalEntity eternal = eternals.getRandom(player.level.getRandom()).create(player.level);
+                eternal.moveTo(player.getX(), player.getY(), player.getZ(), player.yRot, player.xRot);
+                eternal.setDespawnTime(player.getServer().getTickCount() + this.getDespawnTime());
+                eternal.owner = player.getUUID();
+                eternal.setGlowing(true);
+                player.level.addFreshEntity(eternal);
+            }
+        }
+    }
 
-	@SubscribeEvent
-	public static void onDamage(LivingAttackEvent event) {
-		LivingEntity damagedEntity = event.getEntityLiving();
-		Entity dealerEntity = event.getSource().getTrueSource();
+    @SubscribeEvent
+    public static void onDamage(LivingAttackEvent event) {
+        LivingEntity damagedEntity = event.getEntityLiving();
+        Entity dealerEntity = event.getSource().getEntity();
 
-		if (damagedEntity instanceof EternalEntity && dealerEntity instanceof PlayerEntity) {
-			PlayerEntity player = (PlayerEntity) dealerEntity;
-			if (!player.isCreative()) {
-				event.setCanceled(true);
-			}
-		}
-	}
+        if (damagedEntity instanceof EternalEntity && dealerEntity instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) dealerEntity;
+            if (! player.isCreative()) {
+                event.setCanceled(true);
+            }
+        }
+    }
 
 }

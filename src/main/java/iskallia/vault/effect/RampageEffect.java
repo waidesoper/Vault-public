@@ -24,12 +24,12 @@ public class RampageEffect extends Effect {
     }
 
     @Override
-    public boolean isReady(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         return true;
     }
 
     @Override
-    public void applyAttributesModifiersToEntity(LivingEntity livingEntity, AttributeModifierManager attributeMapIn, int amplifier) {
+    public void addAttributeModifiers(LivingEntity livingEntity, AttributeModifierManager attributeMapIn, int amplifier) {
         RampageAbility rampageAbility = ModConfigs.ABILITIES.RAMPAGE.getAbility(amplifier + 1);
 
         initializeAttributeModifiers();
@@ -41,28 +41,28 @@ public class RampageEffect extends Effect {
 
         if (damage != null) {
             this.attributeModifiers[amplifier] = new AttributeModifier(this.getRegistryName().toString(), damageIncrease, AttributeModifier.Operation.ADDITION);
-            damage.applyNonPersistentModifier(this.attributeModifiers[amplifier]);
+            damage.addTransientModifier(this.attributeModifiers[amplifier]);
         }
-        super.applyAttributesModifiersToEntity(livingEntity, attributeMapIn, amplifier);
+        super.addAttributeModifiers(livingEntity, attributeMapIn, amplifier);
     }
 
     private void initializeAttributeModifiers() {
         this.attributeModifiers = new AttributeModifier[ModConfigs.ABILITIES.RAMPAGE.getMaxLevel()];
         for (int i = 0; i < this.attributeModifiers.length; i++) {
             this.attributeModifiers[i] = new AttributeModifier(this.getRegistryName().toString(),
-                    (i + 1) * 0.2f, AttributeModifier.Operation.ADDITION);
+                (i + 1) * 0.2f, AttributeModifier.Operation.ADDITION);
         }
     }
 
     @Override
-    public void removeAttributesModifiersFromEntity(LivingEntity livingEntity, AttributeModifierManager attributeMapIn, int amplifier) {
+    public void removeAttributeModifiers(LivingEntity livingEntity, AttributeModifierManager attributeMapIn, int amplifier) {
         ModifiableAttributeInstance damage = livingEntity.getAttribute(Attributes.ATTACK_DAMAGE);
 
         if (damage != null) {
-            damage.removeModifier(this.attributeModifiers[amplifier].getID());
+            damage.removeModifier(this.attributeModifiers[amplifier].getId());
         }
 
-        super.removeAttributesModifiersFromEntity(livingEntity, attributeMapIn, amplifier);
+        super.removeAttributeModifiers(livingEntity, attributeMapIn, amplifier);
     }
 
 }

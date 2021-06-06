@@ -20,83 +20,83 @@ import java.util.stream.Collectors;
 
 public class UpgradeCrystalRecipe extends SpecialRecipe {
 
-	public UpgradeCrystalRecipe(ResourceLocation id) {
-		super(id);
-	}
+    public UpgradeCrystalRecipe(ResourceLocation id) {
+        super(id);
+    }
 
-	@Override
-	public boolean matches(CraftingInventory inv, World world) {
-		VaultRarity rarity = null;
-		boolean hasSpark = false;
-		int count = 0;
+    @Override
+    public boolean matches(CraftingInventory inv, World world) {
+        VaultRarity rarity = null;
+        boolean hasSpark = false;
+        int count = 0;
 
-		for(int i = 0; i < inv.getSizeInventory(); ++i) {
-			ItemStack stack = inv.getStackInSlot(i);
+        for (int i = 0; i < inv.getContainerSize(); ++ i) {
+            ItemStack stack = inv.getItem(i);
 
-			if(stack.getItem() instanceof ItemVaultCrystal) {
-				if(rarity != null && ((ItemVaultCrystal)stack.getItem()).getRarity() != rarity) {
-					return false;
-				}
+            if (stack.getItem() instanceof ItemVaultCrystal) {
+                if (rarity != null && ((ItemVaultCrystal) stack.getItem()).getRarity() != rarity) {
+                    return false;
+                }
 
-				rarity = ((ItemVaultCrystal)stack.getItem()).getRarity();
-				count++;
-			} else if(!hasSpark && stack.getItem() == ModItems.SPARK) {
-				hasSpark = true;
-			} else if(!stack.isEmpty()) {
-				return false;
-			}
-		}
+                rarity = ((ItemVaultCrystal) stack.getItem()).getRarity();
+                count++;
+            } else if (! hasSpark && stack.getItem() == ModItems.SPARK) {
+                hasSpark = true;
+            } else if (! stack.isEmpty()) {
+                return false;
+            }
+        }
 
-		int targetCount = Integer.MAX_VALUE;
+        int targetCount = Integer.MAX_VALUE;
 
-		if(rarity == VaultRarity.COMMON) {
-			targetCount = ModConfigs.CRYSTAL_UPGRADE.COMMON_TO_RARE;
-		} else if(rarity == VaultRarity.RARE) {
-			targetCount = ModConfigs.CRYSTAL_UPGRADE.RARE_TO_EPIC;
-		} else if(rarity == VaultRarity.EPIC) {
-			targetCount = ModConfigs.CRYSTAL_UPGRADE.EPIC_TO_OMEGA;
-		}
+        if (rarity == VaultRarity.COMMON) {
+            targetCount = ModConfigs.CRYSTAL_UPGRADE.COMMON_TO_RARE;
+        } else if (rarity == VaultRarity.RARE) {
+            targetCount = ModConfigs.CRYSTAL_UPGRADE.RARE_TO_EPIC;
+        } else if (rarity == VaultRarity.EPIC) {
+            targetCount = ModConfigs.CRYSTAL_UPGRADE.EPIC_TO_OMEGA;
+        }
 
-		return rarity != null && hasSpark && count == targetCount;
-	}
+        return rarity != null && hasSpark && count == targetCount;
+    }
 
-	@Override
-	public ItemStack getCraftingResult(CraftingInventory inv) {
-		List<ItemStack> crystals = new ArrayList<>();
-		VaultRarity rarity = null;
+    @Override
+    public ItemStack assemble(CraftingInventory inv) {
+        List<ItemStack> crystals = new ArrayList<>();
+        VaultRarity rarity = null;
 
-		for(int i = 0; i < inv.getSizeInventory(); ++i) {
-			ItemStack stack = inv.getStackInSlot(i);
+        for (int i = 0; i < inv.getContainerSize(); ++ i) {
+            ItemStack stack = inv.getItem(i);
 
-			if(stack.getItem() instanceof ItemVaultCrystal) {
-				rarity = ((ItemVaultCrystal)stack.getItem()).getRarity();
-				crystals.add(stack);
-			}
-		}
+            if (stack.getItem() instanceof ItemVaultCrystal) {
+                rarity = ((ItemVaultCrystal) stack.getItem()).getRarity();
+                crystals.add(stack);
+            }
+        }
 
-		List<String> bossNames = crystals.stream()
-				.filter(ItemStack::hasTag)
-				.filter(stack -> stack.getTag().contains("playerBossName", Constants.NBT.TAG_STRING))
-				.map(stack -> stack.getTag().getString("playerBossName"))
-				.sorted(String::compareToIgnoreCase)
-				.collect(Collectors.toList());
+        List<String> bossNames = crystals.stream()
+            .filter(ItemStack::hasTag)
+            .filter(stack -> stack.getTag().contains("playerBossName", Constants.NBT.TAG_STRING))
+            .map(stack -> stack.getTag().getString("playerBossName"))
+            .sorted(String::compareToIgnoreCase)
+            .collect(Collectors.toList());
 
-		if(!bossNames.isEmpty()) {
-			return ItemVaultCrystal.getCrystalWithBoss(VaultRarity.values()[rarity.ordinal() + 1],
-					bossNames.get(new Random(bossNames.hashCode()).nextInt(bossNames.size())));
-		}
+        if (! bossNames.isEmpty()) {
+            return ItemVaultCrystal.getCrystalWithBoss(VaultRarity.values()[rarity.ordinal() + 1],
+                bossNames.get(new Random(bossNames.hashCode()).nextInt(bossNames.size())));
+        }
 
-		return ItemVaultCrystal.getCrystal(VaultRarity.values()[rarity.ordinal() + 1]);
-	}
+        return ItemVaultCrystal.getCrystal(VaultRarity.values()[rarity.ordinal() + 1]);
+    }
 
-	@Override
-	public boolean canFit(int width, int height) {
-		return width * height >= Math.min(Math.min(ModConfigs.CRYSTAL_UPGRADE.COMMON_TO_RARE, ModConfigs.CRYSTAL_UPGRADE.RARE_TO_EPIC), ModConfigs.CRYSTAL_UPGRADE.EPIC_TO_OMEGA);
-	}
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return width * height >= Math.min(Math.min(ModConfigs.CRYSTAL_UPGRADE.COMMON_TO_RARE, ModConfigs.CRYSTAL_UPGRADE.RARE_TO_EPIC), ModConfigs.CRYSTAL_UPGRADE.EPIC_TO_OMEGA);
+    }
 
-	@Override
-	public IRecipeSerializer<?> getSerializer() {
-		return ModRecipes.Serializer.CRAFTING_SPECIAL_UPGRADE_CRYSTAL;
-	}
+    @Override
+    public IRecipeSerializer<?> getSerializer() {
+        return ModRecipes.Serializer.CRAFTING_SPECIAL_UPGRADE_CRYSTAL;
+    }
 
 }

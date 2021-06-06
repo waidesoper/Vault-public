@@ -15,6 +15,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
+import javax.annotation.Nullable;
+
 
 /**
  * Key Press Recipes class.
@@ -73,24 +75,30 @@ public class KeyPressRecipe implements IRecipe<IInventory>
      */
     public boolean matches(IInventory inv, World worldIn)
     {
-        return this.key.test(inv.getStackInSlot(KeyPressContainer.KEY_SLOT)) &&
-            this.cluster.test(inv.getStackInSlot(KeyPressContainer.CLUSTER_SLOT));
+        return this.key.test(inv.getItem(KeyPressContainer.KEY_SLOT)) &&
+            this.cluster.test(inv.getItem(KeyPressContainer.CLUSTER_SLOT));
     }
 
-
-    /**
-     * Returns an Item that is the result of this recipe
-     */
-    public ItemStack getCraftingResult(IInventory inv)
-    {
+    @Override
+    public ItemStack assemble(IInventory inv) {
         ItemStack itemstack = this.result.copy();
-        CompoundNBT compoundnbt = inv.getStackInSlot(KeyPressContainer.RESULT_SLOT).getTag();
+        CompoundNBT compoundnbt = inv.getItem(KeyPressContainer.RESULT_SLOT).getTag();
         if (compoundnbt != null)
         {
             itemstack.setTag(compoundnbt.copy());
         }
 
         return itemstack;
+    }
+
+    @Override
+    public boolean canCraftInDimensions(int p_194133_1_, int p_194133_2_) {
+        return true;
+    }
+
+    @Override
+    public ItemStack getResultItem() {
+        return this.result;
     }
 
 
@@ -100,16 +108,6 @@ public class KeyPressRecipe implements IRecipe<IInventory>
     public boolean canFit(int width, int height)
     {
         return width * height >= 2;
-    }
-
-
-    /**
-     * Get the result of this recipe, usually for display purposes (e.g. recipe book). If your recipe has more than one
-     * possible result (e.g. it's dynamic and depends on its inputs), then return an empty stack.
-     */
-    public ItemStack getRecipeOutput()
-    {
-        return this.result;
     }
 
 
@@ -202,44 +200,30 @@ public class KeyPressRecipe implements IRecipe<IInventory>
         }
 
 
-        /**
-         * This method reads KeyPressRecipe from given json object.
-         */
-        public KeyPressRecipe read(ResourceLocation recipeId, JsonObject json)
-        {
-            Ingredient key = Ingredient.deserialize(JSONUtils.getJsonObject(json, "key"));
-            Ingredient cluster = Ingredient.deserialize(JSONUtils.getJsonObject(json, "cluster"));
-            ItemStack result = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
-            return new KeyPressRecipe(recipeId, key, cluster, result);
-        }
-
-
-        /**
-         * This method reads KeyPressRecipe from given buffer.
-         */
-        public KeyPressRecipe read(ResourceLocation recipeId, PacketBuffer buffer)
-        {
-            Ingredient key = Ingredient.read(buffer);
-            Ingredient cluster = Ingredient.read(buffer);
-            ItemStack result = buffer.readItemStack();
-            return new KeyPressRecipe(recipeId, key, cluster, result);
-        }
-
-
-        /**
-         * This method serializes KeyPressRecipe to given buffer.
-         */
-        public void write(PacketBuffer buffer, KeyPressRecipe recipe)
-        {
-            recipe.key.write(buffer);
-            recipe.cluster.write(buffer);
-            buffer.writeItemStack(recipe.result);
-        }
-
-
         public IRecipeType<?> getRecipeType()
         {
             return ModRecipes.KEY_PRESS_RECIPE;
+        }
+
+        public KeyPressRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+            Ingredient key = Ingredient.fromJson(JSONUtils.getAsJsonObject(json, "key"));
+            Ingredient cluster = Ingredient.fromJson(JSONUtils.getAsJsonObject(json, "cluster"));
+            ItemStack result = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "result"));
+            return new KeyPressRecipe(recipeId, key, cluster, result);
+        }
+
+        @Nullable
+        public KeyPressRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+            Ingredient key = Ingredient.fromNetwork(buffer);
+            Ingredient cluster = Ingredient.fromNetwork(buffer);
+            ItemStack result = buffer.readItem();
+            return new KeyPressRecipe(recipeId, key, cluster, result);
+        }
+
+        public void toNetwork(PacketBuffer buffer, KeyPressRecipe recipe) {
+            recipe.key.toNetwork(buffer);
+            recipe.cluster.toNetwork(buffer);
+            buffer.writeItemStack(recipe.result, false);
         }
     }
 }

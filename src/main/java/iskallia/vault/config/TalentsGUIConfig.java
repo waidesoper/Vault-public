@@ -9,7 +9,8 @@ import java.util.HashMap;
 
 public class TalentsGUIConfig extends Config {
 
-    @Expose private HashMap<String, SkillStyle> styles;
+    @Expose
+    private HashMap<String, SkillStyle> styles;
 
     @Override
     public String getName() {

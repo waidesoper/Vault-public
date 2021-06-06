@@ -18,7 +18,6 @@ import iskallia.vault.research.type.Research;
 import iskallia.vault.skill.talent.TalentTree;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -45,7 +44,7 @@ public class ResearchDialog extends AbstractGui {
     public void refreshWidgets() {
         if (this.researchName != null) {
             SkillStyle researchStyle = ModConfigs.RESEARCHES_GUI.getStyles()
-                    .get(researchName);
+                .get(researchName);
             this.researchWidget = new ResearchWidget(researchName, researchTree, researchStyle);
 
             Research research = ModConfigs.RESEARCHES.getByName(researchName);
@@ -55,19 +54,19 @@ public class ResearchDialog extends AbstractGui {
                 : new TranslationTextComponent("tip.the_vault.res", "(" + research.getCost() + ")").getString();
 
             this.researchButton = new Button(
-                    10, bounds.getHeight() - 40,
-                    bounds.getWidth() - 30, 20,
-                    new StringTextComponent(buttonText),
-                    (button) -> { research(); },
-                    (button, matrixStack, x, y) -> {}
+                10, bounds.getHeight() - 40,
+                bounds.getWidth() - 30, 20,
+                new StringTextComponent(buttonText),
+                (button) -> { research(); },
+                (button, matrixStack, x, y) -> {}
             );
 
             this.descriptionComponent = new ScrollableContainer(this::renderDescriptions);
 
-            this.researchButton.active = !researchTree.isResearched(researchName)
-                    && (research.usesKnowledge()
-                    ? VaultBarOverlay.unspentKnowledgePoints >= research.getCost()
-                    : VaultBarOverlay.unspentSkillPoints >= research.getCost());
+            this.researchButton.active = ! researchTree.isResearched(researchName)
+                && (research.usesKnowledge()
+                ? VaultBarOverlay.unspentKnowledgePoints >= research.getCost()
+                : VaultBarOverlay.unspentSkillPoints >= research.getCost());
         }
     }
 
@@ -106,8 +105,8 @@ public class ResearchDialog extends AbstractGui {
 
         int cost = research.getCost();
         int unspentPoints = research.usesKnowledge()
-                ? VaultBarOverlay.unspentKnowledgePoints
-                : VaultBarOverlay.unspentSkillPoints;
+            ? VaultBarOverlay.unspentKnowledgePoints
+            : VaultBarOverlay.unspentSkillPoints;
 
         if (cost > unspentPoints)
             return;
@@ -116,8 +115,8 @@ public class ResearchDialog extends AbstractGui {
 
         if (minecraft.player != null) {
             minecraft.player.playSound(
-                    ModSounds.SKILL_TREE_LEARN_SFX,
-                    1f, 1f
+                ModSounds.SKILL_TREE_LEARN_SFX,
+                1f, 1f
             );
         }
 
@@ -148,13 +147,13 @@ public class ResearchDialog extends AbstractGui {
     }
 
     public void mouseScrolled(double mouseX, double mouseY, double delta) {
-        if (!bounds.contains((int) mouseX, (int) mouseY)) return;
+        if (! bounds.contains((int) mouseX, (int) mouseY)) return;
         descriptionComponent.mouseScrolled(mouseX, mouseY, delta);
     }
 
     public void
     render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        matrixStack.push();
+        matrixStack.pushPose();
 
         renderBackground(matrixStack, mouseX, mouseY, partialTicks);
 
@@ -169,97 +168,95 @@ public class ResearchDialog extends AbstractGui {
 
         renderFooter(matrixStack, mouseX, mouseY, partialTicks);
 
-        matrixStack.push();
+        matrixStack.pushPose();
     }
 
     private void
     renderBackground(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        Minecraft.getInstance().getTextureManager().bindTexture(SkillTreeScreen.UI_RESOURCE);
+        Minecraft.getInstance().getTextureManager().bind(SkillTreeScreen.UI_RESOURCE);
         fill(matrixStack,
-                bounds.x0 + 5, bounds.y0 + 5,
-                bounds.x1 - 5, bounds.y1 - 5,
-                0xFF_C6C6C6);
+            bounds.x0 + 5, bounds.y0 + 5,
+            bounds.x1 - 5, bounds.y1 - 5,
+            0xFF_C6C6C6);
 
         blit(matrixStack,
-                bounds.x0, bounds.y0,
-                0, 44, 5, 5);
+            bounds.x0, bounds.y0,
+            0, 44, 5, 5);
         blit(matrixStack,
-                bounds.x1 - 5, bounds.y0,
-                8, 44, 5, 5);
+            bounds.x1 - 5, bounds.y0,
+            8, 44, 5, 5);
         blit(matrixStack,
-                bounds.x0, bounds.y1 - 5,
-                0, 52, 5, 5);
+            bounds.x0, bounds.y1 - 5,
+            0, 52, 5, 5);
         blit(matrixStack,
-                bounds.x1 - 5, bounds.y1 - 5,
-                8, 52, 5, 5);
+            bounds.x1 - 5, bounds.y1 - 5,
+            8, 52, 5, 5);
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(bounds.x0 + 5, bounds.y0, 0);
         matrixStack.scale(bounds.getWidth() - 10, 1, 1);
         blit(matrixStack, 0, 0,
-                6, 44, 1, 5);
+            6, 44, 1, 5);
         matrixStack.translate(0, bounds.getHeight() - 5, 0);
         blit(matrixStack, 0, 0,
-                6, 52, 1, 5);
-        matrixStack.pop();
+            6, 52, 1, 5);
+        matrixStack.popPose();
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(bounds.x0, bounds.y0 + 5, 0);
         matrixStack.scale(1, bounds.getHeight() - 10, 1);
         blit(matrixStack, 0, 0,
-                0, 50, 5, 1);
+            0, 50, 5, 1);
         matrixStack.translate(bounds.getWidth() - 5, 0, 0);
         blit(matrixStack, 0, 0,
-                8, 50, 5, 1);
-        matrixStack.pop();
+            8, 50, 5, 1);
+        matrixStack.popPose();
     }
 
     private void
     renderHeading(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        Minecraft.getInstance().getTextureManager().bindTexture(SkillTreeScreen.UI_RESOURCE);
+        Minecraft.getInstance().getTextureManager().bind(SkillTreeScreen.UI_RESOURCE);
 
-        FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+//        FontRenderer fontRenderer = Minecraft.getInstance().font;
         SkillStyle abilityStyle = ModConfigs.RESEARCHES_GUI.getStyles()
-                .get(researchName);
+            .get(researchName);
 
         Rectangle abilityBounds = researchWidget.getClickableBounds();
 
         UIHelper.renderContainerBorder(this, matrixStack,
-                getHeadingBounds(),
-                14, 44,
-                2, 2, 2, 2,
-                0xFF_8B8B8B);
+            getHeadingBounds(),
+            14, 44,
+            2, 2, 2, 2,
+            0xFF_8B8B8B);
 
         boolean researched = researchTree.getResearchesDone().contains(researchName);
 
-// #Crimson_Fluff, no need for this, as "Learn" button will be active/non-active
-//        String subText = !researched
-//                ? "Not Researched"
-//                : "Researched";
+//        String subText = ! researched
+//            ? "Not Researched"
+//            : "Researched";
 
         int gap = 5;
-//        int contentWidth = abilityBounds.getWidth() + gap
-//                + Math.max(fontRenderer.getStringWidth(researchName), fontRenderer.getStringWidth(subText));
+//        int contentWidth = abilityBounds.getWidth() + gap + Math.max(fontRenderer.width(researchName), fontRenderer.width(subText));
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(10, 0, 0);
         FontHelper.drawStringWithBorder(matrixStack,
-                researchName,
-                abilityBounds.getWidth() + gap, 13,
-                !researched ? 0xFF_FFFFFF : 0xFF_fff8c7,
-                !researched ? 0xFF_000000 : 0xFF_3b3300);
+            researchName,
+            abilityBounds.getWidth() + gap, 13,
+            ! researched ? 0xFF_FFFFFF : 0xFF_fff8c7,
+            ! researched ? 0xFF_000000 : 0xFF_3b3300);
 
 //        FontHelper.drawStringWithBorder(matrixStack,
-//                subText,
-//                abilityBounds.getWidth() + gap, 23,
-//                !researched ? 0xFF_FFFFFF : 0xFF_fff8c7,
-//                !researched ? 0xFF_000000 : 0xFF_3b3300);
+//            subText,
+//            abilityBounds.getWidth() + gap, 23,
+//            ! researched ? 0xFF_FFFFFF : 0xFF_fff8c7,
+//            ! researched ? 0xFF_000000 : 0xFF_3b3300);
 
-        matrixStack.translate(-abilityStyle.x, -abilityStyle.y, 0); // Nullify the viewport style
+        matrixStack.translate(- abilityStyle.x, - abilityStyle.y, 0); // Nullify the viewport style
         matrixStack.translate(abilityBounds.getWidth() / 2f, 0, 0);
         matrixStack.translate(0, 23, 0);
         researchWidget.render(matrixStack, mouseX, mouseY, partialTicks);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     private void
@@ -269,7 +266,7 @@ public class ResearchDialog extends AbstractGui {
         IFormattableTextComponent description = ModConfigs.SKILL_DESCRIPTIONS.getDescriptionFor(researchName);
 
         int renderedLineCount = UIHelper.renderWrappedText(matrixStack,
-                description, renderableBounds.getWidth(), 10);
+            description, renderableBounds.getWidth(), 10);
 
         descriptionComponent.setInnerHeight(renderedLineCount * 10 + 20);
 
@@ -283,15 +280,15 @@ public class ResearchDialog extends AbstractGui {
 
         this.researchButton.render(matrixStack, containerX, containerY, partialTicks);
 
-        Minecraft.getInstance().getTextureManager().bindTexture(SkillTreeScreen.UI_RESOURCE);
+        Minecraft.getInstance().getTextureManager().bind(SkillTreeScreen.UI_RESOURCE);
 
         Research research = ModConfigs.RESEARCHES.getByName(researchName);
         boolean researched = researchTree.getResearchesDone().contains(researchName);
 
-        if (!researched) {
+        if (! researched) {
             blit(matrixStack,
-                    13, bounds.getHeight() - 40 - 2,
-                    121 + (research.usesKnowledge() ? 15 : 30), 0, 15, 23);
+                13, bounds.getHeight() - 40 - 2,
+                121 + (research.usesKnowledge() ? 15 : 30), 0, 15, 23);
         }
     }
 

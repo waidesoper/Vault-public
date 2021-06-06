@@ -19,7 +19,7 @@ public class AbilityKeyMessage {
     public boolean scrollUp;
     public boolean scrollDown;
     public boolean shouldCancelDown;
-    public int abilityIndex = -1;
+    public int abilityIndex = - 1;
 
     public AbilityKeyMessage() { }
 
@@ -65,7 +65,7 @@ public class AbilityKeyMessage {
 
             if (sender == null) return;
 
-            PlayerAbilitiesData abilitiesData = PlayerAbilitiesData.get((ServerWorld) sender.world);
+            PlayerAbilitiesData abilitiesData = PlayerAbilitiesData.get((ServerWorld) sender.level);
             AbilityTree abilityTree = abilitiesData.getAbilities(sender);
 
             if (message.scrollUp) {
@@ -78,7 +78,7 @@ public class AbilityKeyMessage {
                 abilityTree.keyDown(sender.server);
             } else if (message.shouldCancelDown) {
                 abilityTree.cancelKeyDown(sender.server);
-            } else if (message.abilityIndex != -1) {
+            } else if (message.abilityIndex != - 1) {
                 abilityTree.quickSelectAbility(sender.server, message.abilityIndex);
             }
         });

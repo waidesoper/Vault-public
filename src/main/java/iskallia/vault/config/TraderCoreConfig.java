@@ -24,9 +24,9 @@ public class TraderCoreConfig extends Config {
     protected void reset() {
 
         this.TRADES.add(
-                new Trade(new Product(Items.APPLE, 8, null), null, new Product(Items.GOLDEN_APPLE, 1, null)));
+            new Trade(new Product(Items.APPLE, 8, null), null, new Product(Items.GOLDEN_APPLE, 1, null)));
         this.TRADES.add(new Trade(new Product(Items.GOLDEN_APPLE, 8, null), null,
-                new Product(Items.ENCHANTED_GOLDEN_APPLE, 1, null)));
+            new Product(Items.ENCHANTED_GOLDEN_APPLE, 1, null)));
         CompoundNBT nbt = new CompoundNBT();
         ListNBT enchantments = new ListNBT();
         CompoundNBT knockback = new CompoundNBT();
@@ -38,7 +38,7 @@ public class TraderCoreConfig extends Config {
         nbt.put("ench", enchantments);
 
         this.TRADES
-                .add(new Trade(new Product(Items.ENCHANTED_GOLDEN_APPLE, 8, null), null, new Product(Items.STICK, 1, nbt)));
+            .add(new Trade(new Product(Items.ENCHANTED_GOLDEN_APPLE, 8, null), null, new Product(Items.STICK, 1, nbt)));
     }
 
     public static class TraderCoreCommonConfig extends TraderCoreConfig {
@@ -48,6 +48,7 @@ public class TraderCoreConfig extends Config {
             return "trader_core_common";
         }
     }
+
     public static class TraderCoreOmegaConfig extends TraderCoreConfig {
 
         @Override
@@ -55,6 +56,7 @@ public class TraderCoreConfig extends Config {
             return "trader_core_omega";
         }
     }
+
     public static class TraderCoreRaffleConfig extends TraderCoreConfig {
 
         @Override

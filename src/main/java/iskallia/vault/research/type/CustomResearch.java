@@ -12,9 +12,12 @@ import java.util.Map;
 
 public class CustomResearch extends Research {
 
-    @Expose protected Map<String, Restrictions> itemRestrictions;
-    @Expose protected Map<String, Restrictions> blockRestrictions;
-    @Expose protected Map<String, Restrictions> entityRestrictions;
+    @Expose
+    protected Map<String, Restrictions> itemRestrictions;
+    @Expose
+    protected Map<String, Restrictions> blockRestrictions;
+    @Expose
+    protected Map<String, Restrictions> entityRestrictions;
 
     public CustomResearch(String name, int cost) {
         super(name, cost);

@@ -6,9 +6,12 @@ import java.util.HashMap;
 
 public class CryoChamberConfig extends Config {
 
-    @Expose private int INFUSION_TIME;
-    @Expose private int GROW_ETERNAL_TIME;
-    @Expose private HashMap<String, Integer> STREAMER_CORE_REQ = new HashMap<>();
+    @Expose
+    private int INFUSION_TIME;
+    @Expose
+    private int GROW_ETERNAL_TIME;
+    @Expose
+    private HashMap<String, Integer> STREAMER_CORE_REQ = new HashMap<>();
 
 //	@Expose public int GENERATOR_FE_PER_TICK_MIN;
 //	@Expose public int GENERATOR_FE_PER_TICK_MAX;
@@ -30,6 +33,7 @@ public class CryoChamberConfig extends Config {
     }
 
     public int getGrowEternalTime() { return this.GROW_ETERNAL_TIME * 20; }
+
     public int getInfusionTime() { return this.INFUSION_TIME * 20; }
 
     @Override

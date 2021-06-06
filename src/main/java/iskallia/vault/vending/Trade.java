@@ -26,7 +26,7 @@ public class Trade implements INBTSerializable {
 
     public Trade() {
         // Serialization.
-        this.max_trades = -1;
+        this.max_trades = - 1;
     }
 
     public Trade(Product buy, Product extra, Product sell) {
@@ -64,7 +64,7 @@ public class Trade implements INBTSerializable {
     public void setTimesTraded(int amount) { this.times_traded = amount; }
 
     public int getTradesLeft() {
-        if (max_trades == -1) return -1;
+        if (max_trades == - 1) return - 1;
         return Math.max(0, max_trades - times_traded);
     }
 
@@ -73,11 +73,11 @@ public class Trade implements INBTSerializable {
     }
 
     public boolean isValid() {
-        if (this.buy == null || !this.buy.isValid())
+        if (this.buy == null || ! this.buy.isValid())
             return false;
-        if (this.sell == null || !this.sell.isValid())
+        if (this.sell == null || ! this.sell.isValid())
             return false;
-        if (this.extra != null && !this.extra.isValid())
+        if (this.extra != null && ! this.extra.isValid())
             return false;
         return true;
     }

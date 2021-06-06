@@ -13,39 +13,41 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class FrenzyTalent extends PlayerTalent {
 
-	@Expose private final float threshold;
-	@Expose private final float damageMultiplier;
+    @Expose
+    private final float threshold;
+    @Expose
+    private final float damageMultiplier;
 
-	public FrenzyTalent(int cost, float threshold, float damageMultiplier) {
-		super(cost);
-		this.threshold = threshold;
-		this.damageMultiplier = damageMultiplier;
-	}
+    public FrenzyTalent(int cost, float threshold, float damageMultiplier) {
+        super(cost);
+        this.threshold = threshold;
+        this.damageMultiplier = damageMultiplier;
+    }
 
-	public float getThreshold() {
-		return this.threshold;
-	}
+    public float getThreshold() {
+        return this.threshold;
+    }
 
-	public float getDamageMultiplier() {
-		return this.damageMultiplier;
-	}
+    public float getDamageMultiplier() {
+        return this.damageMultiplier;
+    }
 
-	@SubscribeEvent
-	public static void onLivingHurt(LivingHurtEvent event) {
-		if(event.getEntity().world.isRemote)return;
-		if(!(event.getSource().getTrueSource() instanceof PlayerEntity))return;
+    @SubscribeEvent
+    public static void onLivingHurt(LivingHurtEvent event) {
+        if (event.getEntity().level.isClientSide) return;
+        if (! (event.getSource().getEntity() instanceof PlayerEntity)) return;
 
-		ServerPlayerEntity player = (ServerPlayerEntity)event.getSource().getTrueSource();
-		TalentTree abilities = PlayerTalentsData.get(player.getServerWorld()).getTalents(player);
+        ServerPlayerEntity player = (ServerPlayerEntity) event.getSource().getEntity();
+        TalentTree abilities = PlayerTalentsData.get(player.getLevel()).getTalents(player);
 
-		for(TalentNode<?> node : abilities.getNodes()) {
-			if(!(node.getTalent() instanceof FrenzyTalent))continue;
-			FrenzyTalent talent = (FrenzyTalent)node.getTalent();
+        for (TalentNode<?> node : abilities.getNodes()) {
+            if (! (node.getTalent() instanceof FrenzyTalent)) continue;
+            FrenzyTalent talent = (FrenzyTalent) node.getTalent();
 
-			if(player.getHealth() / player.getMaxHealth() <= talent.getThreshold()) {
-				event.setAmount(event.getAmount() * talent.getDamageMultiplier());
-			}
-		}
-	}
+            if (player.getHealth() / player.getMaxHealth() <= talent.getThreshold()) {
+                event.setAmount(event.getAmount() * talent.getDamageMultiplier());
+            }
+        }
+    }
 
 }

@@ -7,25 +7,26 @@ import net.minecraft.entity.player.PlayerEntity;
 
 public abstract class TalentSet<T extends PlayerTalent> extends PlayerSet {
 
-	@Expose private final T child;
+    @Expose
+    private final T child;
 
-	public TalentSet(VaultGear.Set set, T child) {
-		super(set);
-		this.child = child;
-	}
+    public TalentSet(VaultGear.Set set, T child) {
+        super(set);
+        this.child = child;
+    }
 
-	public T getChild() {
-		return this.child;
-	}
+    public T getChild() {
+        return this.child;
+    }
 
-	@Override
-	public void onAdded(PlayerEntity player) {
-		this.child.onAdded(player);
-	}
+    @Override
+    public void onAdded(PlayerEntity player) {
+        this.child.onAdded(player);
+    }
 
-	@Override
-	public void onRemoved(PlayerEntity player) {
-		this.child.onRemoved(player);
-	}
+    @Override
+    public void onRemoved(PlayerEntity player) {
+        this.child.onRemoved(player);
+    }
 
 }

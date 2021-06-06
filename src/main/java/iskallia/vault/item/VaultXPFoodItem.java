@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 
 public class VaultXPFoodItem extends Item {
 
-    public static Food FOOD = new Food.Builder().saturation(0).hunger(0).fastToEat().setAlwaysEdible().build();
+    public static Food FOOD = new Food.Builder().saturationMod(0).nutrition(0).fast().alwaysEat().build();
     private final Supplier<Float> min;
     private final Supplier<Float> max;
 
@@ -28,8 +28,8 @@ public class VaultXPFoodItem extends Item {
     }
 
     @Override
-    public ItemStack onItemUseFinish(ItemStack stack, World world, LivingEntity entityLiving) {
-        if (!world.isRemote && entityLiving instanceof ServerPlayerEntity) {
+    public ItemStack finishUsingItem(ItemStack stack, World world, LivingEntity entityLiving) {
+        if (! world.isClientSide && entityLiving instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) entityLiving;
             PlayerVaultStatsData statsData = PlayerVaultStatsData.get((ServerWorld) world);
             PlayerVaultStats stats = statsData.getVaultStats(player);
@@ -37,7 +37,7 @@ public class VaultXPFoodItem extends Item {
             statsData.addVaultExp(player, (int) (stats.getTnl() * randomPercentage));
         }
 
-        return super.onItemUseFinish(stack, world, entityLiving);
+        return super.finishUsingItem(stack, world, entityLiving);
     }
 
 }

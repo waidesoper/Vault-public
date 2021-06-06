@@ -24,13 +24,13 @@ public class OverlevelEnchantHelper {
                 return level - enchantment.getMaxLevel();
             }
         }
-        return -1;
+        return - 1;
     }
 
     public static Map<Enchantment, Integer> getEnchantments(ItemStack stack) {
         CompoundNBT nbt = Optional.ofNullable(stack.getTag()).orElseGet(CompoundNBT::new);
         ListNBT enchantmentsNBT = nbt.getList(stack.getItem() == Items.ENCHANTED_BOOK
-                ? "StoredEnchantments" : "Enchantments", Constants.NBT.TAG_COMPOUND);
+            ? "StoredEnchantments" : "Enchantments", Constants.NBT.TAG_COMPOUND);
 
         HashMap<Enchantment, Integer> enchantments = new HashMap<>();
 

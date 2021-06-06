@@ -13,9 +13,9 @@ import iskallia.vault.container.VendingMachineContainer;
 import iskallia.vault.entity.model.StatuePlayerModel;
 import iskallia.vault.event.InputEvents;
 import iskallia.vault.init.ModNetwork;
-import iskallia.vault.item.ItemTraderCore;
 import iskallia.vault.network.message.VendingUIMessage;
 import iskallia.vault.util.SkinProfile;
+import iskallia.vault.vending.Trade;
 import iskallia.vault.vending.TraderCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
@@ -25,15 +25,16 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,14 +53,14 @@ public class VendingMachineScreen extends ContainerScreen<VendingMachineContaine
 
         refreshWidgets();
 
-        xSize = 394;
-        ySize = 170;
+        imageWidth = 394;
+        imageHeight = 170;
     }
 
     public void refreshWidgets() {
         tradeWidgets.clear();
 
-        List<TraderCore> cores = getContainer().getTileEntity().getCores();
+        List<TraderCore> cores = getMenu().getTileEntity().getCores();
 
         for (int i = 0; i < cores.size(); i++) {
             TraderCore traderCore = cores.get(i);
@@ -111,21 +112,21 @@ public class VendingMachineScreen extends ContainerScreen<VendingMachineContaine
         for (int i = 0; i < tradeWidgets.size(); i++) {
             TradeWidget tradeWidget = tradeWidgets.get(i);
             boolean isHovered = tradeWidget.x <= tradeContainerX && tradeContainerX <= tradeWidget.x + TradeWidget.BUTTON_WIDTH
-                    && tradeWidget.y <= tradeContainerY && tradeContainerY <= tradeWidget.y + TradeWidget.BUTTON_HEIGHT;
+                && tradeWidget.y <= tradeContainerY && tradeContainerY <= tradeWidget.y + TradeWidget.BUTTON_HEIGHT;
 
             if (isHovered) {
                 if (InputEvents.isShiftDown()) {
-                    getContainer().ejectCore(i);
+                    getMenu().ejectCore(i);
                     refreshWidgets();
                     ModNetwork.CHANNEL.sendToServer(VendingUIMessage.ejectTrade(i));
-                    Minecraft.getInstance().getSoundHandler()
-                            .play(SimpleSound.master(SoundEvents.ENTITY_ITEM_PICKUP, 1f));
+                    Minecraft.getInstance().getSoundManager()
+                        .play(SimpleSound.forUI(SoundEvents.ITEM_PICKUP, 1f));
 
                 } else {
-                    getContainer().selectTrade(i);
+                    getMenu().selectTrade(i);
                     ModNetwork.CHANNEL.sendToServer(VendingUIMessage.selectTrade(i));
-                    Minecraft.getInstance().getSoundHandler()
-                            .play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1f));
+                    Minecraft.getInstance().getSoundManager()
+                        .play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
                 }
 
                 break;
@@ -151,16 +152,16 @@ public class VendingMachineScreen extends ContainerScreen<VendingMachineContaine
 
     @Override
     protected void
-    drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) { }
+    renderBg(MatrixStack matrixStack, float partialTicks, int x, int y) { }
 
     @Override
     protected void
-    drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+    renderLabels(MatrixStack matrixStack, int x, int y) {
         // For some reason, without this it won't render :V
-        this.font.func_243248_b(matrixStack,
-                new StringTextComponent(""),
-                (float) this.titleX, (float) this.titleY,
-                4210752);
+        this.font.draw(matrixStack,
+            new StringTextComponent(""),
+            (float) this.titleLabelX, (float) this.titleLabelY,
+            4210752);
     }
 
     @Override
@@ -175,12 +176,12 @@ public class VendingMachineScreen extends ContainerScreen<VendingMachineContaine
         int containerWidth = 276;
         int containerHeight = 166;
 
-        minecraft.getTextureManager().bindTexture(HUD_RESOURCE);
+        minecraft.getTextureManager().bind(HUD_RESOURCE);
         blit(matrixStack, (int) (midX - containerWidth / 2), (int) (midY - containerHeight / 2),
-                0, 0, containerWidth, containerHeight,
-                512, 256);
+            0, 0, containerWidth, containerHeight,
+            512, 256);
 
-        VendingMachineContainer container = getContainer();
+        VendingMachineContainer container = getMenu();
         VendingMachineTileEntity tileEntity = container.getTileEntity();
         Rectangle tradeBoundaries = getTradeBoundaries();
 
@@ -193,22 +194,22 @@ public class VendingMachineScreen extends ContainerScreen<VendingMachineContaine
         TraderCore lastCore = tileEntity.getLastCore();
         if (lastCore != null) {
 //            drawSkin((int) midX - 175, (int) midY - 10, 45, tileEntity.getSkin(), lastCore.isMegahead());
-            drawSkin((int) midX + 175, (int) midY - 10, -45, tileEntity.getSkin(), lastCore.isMegahead());
+            drawSkin((int) midX + 175, (int) midY - 10, - 45, tileEntity.getSkin(), lastCore.isMegahead());
         }
 
-        minecraft.fontRenderer.drawString(matrixStack,
-                new TranslationTextComponent("tip.the_vault.vending_trades").getString(), midX - 108, midY - 77, 0xFF_3f3f3f);
+        minecraft.font.draw(matrixStack,
+            new TranslationTextComponent("tip.the_vault.vending_trades").getString(), midX - 108, midY - 77, 0xFF_3f3f3f);
 
         if (lastCore != null) {
             String name = new TranslationTextComponent("tip.the_vault.vending_vendor", lastCore.getName()).getString();
-            int nameWidth = minecraft.fontRenderer.getStringWidth(name);
-            minecraft.fontRenderer.drawString(matrixStack,
-                    name,
-                    midX + 50 - nameWidth / 2f,
-                    midY - 70, 0xFF_3f3f3f);
+            int nameWidth = minecraft.font.width(name);
+            minecraft.font.draw(matrixStack,
+                name,
+                midX + 50 - nameWidth / 2f,
+                midY - 70, 0xFF_3f3f3f);
         }
 
-        this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
+        this.renderTooltip(matrixStack, mouseX, mouseY);
     }
 
     public void
@@ -224,7 +225,7 @@ public class VendingMachineScreen extends ContainerScreen<VendingMachineContaine
     }
 
     @Override
-    protected void renderHoveredTooltip(MatrixStack matrixStack, int mouseX, int mouseY) {
+    protected void renderTooltip(MatrixStack matrixStack, int mouseX, int mouseY) {
         Rectangle tradeBoundaries = getTradeBoundaries();
 
         int tradeContainerX = mouseX - tradeBoundaries.x0;
@@ -232,28 +233,19 @@ public class VendingMachineScreen extends ContainerScreen<VendingMachineContaine
 
         for (TradeWidget tradeWidget : tradeWidgets) {
             if (tradeWidget.isHovered(tradeContainerX, tradeContainerY)) {
-//                Trade trade = tradeWidget.getTraderCode().getTrade();
-//                if (trade.getTradesLeft() != 0) {
-                    //ItemStack sellStack = trade.getSell().toStack();
-                    //renderTooltip(matrixStack, sellStack, mouseX, mouseY);
-
-                    // #Crimson_Fluff, match Trader Core tooltip, saves hastle of having to remove Trader Core to see
-                    // number of trades left or trader name
-                    List<ITextComponent> tooltip = new ArrayList<>();
-                    tooltip.add(new StringTextComponent(tradeWidget.getTraderCode().getName()));
-                    ItemTraderCore.makeTooltip(tradeWidget.getTraderCode(), tooltip);
-                    func_243308_b(matrixStack, tooltip, mouseX, mouseY);
-                    break;
-
-//                } else {
-//                    TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.trader_soldout");
-//                    text.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_FF0000)));
-//                    renderTooltip(matrixStack, text, mouseX, mouseY);
-//                }
+                Trade trade = tradeWidget.getTraderCode().getTrade();
+                if (trade.getTradesLeft() != 0) {
+                    ItemStack sellStack = trade.getSell().toStack();
+                    renderTooltip(matrixStack, sellStack, mouseX, mouseY);
+                } else {
+                    TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.trader_soldout");
+                    text.withStyle(TextFormatting.RED); // setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_FF0000)));
+                    renderTooltip(matrixStack, text, mouseX, mouseY);
+                }
             }
         }
 
-        super.renderHoveredTooltip(matrixStack, mouseX, mouseY);
+        super.renderTooltip(matrixStack, mouseX, mouseY);
     }
 
     public static void drawSkin(int posX, int posY, int yRotation, SkinProfile skin, boolean megahead) {
@@ -261,50 +253,50 @@ public class VendingMachineScreen extends ContainerScreen<VendingMachineContaine
         float headScale = megahead ? 1.75f : 1f;
         RenderSystem.pushMatrix();
         RenderSystem.translatef((float) posX, (float) posY, 1050.0F);
-        RenderSystem.scalef(1.0F, 1.0F, -1.0F);
+        RenderSystem.scalef(1.0F, 1.0F, - 1.0F);
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.translate(0.0D, 0.0D, 1000.0D);
         matrixStack.scale((float) scale, (float) scale, (float) scale);
         Quaternion quaternion = Vector3f.ZP.rotationDegrees(180.0F + 20f);
         Quaternion quaternion1 = Vector3f.XP.rotationDegrees(45f);
-        quaternion.multiply(quaternion1);
+        quaternion.mul(quaternion1);
 //        matrixStack.rotate(quaternion);
-        EntityRendererManager entityrenderermanager = Minecraft.getInstance().getRenderManager();
-        quaternion1.conjugate();
-        entityrenderermanager.setCameraOrientation(quaternion1);
+        EntityRendererManager entityrenderermanager = Minecraft.getInstance().getEntityRenderDispatcher();
+        quaternion1.conj();
+        entityrenderermanager.overrideCameraOrientation(quaternion1);
         entityrenderermanager.setRenderShadow(false);
-        IRenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+        IRenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
         StatuePlayerModel<PlayerEntity> model = VendingMachineRenderer.PLAYER_MODEL;
         RenderSystem.runAsFancy(() -> {
             matrixStack.scale(scale, scale, scale);
-            matrixStack.rotate(Vector3f.XP.rotationDegrees(20));
-            matrixStack.rotate(Vector3f.YN.rotationDegrees(yRotation));
+            matrixStack.mulPose(Vector3f.XP.rotationDegrees(20));
+            matrixStack.mulPose(Vector3f.YN.rotationDegrees(yRotation));
             int lighting = 0xf00000;
             int overlay = 0xf0000;
-            RenderType renderType = model.getRenderType(skin.getLocationSkin());
+            RenderType renderType = model.renderType(skin.getLocationSkin());
             IVertexBuilder vertexBuilder = irendertypebuffer$impl.getBuffer(renderType);
-            model.bipedBody.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
-            model.bipedLeftLeg.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
-            model.bipedRightLeg.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
-            model.bipedLeftArm.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
-            model.bipedRightArm.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
+            model.body.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
+            model.leftLeg.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
+            model.rightLeg.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
+            model.leftArm.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
+            model.rightArm.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
 
-            model.bipedBodyWear.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
-            model.bipedLeftLegwear.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
-            model.bipedRightLegwear.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
-            model.bipedLeftArmwear.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
+            model.jacket.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
+            model.leftPants.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
+            model.rightPants.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
+            model.leftSleeve.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
 
-            matrixStack.push();
-            matrixStack.translate(0, 0, -0.62f);
-            model.bipedRightArmwear.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
-            matrixStack.pop();
+            matrixStack.pushPose();
+            matrixStack.translate(0, 0, - 0.62f);
+            model.rightSleeve.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
+            matrixStack.popPose();
 
             matrixStack.scale(headScale, headScale, headScale);
-            model.bipedHeadwear.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
-            model.bipedHead.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
-            matrixStack.pop();
+            model.hat.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
+            model.head.render(matrixStack, vertexBuilder, lighting, overlay, 1, 1, 1, 1);
+            matrixStack.popPose();
         });
-        irendertypebuffer$impl.finish();
+        irendertypebuffer$impl.endBatch();
         entityrenderermanager.setRenderShadow(true);
         RenderSystem.popMatrix();
     }

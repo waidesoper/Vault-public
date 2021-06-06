@@ -28,8 +28,8 @@ public class ResearchWidget extends Widget {
 
     public ResearchWidget(String researchName, ResearchTree researchTree, SkillStyle style) {
         super(style.x, style.y,
-                ICON_SIZE, ICON_SIZE,
-                new StringTextComponent("the_vault.widgets.research"));
+            ICON_SIZE, ICON_SIZE,
+            new StringTextComponent("the_vault.widgets.research"));
         this.style = style;
         this.locked = ModConfigs.SKILL_GATES.getGates().isLocked(researchName, researchTree);
         this.researchName = researchName;
@@ -59,7 +59,7 @@ public class ResearchWidget extends Widget {
     public boolean isMouseOver(double mouseX, double mouseY) {
         Rectangle clickableBounds = getClickableBounds();
         return clickableBounds.x0 <= mouseX && mouseX <= clickableBounds.x1
-                && clickableBounds.y0 <= mouseY && mouseY <= clickableBounds.y1;
+            && clickableBounds.y0 <= mouseY && mouseY <= clickableBounds.y1;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class ResearchWidget extends Widget {
         if (locked) return false;
         if (selected) return false;
 
-        this.playDownSound(Minecraft.getInstance().getSoundHandler());
+        this.playDownSound(Minecraft.getInstance().getSoundManager());
         return true;
     }
 
@@ -90,32 +90,32 @@ public class ResearchWidget extends Widget {
     renderIcon(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         ResourceBoundary resourceBoundary = style.frameType.getResourceBoundary();
 
-        matrixStack.push();
-        matrixStack.translate(-ICON_SIZE / 2f, -ICON_SIZE / 2f, 0);
-        Minecraft.getInstance().textureManager.bindTexture(resourceBoundary.getResource());
+        matrixStack.pushPose();
+        matrixStack.translate(- ICON_SIZE / 2f, - ICON_SIZE / 2f, 0);
+        Minecraft.getInstance().textureManager.bind(resourceBoundary.getResource());
 
         int vOffset = locked ? 62
-                : selected || isMouseOver(mouseX, mouseY) ? -31
-                : researchTree.getResearchesDone().contains(researchName) ? 31 : 0;
+            : selected || isMouseOver(mouseX, mouseY) ? - 31
+            : researchTree.getResearchesDone().contains(researchName) ? 31 : 0;
         blit(matrixStack, this.x, this.y,
-                resourceBoundary.getU(),
-                resourceBoundary.getV() + vOffset,
-                resourceBoundary.getW(),
-                resourceBoundary.getH());
-        matrixStack.pop();
+            resourceBoundary.getU(),
+            resourceBoundary.getV() + vOffset,
+            resourceBoundary.getW(),
+            resourceBoundary.getH());
+        matrixStack.popPose();
 
-        matrixStack.push();
-        matrixStack.translate(-16 / 2f, -16 / 2f, 0);
-        Minecraft.getInstance().textureManager.bindTexture(locked ? SKILL_WIDGET_RESOURCE : RESEARCHES_RESOURCE);
+        matrixStack.pushPose();
+        matrixStack.translate(- 16 / 2f, - 16 / 2f, 0);
+        Minecraft.getInstance().textureManager.bind(locked ? SKILL_WIDGET_RESOURCE : RESEARCHES_RESOURCE);
         if (locked) {
             blit(matrixStack, this.x + 3, this.y + 1,
-                    10, 124, 10, 14);
+                10, 124, 10, 14);
         } else {
             blit(matrixStack, this.x, this.y,
-                    style.u, style.v,
-                    16, 16);
+                style.u, style.v,
+                16, 16);
         }
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
 }

@@ -1,11 +1,10 @@
-Updated to 1.16.4 mappings
+Updated to 1.16.5 OFFICIAL Mappings - using Hexeption's fork
 Works with Forge 1.16.5 - 36.1.17
 Optifine does NOT work
-Does NOT run in DEV environment, but does as part of Official VH modpack
 
 
 TODO: Make a playable pack...
-Remove Z-fighting from Vending Machine walls - Some of the trim is missing. 1.16.5 in Dev its fine. Don't know why
+Remove Z-fighting from Vending Machine walls - When in Dev the models are fine, in modpack they have black areas on trim. Don't know why
 Remove Z-fighting from Vault Arena Crate
 Reverted Andesite name change
 Added missing localisations (en_us) for existing vault items, eg: Vault Portal, Dragon Statue
@@ -36,12 +35,15 @@ Chests/Barrels can be broken without opening them first
 Vein mine produces XP after level 2 and now costs hunger. Update your descriptions !
 Vault Crate/Arena Crates have opening sounds
 Obelisks now have particles, visually pleasing, easy to spot in vaults
-Obelisk is now 2 blocks tall, so you can activate by clicking the top part. Added voxel
+Obelisk is now 2 blocks tall, so you can activate by clicking the top part.
 Reduced number of "Twerker" particles. Only show particles if successfully bone-mealed something
 In peaceful mode mobs no longer try to spawn in the vault
-Skellington Key, added keys to tags
+Skellington Key, add keys to tags
 Vault Ore loot tables based on Diamond drops now
 Vault Altar requires blackstone not purpur now
+The Vault XP bar was 1 pixel too long. Yep, I saw it !
+Removed chance of Guardian Fighter dropping nothing
+Re-localised Legendary Treasure. You can't have "Rare Legendary Treasure"
 
 
 TODO: Mod...
@@ -56,9 +58,16 @@ when killed by robot it says simply "Killed by" (no name), also show serverwide 
 
 TODO: Modpack...
 Super Gift Bomb loot table is empty?
+Vault Fighters appear at every vault level, it was only at 30
 
 
+<<<<<<< Updated upstream
 BONNe - Implemented various commits from BONNe:
+=======
+TODO: Implemented various commits:
+BONNe:
+Fixes the changing order of abilities in the wheel                      #66
+>>>>>>> Stashed changes
 Implement an option to set different Vault Fighters                    #271
 Fixes bug with Star Core recipe                                        #287
 Fixes missing Mystery Stew Recipe in JEI and Crafting Books            #288
@@ -69,3 +78,9 @@ Add proper crystal upgrade recipes                                     #295
 Add Vault Plugin Anvil recipes to JEI                                  #296
 Fixes broken step-up talent                                            #297
 Fix a bug that allowed creating portals in any dimension               #298
+<<<<<<< Updated upstream
+=======
+
+Waidesoper:
+Fixes an issue with Ghost Walk being too fast                          #354
+>>>>>>> Stashed changes

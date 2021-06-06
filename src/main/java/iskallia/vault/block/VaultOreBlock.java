@@ -11,16 +11,16 @@ import java.util.Random;
 public class VaultOreBlock extends OreBlock {
 
     public VaultOreBlock() {
-        super(Properties.create(Material.ROCK, MaterialColor.DIAMOND)
-                .setRequiresTool()
-                .setLightLevel(state -> 9)
-                .hardnessAndResistance(3f, 3f)
-                .sound(ModSounds.VAULT_GEM)
+        super(Properties.of(Material.STONE, MaterialColor.DIAMOND)
+            .requiresCorrectToolForDrops()
+            .lightLevel(state -> 9)
+            .strength(3f, 3f)
+            .sound(ModSounds.VAULT_GEM)
         );
     }
 
     @Override
-    protected int getExperience(Random rand) {
+    protected int xpOnDrop(Random rand) {
         return MathHelper.nextInt(rand, 3, 7);
     }
 

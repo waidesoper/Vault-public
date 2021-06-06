@@ -12,8 +12,8 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -24,12 +24,12 @@ public class VendingMachineBlockItem extends BlockItem {
 
     public VendingMachineBlockItem(Block block) {
         super(block, new Properties()
-                .group(ModItems.VAULT_MOD_GROUP)
-                .maxStackSize(64));
+            .tab(ModItems.VAULT_MOD_GROUP)
+            .stacksTo(64));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         CompoundNBT nbt = stack.getTag();
 
         if (nbt != null) {
@@ -39,8 +39,8 @@ public class VendingMachineBlockItem extends BlockItem {
                 TraderCore core;
                 try {
                     core = NBTSerializer.deserialize(TraderCore.class, (CompoundNBT) tag);
-                    TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.vending_vendor", core.getName());
-                    text.setStyle(Style.EMPTY.setColor(Color.fromInt(0xFF_ff9966)));
+                    StringTextComponent text = new StringTextComponent(" Vendor: " + core.getName());
+                    text.setStyle(Style.EMPTY.withColor(Color.fromRgb(0xFF_ff9966)));
                     tooltip.add(text);
                     return;
                 } catch (Exception e) {
@@ -49,6 +49,6 @@ public class VendingMachineBlockItem extends BlockItem {
             }
         }
 
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 }

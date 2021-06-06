@@ -8,8 +8,8 @@ public class ItemSkillShard extends Item {
 
     public ItemSkillShard(ItemGroup group, ResourceLocation id) {
         super(new Properties()
-                .group(group)
-                .maxStackSize(64));
+            .tab(group)
+            .stacksTo(64));
 
         this.setRegistryName(id);
     }

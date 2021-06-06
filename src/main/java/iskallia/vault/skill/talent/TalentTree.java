@@ -22,8 +22,8 @@ public class TalentTree implements INBTSerializable<CompoundNBT> {
     public TalentTree(UUID uuid) {
         this.uuid = uuid;
         this.add(null, ModConfigs.TALENTS.getAll().stream()
-                .map(talentGroup -> new TalentNode<>(talentGroup, 0))
-                .toArray(TalentNode<?>[]::new));
+            .map(talentGroup -> new TalentNode<>(talentGroup, 0))
+            .toArray(TalentNode<?>[]::new));
     }
 
     public List<TalentNode<?>> getNodes() {
@@ -36,7 +36,7 @@ public class TalentTree implements INBTSerializable<CompoundNBT> {
 
     public TalentNode<?> getNodeByName(String name) {
         Optional<TalentNode<?>> talentWrapped = this.nodes.stream().filter(node -> node.getGroup().getParentName().equals(name)).findFirst();
-        if (!talentWrapped.isPresent()) {
+        if (! talentWrapped.isPresent()) {
             TalentNode<?> talentNode = new TalentNode<>(ModConfigs.TALENTS.getByName(name), 0);
             this.nodes.add(talentNode);
             return talentNode;
@@ -74,7 +74,7 @@ public class TalentTree implements INBTSerializable<CompoundNBT> {
     public TalentTree tick(MinecraftServer server) {
         NetcodeUtils.runIfPresent(server, this.uuid, player -> {
             this.nodes.stream().filter(TalentNode::isLearned)
-                    .forEach(node -> node.getTalent().tick(player));
+                .forEach(node -> node.getTalent().tick(player));
         });
         return this;
     }

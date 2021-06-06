@@ -48,7 +48,7 @@ public class AbilityGroup<T extends PlayerAbility> {
     }
 
     public int cost(int level) {
-        if (level > getMaxLevel()) return -1;
+        if (level > getMaxLevel()) return - 1;
         return this.levels[level - 1].getCost();
     }
 
@@ -62,7 +62,7 @@ public class AbilityGroup<T extends PlayerAbility> {
             } else if (this.getMaxLevel() > 1) {
                 for (int i = 0; i < getMaxLevel(); i++) {
                     this.registry.put(this.getParentName() + " " + RomanNumber.toRoman(i + 1),
-                            this.getAbility(i + 1));
+                        this.getAbility(i + 1));
                 }
             }
         }
@@ -75,39 +75,39 @@ public class AbilityGroup<T extends PlayerAbility> {
     public static AbilityGroup<EffectAbility> ofEffect(String name, Effect effect, EffectAbility.Type type, int maxLevel,
                                                        IntUnaryOperator cost) {
         EffectAbility[] abilities = IntStream.range(0, maxLevel)
-                .mapToObj(i -> new EffectAbility(cost.applyAsInt(i + 1), effect, i, type))
-                .toArray(EffectAbility[]::new);
+            .mapToObj(i -> new EffectAbility(cost.applyAsInt(i + 1), effect, i, type))
+            .toArray(EffectAbility[]::new);
         return new AbilityGroup<>(name, abilities);
     }
 
     public static AbilityGroup<GhostWalkAbility> ofGhostWalkEffect(String name, Effect effect, EffectAbility.Type type, int maxLevel,
                                                                    IntUnaryOperator cost) {
         GhostWalkAbility[] abilities = IntStream.range(0, maxLevel)
-                .mapToObj(i -> new GhostWalkAbility(cost.applyAsInt(i + 1), effect, i, (i + 1) * (5 * 20), type, PlayerAbility.Behavior.RELEASE_TO_PERFORM))
-                .toArray(GhostWalkAbility[]::new);
+            .mapToObj(i -> new GhostWalkAbility(cost.applyAsInt(i + 1), effect, i, (i + 1) * (5 * 20), type, PlayerAbility.Behavior.RELEASE_TO_PERFORM))
+            .toArray(GhostWalkAbility[]::new);
         return new AbilityGroup<>(name, abilities);
     }
 
     public static AbilityGroup<RampageAbility> ofRampage(String name, Effect effect, EffectAbility.Type type, int maxLevel, IntUnaryOperator cost) {
         RampageAbility[] abilities = IntStream.range(0, maxLevel)
-                .mapToObj(i -> new RampageAbility(cost.applyAsInt(i + 1), effect, i, i, (i + 1) * (5 * 20), (i + 1) * (5 * 20), type, PlayerAbility.Behavior.RELEASE_TO_PERFORM))
-                .toArray(RampageAbility[]::new);
+            .mapToObj(i -> new RampageAbility(cost.applyAsInt(i + 1), effect, i, i, (i + 1) * (5 * 20), (i + 1) * (5 * 20), type, PlayerAbility.Behavior.RELEASE_TO_PERFORM))
+            .toArray(RampageAbility[]::new);
         return new AbilityGroup<>(name, abilities);
     }
 
     public static AbilityGroup<TankAbility> ofTank(String name, Effect effect, EffectAbility.Type type, int maxLevel,
                                                    IntUnaryOperator cost) {
         TankAbility[] abilities = IntStream.range(0, maxLevel)
-                .mapToObj(i -> new TankAbility(cost.applyAsInt(i + 1), effect, i, (i + 1) * (5 * 20), type, PlayerAbility.Behavior.RELEASE_TO_PERFORM))
-                .toArray(TankAbility[]::new);
+            .mapToObj(i -> new TankAbility(cost.applyAsInt(i + 1), effect, i, (i + 1) * (5 * 20), type, PlayerAbility.Behavior.RELEASE_TO_PERFORM))
+            .toArray(TankAbility[]::new);
         return new AbilityGroup<>(name, abilities);
     }
 
     public static AbilityGroup<ExecuteAbility> ofExecute(String name, Effect effect, EffectAbility.Type type, int maxLevel,
                                                          IntUnaryOperator cost) {
         ExecuteAbility[] abilities = IntStream.range(0, maxLevel)
-                .mapToObj(i -> new ExecuteAbility(cost.applyAsInt(i + 1), effect, i, type, PlayerAbility.Behavior.RELEASE_TO_PERFORM, ((float) i + 1) * 0.1f))
-                .toArray(ExecuteAbility[]::new);
+            .mapToObj(i -> new ExecuteAbility(cost.applyAsInt(i + 1), effect, i, type, PlayerAbility.Behavior.RELEASE_TO_PERFORM, ((float) i + 1) * 0.1f))
+            .toArray(ExecuteAbility[]::new);
         return new AbilityGroup<>(name, abilities);
     }
 

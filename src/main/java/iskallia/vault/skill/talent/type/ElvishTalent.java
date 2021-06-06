@@ -4,13 +4,13 @@ import net.minecraft.entity.player.PlayerEntity;
 
 public class ElvishTalent extends PlayerTalent {
 
-	public ElvishTalent(int cost) {
-		super(cost);
-	}
+    public ElvishTalent(int cost) {
+        super(cost);
+    }
 
-	@Override
-	public void tick(PlayerEntity player) {
-		player.fallDistance = 0.0F;
-	}
+    @Override
+    public void tick(PlayerEntity player) {
+        player.fallDistance = 0.0F;
+    }
 
 }

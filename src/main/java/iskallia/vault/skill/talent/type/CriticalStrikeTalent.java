@@ -13,31 +13,32 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CriticalStrikeTalent extends PlayerTalent {
 
-	@Expose private final float chance;
+    @Expose
+    private final float chance;
 
-	public CriticalStrikeTalent(int cost, float chance) {
-		super(cost);
-		this.chance = chance;
-	}
+    public CriticalStrikeTalent(int cost, float chance) {
+        super(cost);
+        this.chance = chance;
+    }
 
-	public float getChance() {
-		return this.chance;
-	}
+    public float getChance() {
+        return this.chance;
+    }
 
-	@SubscribeEvent
-	public static void onCriticalHit(CriticalHitEvent event) {
-		if(event.getEntity().world.isRemote)return;
-		ServerPlayerEntity player = (ServerPlayerEntity)event.getPlayer();
-		TalentTree abilities = PlayerTalentsData.get(player.getServerWorld()).getTalents(player);
+    @SubscribeEvent
+    public static void onCriticalHit(CriticalHitEvent event) {
+        if (event.getEntity().level.isClientSide) return;
+        ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
+        TalentTree abilities = PlayerTalentsData.get(player.getLevel()).getTalents(player);
 
-		for(TalentNode<?> node : abilities.getNodes()) {
-			if(!(node.getTalent() instanceof CriticalStrikeTalent))continue;
+        for (TalentNode<?> node : abilities.getNodes()) {
+            if (! (node.getTalent() instanceof CriticalStrikeTalent)) continue;
 
-			if(player.world.rand.nextFloat() < ((CriticalStrikeTalent)node.getTalent()).getChance()) {
-				event.setResult(Event.Result.ALLOW);
-				return;
-			}
-		}
-	}
+            if (player.level.random.nextFloat() < ((CriticalStrikeTalent) node.getTalent()).getChance()) {
+                event.setResult(Event.Result.ALLOW);
+                return;
+            }
+        }
+    }
 
 }

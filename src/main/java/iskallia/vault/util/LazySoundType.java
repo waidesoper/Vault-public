@@ -17,10 +17,10 @@ public class LazySoundType extends SoundType {
 
     public LazySoundType(SoundType vanillaType) {
         super(1f, 1f, vanillaType.getBreakSound(),
-                vanillaType.getStepSound(),
-                vanillaType.getPlaceSound(),
-                vanillaType.getHitSound(),
-                vanillaType.getFallSound());
+            vanillaType.getStepSound(),
+            vanillaType.getPlaceSound(),
+            vanillaType.getHitSound(),
+            vanillaType.getFallSound());
     }
 
     public LazySoundType() {

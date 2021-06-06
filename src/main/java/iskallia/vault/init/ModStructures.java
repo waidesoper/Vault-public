@@ -25,7 +25,7 @@ public class ModStructures {
     }
 
     private static <T extends Structure<?>> T register(IForgeRegistry<Structure<?>> registry, String name, T structure) {
-        Structure.NAME_STRUCTURE_BIMAP.put(name, structure);
+        Structure.STRUCTURES_REGISTRY.put(name, structure);
         structure.setRegistryName(Vault.id(name));
         registry.register(structure);
         return structure;
@@ -38,7 +38,7 @@ public class ModStructures {
         //No event for registering IJigsawDeserializer?
         public static void register(RegistryEvent.Register<Structure<?>> event) {
             PALETTED_SINGLE_POOL_ELEMENT = register("paletted_single_pool_element", PalettedSinglePoolElement.CODEC);
-            PALETTED_LIST_POOL_ELEMENT  = register("paletted_list_pool_element", PalettedListPoolElement.CODEC);
+            PALETTED_LIST_POOL_ELEMENT = register("paletted_list_pool_element", PalettedListPoolElement.CODEC);
         }
 
         static <P extends JigsawPiece> IJigsawDeserializer<P> register(String name, Codec<P> codec) {

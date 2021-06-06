@@ -5,17 +5,17 @@ import iskallia.vault.util.ResourceBoundary;
 
 public enum SkillFrame {
 
-	STAR(new ResourceBoundary(Vault.id("textures/gui/skill-widget.png"), 0, 31, 30, 30)),
-	RECTANGULAR(new ResourceBoundary(Vault.id("textures/gui/skill-widget.png"), 30, 31, 30, 30));
+    STAR(new ResourceBoundary(Vault.id("textures/gui/skill-widget.png"), 0, 31, 30, 30)),
+    RECTANGULAR(new ResourceBoundary(Vault.id("textures/gui/skill-widget.png"), 30, 31, 30, 30));
 
-	ResourceBoundary resourceBoundary;
+    ResourceBoundary resourceBoundary;
 
-	SkillFrame(ResourceBoundary resourceBoundary) {
-		this.resourceBoundary = resourceBoundary;
-	}
+    SkillFrame(ResourceBoundary resourceBoundary) {
+        this.resourceBoundary = resourceBoundary;
+    }
 
-	public ResourceBoundary getResourceBoundary() {
-		return resourceBoundary;
-	}
+    public ResourceBoundary getResourceBoundary() {
+        return resourceBoundary;
+    }
 
 }

@@ -5,9 +5,12 @@ import iskallia.vault.client.gui.helper.SkillFrame;
 
 public class SkillStyle {
 
-    @Expose public int x, y;
-    @Expose public SkillFrame frameType;
-    @Expose public int u, v;
+    @Expose
+    public int x, y;
+    @Expose
+    public SkillFrame frameType;
+    @Expose
+    public int u, v;
 
     public SkillStyle() {}
 

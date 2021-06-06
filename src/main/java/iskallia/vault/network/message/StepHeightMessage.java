@@ -8,34 +8,34 @@ import java.util.function.Supplier;
 
 public class StepHeightMessage {
 
-	public float stepHeight;
+    public float stepHeight;
 
-	protected StepHeightMessage() { }
+    protected StepHeightMessage() { }
 
-	public StepHeightMessage(float stepHeight) {
-		this.stepHeight = stepHeight;
-	}
+    public StepHeightMessage(float stepHeight) {
+        this.stepHeight = stepHeight;
+    }
 
-	public static void encode(StepHeightMessage message, PacketBuffer buffer) {
-		buffer.writeFloat(message.stepHeight);
-	}
+    public static void encode(StepHeightMessage message, PacketBuffer buffer) {
+        buffer.writeFloat(message.stepHeight);
+    }
 
-	public static StepHeightMessage decode(PacketBuffer buffer) {
-		StepHeightMessage message = new StepHeightMessage();
-		message.stepHeight = buffer.readFloat();
-		return message;
-	}
+    public static StepHeightMessage decode(PacketBuffer buffer) {
+        StepHeightMessage message = new StepHeightMessage();
+        message.stepHeight = buffer.readFloat();
+        return message;
+    }
 
-	public static void handle(StepHeightMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
-		NetworkEvent.Context context = contextSupplier.get();
+    public static void handle(StepHeightMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
+        NetworkEvent.Context context = contextSupplier.get();
 
-		context.enqueueWork(() -> {
-			if(Minecraft.getInstance().player != null) {
-				Minecraft.getInstance().player.stepHeight = message.stepHeight;
-			}
-		});
+        context.enqueueWork(() -> {
+            if (Minecraft.getInstance().player != null) {
+                Minecraft.getInstance().player.maxUpStep = message.stepHeight;
+            }
+        });
 
-		context.setPacketHandled(true);
-	}
+        context.setPacketHandled(true);
+    }
 
 }

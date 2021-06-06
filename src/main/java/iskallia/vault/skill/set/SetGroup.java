@@ -10,8 +10,10 @@ import java.util.stream.IntStream;
 
 public class SetGroup<T extends PlayerSet> {
 
-    @Expose private final String name;
-    @Expose private final T[] levels;
+    @Expose
+    private final String name;
+    @Expose
+    private final T[] levels;
 
     private BiMap<String, T> registry;
 
@@ -53,7 +55,7 @@ public class SetGroup<T extends PlayerSet> {
             } else if (this.getMaxLevel() > 1) {
                 for (int i = 0; i < this.getMaxLevel(); i++) {
                     this.registry.put(this.getParentName() + " " + RomanNumber.toRoman(i + 1),
-                            this.getSet(i + 1));
+                        this.getSet(i + 1));
                 }
             }
         }
@@ -65,7 +67,7 @@ public class SetGroup<T extends PlayerSet> {
 
     public static <T extends PlayerSet> SetGroup<T> of(String name, int maxLevel, IntFunction<T> supplier) {
         PlayerSet[] talents = IntStream.range(0, maxLevel).mapToObj(supplier).toArray(PlayerSet[]::new);
-        return new SetGroup<>(name, (T[])talents);
+        return new SetGroup<>(name, (T[]) talents);
     }
 
 }

@@ -17,7 +17,7 @@ import java.util.*;
 /**
  * This class creates Vault Plugin Anvil recipes.
  */
-public final class AnvilRecipeMaker
+public final class JEIAnvilRecipeMaker
 {
     /**
      * Random number generator.
@@ -35,10 +35,10 @@ public final class AnvilRecipeMaker
         List<List<ItemStack>> vaultArmorList = Lists.newArrayList();
 
         // Populate different armors
-        vaultArmorList.add(AnvilRecipeMaker.generateRandomArmorList(ModItems.HELMET));
-        vaultArmorList.add(AnvilRecipeMaker.generateRandomArmorList(ModItems.CHESTPLATE));
-        vaultArmorList.add(AnvilRecipeMaker.generateRandomArmorList(ModItems.LEGGINGS));
-        vaultArmorList.add(AnvilRecipeMaker.generateRandomArmorList(ModItems.BOOTS));
+        vaultArmorList.add(JEIAnvilRecipeMaker.generateRandomArmorList(ModItems.HELMET));
+        vaultArmorList.add(JEIAnvilRecipeMaker.generateRandomArmorList(ModItems.CHESTPLATE));
+        vaultArmorList.add(JEIAnvilRecipeMaker.generateRandomArmorList(ModItems.LEGGINGS));
+        vaultArmorList.add(JEIAnvilRecipeMaker.generateRandomArmorList(ModItems.BOOTS));
 
         ArrayList<ItemStack> vaultWeapons = Lists.newArrayList(
             new ItemStack(ModItems.SWORD),
@@ -58,7 +58,7 @@ public final class AnvilRecipeMaker
             {
                 // Create result item stack.
                 ItemStack input = armorItem.copy();
-                input.setDamage(100);
+                input.setDamageValue(100);
 
                 ItemStack result = armorItem.copy();
                 ModAttributes.CURRENT_REPAIRS.create(result, 1);
@@ -80,19 +80,19 @@ public final class AnvilRecipeMaker
             ModAttributes.GEAR_COLOR.create(weapon, VaultGear.randomBaseColor(new Random(0)));
             ModAttributes.DURABILITY.create(weapon, 100);
             ModAttributes.MAX_REPAIRS.create(weapon, 1);
-            weapon.setDamage(100);
+            weapon.setDamageValue(100);
 
             // Create result item stack.
             ItemStack result = weapon.copy();
             ModAttributes.CURRENT_REPAIRS.create(result, 1);
-            result.setDamage(0);
+            result.setDamageValue(0);
 
             // Create anvil recipe.
             recipeList.add(vanillaRecipeFactory.createAnvilRecipe(weapon, omegaPog, Lists.newArrayList(result)));
         }
 
         // Etching Recipes
-        List<ItemStack> randomEtchingList = AnvilRecipeMaker.generateRandomEtchingList();
+        List<ItemStack> randomEtchingList = JEIAnvilRecipeMaker.generateRandomEtchingList();
 
         for (List<ItemStack> armorItemList : vaultArmorList)
         {

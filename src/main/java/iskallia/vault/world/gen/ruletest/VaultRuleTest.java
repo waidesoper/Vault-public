@@ -12,22 +12,22 @@ import java.util.Random;
 
 public class VaultRuleTest extends RuleTest {
 
-	public static final VaultRuleTest INSTANCE = new VaultRuleTest();
-	public static final Codec<VaultRuleTest> CODEC = Codec.unit(() -> INSTANCE);
-	public static final IRuleTestType<VaultRuleTest> TYPE = register("vault_stone_match", CODEC);
+    public static final VaultRuleTest INSTANCE = new VaultRuleTest();
+    public static final Codec<VaultRuleTest> CODEC = Codec.unit(() -> INSTANCE);
+    public static final IRuleTestType<VaultRuleTest> TYPE = register("vault_stone_match", CODEC);
 
-	@Override
-	public boolean test(BlockState state, Random random) {
-		return state.isSolid() && state.getMaterial() == Material.ROCK;
-	}
+    @Override
+    public boolean test(BlockState state, Random random) {
+        return state.canOcclude() && state.getMaterial() == Material.STONE;
+    }
 
-	@Override
-	protected IRuleTestType<?> getType() {
-		return TYPE;
-	}
+    @Override
+    protected IRuleTestType<?> getType() {
+        return TYPE;
+    }
 
-	static <P extends RuleTest> IRuleTestType<P> register(String name, Codec<P> codec) {
-		return Registry.register(Registry.RULE_TEST, Vault.id(name), () -> codec);
-	}
+    static <P extends RuleTest> IRuleTestType<P> register(String name, Codec<P> codec) {
+        return Registry.register(Registry.RULE_TEST, Vault.id(name), () -> codec);
+    }
 
 }

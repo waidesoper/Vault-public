@@ -8,10 +8,14 @@ import net.minecraft.item.Item;
 
 public abstract class Research {
 
-    @Expose protected String name;
-    @Expose protected int cost;
-    @Expose protected boolean usesKnowledge;
-    @Expose protected String gatedBy;
+    @Expose
+    protected String name;
+    @Expose
+    protected int cost;
+    @Expose
+    protected boolean usesKnowledge;
+    @Expose
+    protected String gatedBy;
 
     public Research(String name, int cost) {
         this.name = name;

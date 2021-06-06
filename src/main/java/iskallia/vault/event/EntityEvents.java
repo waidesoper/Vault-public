@@ -35,6 +35,7 @@ import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootParameterSets;
 import net.minecraft.loot.LootParameters;
 import net.minecraft.network.play.server.STitlePacket;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.DoubleBlockHalf;
 import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -56,86 +57,86 @@ public class EntityEvents {
 
     @SubscribeEvent
     public static void onEntityTick(LivingEvent.LivingUpdateEvent event) {
-        if (event.getEntity().world.isRemote
-                || !(event.getEntity() instanceof MonsterEntity)
-                || event.getEntity() instanceof EternalEntity
-                || event.getEntity().world.getDimensionKey() != Vault.VAULT_KEY
-                || event.getEntity().getTags().contains("VaultScaled")) return;
+        if (event.getEntity().level.isClientSide
+            || ! (event.getEntity() instanceof MonsterEntity)
+            || event.getEntity() instanceof EternalEntity
+            || event.getEntity().level.dimension() != Vault.VAULT_KEY
+            || event.getEntity().getTags().contains("VaultScaled")) return;
 
         MonsterEntity entity = (MonsterEntity) event.getEntity();
-        VaultRaid raid = VaultRaidData.get((ServerWorld) entity.world).getAt(entity.getPosition());
+        VaultRaid raid = VaultRaidData.get((ServerWorld) entity.level).getAt(entity.blockPosition());
         if (raid == null) return;
 
         EntityScaler.scaleVault(entity, raid.level, new Random(), EntityScaler.Type.MOB);
         entity.getTags().add("VaultScaled");
-        entity.enablePersistence();
+        entity.setPersistenceRequired();
     }
 
     @SubscribeEvent
     public static void onEntityTick2(LivingEvent.LivingUpdateEvent event) {
-        if (event.getEntity().world.isRemote
-                || !(event.getEntity() instanceof FighterEntity)) return;
+        if (event.getEntity().level.isClientSide
+            || ! (event.getEntity() instanceof FighterEntity)) return;
 
-        ((FighterEntity) event.getEntity()).enablePersistence();
+        ((FighterEntity) event.getEntity()).setPersistenceRequired();
     }
 
     @SubscribeEvent
     public static void onEntityTick3(EntityEvent.EntityConstructing event) {
-        if (event.getEntity().world.isRemote
-                || !(event.getEntity() instanceof AreaEffectCloudEntity)
-                || event.getEntity().world.getDimensionKey() != Vault.VAULT_KEY) return;
+        if (event.getEntity().level.isClientSide
+            || ! (event.getEntity() instanceof AreaEffectCloudEntity)
+            || event.getEntity().level.dimension() != Vault.VAULT_KEY) return;
 
-        event.getEntity().getServer().enqueue(new TickDelayedTask(event.getEntity().getServer().getTickCounter() + 2, () -> {
-            if (!event.getEntity().getTags().contains("vault_door")) return;
+        event.getEntity().getServer().tell(new TickDelayedTask(event.getEntity().getServer().getTickCount() + 2, () -> {
+            if (! event.getEntity().getTags().contains("vault_door")) return;
 
-            for (int ox = -1; ox <= 1; ox++) {
-                for (int oz = -1; oz <= 1; oz++) {
-                    BlockPos pos = event.getEntity().getPosition().add(ox, 0, oz);
-                    BlockState state = event.getEntity().world.getBlockState(pos);
+            for (int ox = - 1; ox <= 1; ox++) {
+                for (int oz = - 1; oz <= 1; oz++) {
+                    BlockPos pos = event.getEntity().blockPosition().offset(ox, 0, oz);
+                    BlockState state = event.getEntity().level.getBlockState(pos);
 
                     if (state.getBlock() == Blocks.IRON_DOOR) {
-                        BlockState newState = VaultDoorBlock.VAULT_DOORS.get(event.getEntity().world.rand.nextInt(VaultDoorBlock.VAULT_DOORS.size())).getDefaultState()
-                                .with(DoorBlock.FACING, state.get(DoorBlock.FACING))
-                                .with(DoorBlock.OPEN, state.get(DoorBlock.OPEN))
-                                .with(DoorBlock.HINGE, state.get(DoorBlock.HINGE))
-                                .with(DoorBlock.POWERED, state.get(DoorBlock.POWERED))
-                                .with(DoorBlock.HALF, state.get(DoorBlock.HALF));
+                        BlockState newState = VaultDoorBlock.VAULT_DOORS.get(event.getEntity().level.random.nextInt(VaultDoorBlock.VAULT_DOORS.size())).defaultBlockState()
+                            .setValue(DoorBlock.FACING, state.getValue(DoorBlock.FACING))
+                            .setValue(DoorBlock.OPEN, state.getValue(DoorBlock.OPEN))
+                            .setValue(DoorBlock.HINGE, state.getValue(DoorBlock.HINGE))
+                            .setValue(DoorBlock.POWERED, state.getValue(DoorBlock.POWERED))
+                            .setValue(DoorBlock.HALF, state.getValue(DoorBlock.HALF));
 
-                        PortalPlacer placer = new PortalPlacer((pos1, random, facing) -> null, (pos1, random, facing) -> Blocks.BEDROCK.getDefaultState());
-                        placer.place(event.getEntity().world, pos, state.get(DoorBlock.FACING).rotateYCCW(), 1, 2);
-                        placer.place(event.getEntity().world, pos.offset(state.get(DoorBlock.FACING).getOpposite()), state.get(DoorBlock.FACING).rotateYCCW(), 1, 2);
-                        placer.place(event.getEntity().world, pos.offset(state.get(DoorBlock.FACING).getOpposite(), 2), state.get(DoorBlock.FACING).rotateYCCW(), 1, 2);
-                        placer.place(event.getEntity().world, pos.offset(state.get(DoorBlock.FACING)), state.get(DoorBlock.FACING).rotateYCCW(), 1, 2);
-                        placer.place(event.getEntity().world, pos.offset(state.get(DoorBlock.FACING), 2), state.get(DoorBlock.FACING).rotateYCCW(), 1, 2);
+                        PortalPlacer placer = new PortalPlacer((pos1, random, facing) -> null, (pos1, random, facing) -> Blocks.BEDROCK.defaultBlockState());
+                        placer.place(event.getEntity().level, pos, state.getValue(DoorBlock.FACING).getCounterClockWise(), 1, 2);
+                        placer.place(event.getEntity().level, pos.relative(state.getValue(DoorBlock.FACING).getOpposite()), state.getValue(DoorBlock.FACING).getCounterClockWise(), 1, 2);
+                        placer.place(event.getEntity().level, pos.relative(state.getValue(DoorBlock.FACING).getOpposite(), 2), state.getValue(DoorBlock.FACING).getCounterClockWise(), 1, 2);
+                        placer.place(event.getEntity().level, pos.relative(state.getValue(DoorBlock.FACING)), state.getValue(DoorBlock.FACING).getCounterClockWise(), 1, 2);
+                        placer.place(event.getEntity().level, pos.relative(state.getValue(DoorBlock.FACING), 2), state.getValue(DoorBlock.FACING).getCounterClockWise(), 1, 2);
 
-                        event.getEntity().world.setBlockState(pos.up(), Blocks.AIR.getDefaultState(), 27);
-                        event.getEntity().world.setBlockState(pos, newState, 11);
-                        event.getEntity().world.setBlockState(pos.up(), newState.with(DoorBlock.HALF, DoubleBlockHalf.UPPER), 11);
+                        event.getEntity().level.setBlock(pos.above(), Blocks.AIR.defaultBlockState(), 27);
+                        event.getEntity().level.setBlock(pos, newState, 11);
+                        event.getEntity().level.setBlock(pos.above(), newState.setValue(DoorBlock.HALF, DoubleBlockHalf.UPPER), 11);
 
-                        for (int x = -30; x <= 30; x++) {
-                            for (int z = -30; z <= 30; z++) {
-                                for (int y = -15; y <= 15; y++) {
-                                    BlockPos c = pos.add(x, y, z);
-                                    BlockState s = event.getEntity().world.getBlockState(c);
+                        for (int x = - 30; x <= 30; x++) {
+                            for (int z = - 30; z <= 30; z++) {
+                                for (int y = - 15; y <= 15; y++) {
+                                    BlockPos c = pos.offset(x, y, z);
+                                    BlockState s = event.getEntity().level.getBlockState(c);
 
                                     if (s.getBlock() == Blocks.PINK_WOOL) {
-                                        event.getEntity().world.setBlockState(c, Blocks.CHEST.getDefaultState()
-                                                .with(ChestBlock.FACING, Direction.byHorizontalIndex(event.getEntity().world.rand.nextInt(4))), 2);
-                                        TileEntity te = event.getEntity().world.getTileEntity(c);
+                                        event.getEntity().level.setBlock(c, Blocks.CHEST.defaultBlockState()
+                                            .setValue(ChestBlock.FACING, Direction.from2DDataValue(event.getEntity().level.random.nextInt(4))), 2);
+                                        TileEntity te = event.getEntity().level.getBlockEntity(c);
 
                                         if (te instanceof ChestTileEntity) {
                                             ((ChestTileEntity) te).setLootTable(Vault.id("chest/treasure"), 0L);
                                         }
                                     } else if (s.getBlock() == Blocks.PURPLE_WOOL) {
-                                        event.getEntity().world.setBlockState(c, Blocks.CHEST.getDefaultState()
-                                                .with(ChestBlock.FACING, Direction.byHorizontalIndex(event.getEntity().world.rand.nextInt(4))), 2);
-                                        TileEntity te = event.getEntity().world.getTileEntity(c);
+                                        event.getEntity().level.setBlock(c, Blocks.CHEST.defaultBlockState()
+                                            .setValue(ChestBlock.FACING, Direction.from2DDataValue(event.getEntity().level.random.nextInt(4))), 2);
+                                        TileEntity te = event.getEntity().level.getBlockEntity(c);
 
                                         if (te instanceof ChestTileEntity) {
                                             ((ChestTileEntity) te).setLootTable(Vault.id("chest/treasure_extra"), 0L);
                                         }
                                     } else if (s.getBlock() == Blocks.BEDROCK) {
-                                        event.getEntity().world.setBlockState(c, ModBlocks.VAULT_BEDROCK.getDefaultState());
+                                        event.getEntity().level.setBlockAndUpdate(c, ModBlocks.VAULT_BEDROCK.defaultBlockState());
                                     }
                                 }
                             }
@@ -150,280 +151,300 @@ public class EntityEvents {
 
     @SubscribeEvent
     public static void onEntityTick5(LivingEvent.LivingUpdateEvent event) {
-        if (event.getEntity().world.isRemote
-                || event.getEntity().world.getDimensionKey() != Vault.VAULT_KEY
-                || !(event.getEntity() instanceof ArmorStandEntity)
+        if (event.getEntity().level.isClientSide
+            || event.getEntity().level.dimension() != Vault.VAULT_KEY
+            || ! (event.getEntity() instanceof ArmorStandEntity)
             //|| !event.getEntity().getTags().contains("vault_obelisk")
         ) return;
 
-        event.getEntityLiving().world.setBlockState(event.getEntityLiving().getPosition(), ModBlocks.OBELISK.getDefaultState());
-        
-		// #Crimson_Fluff, obelisk is 2 blocks now
-        event.getEntityLiving().world.setBlockState(event.getEntityLiving().getPosition().above(),
+        event.getEntityLiving().level.setBlockAndUpdate(event.getEntityLiving().blockPosition(), ModBlocks.OBELISK.defaultBlockState());
+
+        // #Crimson_Fluff, obelisk is 2 blocks now
+        event.getEntityLiving().level.setBlockAndUpdate(event.getEntityLiving().blockPosition().above(),
             ModBlocks.OBELISK.defaultBlockState().setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER));
 
-		event.getEntityLiving().remove();
+        event.getEntityLiving().remove();
     }
 
-
-    // #Crimson_Fluff, if a VaultBoss dies then....
+    // #Crimson_Fluff, this is vault boss killed !
     @SubscribeEvent
     public static void onEntityDeath(LivingDeathEvent event) {
-        if (event.getEntity().world.isRemote
-                || event.getEntity().world.getDimensionKey() != Vault.VAULT_KEY
-                || !event.getEntity().getTags().contains("VaultBoss")) return;
+        if (event.getEntity().level.isClientSide
+            || event.getEntity().level.dimension() != Vault.VAULT_KEY) return;
 
-        ServerWorld world = (ServerWorld) event.getEntityLiving().world;
-        VaultRaid raid = VaultRaidData.get(world).getAt(event.getEntity().getPosition());
+        // #Crimson_Fluff, AddStat
+        if (event.getEntity() instanceof VaultGuardianEntity) {
+            PlayerEntity player = (PlayerEntity) event.getSource().getEntity();
 
-		if(raid != null) {
-			raid.bosses.remove(event.getEntity().getUniqueID());
-			if(raid.isFinalVault)return;
+            if (player != null) player.awardStat(Vault.STAT_VAULTS_GUARDIANKILL, 1);
 
-			raid.runForPlayers(world.getServer(), player -> {
-				for(EquipmentSlotType slot: EquipmentSlotType.values()) {
-					ItemStack stack = player.getItemStackFromSlot(slot);
-					float chance = ModAttributes.GEAR_LEVEL_CHANCE.getOrDefault(stack, 1.0F).getValue(stack);
+            return;
+        }
 
-					if(world.getRandom().nextFloat() < chance) {
-						VaultGear.addLevel(stack, 1.0F);
-					}
-				}
+        // #Crimson_Fluff, AddStat
+        // Fighters can be bosses or just regular textured mobs
+        if (! event.getEntity().getTags().contains("VaultBoss")) {
+            if (event.getEntity() instanceof FighterEntity) {
+                PlayerEntity player = (PlayerEntity) event.getSource().getEntity();
 
-				LootContext.Builder builder = (new LootContext.Builder(world)).withRandom(world.rand)
-						.withParameter(LootParameters.THIS_ENTITY, player)
-						.withParameter(LootParameters.field_237457_g_, event.getEntity().getPositionVec())
-						.withParameter(LootParameters.DAMAGE_SOURCE, event.getSource())
-						.withNullableParameter(LootParameters.KILLER_ENTITY, event.getSource().getTrueSource())
-						.withNullableParameter(LootParameters.DIRECT_KILLER_ENTITY, event.getSource().getImmediateSource())
-						.withParameter(LootParameters.LAST_DAMAGE_PLAYER, player).withLuck(player.getLuck());
+                if (player != null) player.awardStat(Vault.STAT_VAULTS_FIGHTERKILL, 1);
+            }
 
-				LootContext ctx = builder.build(LootParameterSets.ENTITY);
+            return;
+        }
 
-				NonNullList<ItemStack> stacks = NonNullList.create();
-				stacks.addAll(world.getServer().getLootTableManager().getLootTableFromLocation(Vault.id("chest/boss")).generate(ctx));
+        ServerWorld world = (ServerWorld) event.getEntityLiving().level;
+        VaultRaid raid = VaultRaidData.get(world).getAt(event.getEntity().blockPosition());
 
-				if(raid.playerBossName != null && !raid.playerBossName.isEmpty()) {
-					stacks.add(LootStatueBlockItem.forVaultBoss(event.getEntity().getCustomName().getString(), StatueType.VAULT_BOSS.ordinal(), false));
+        if (raid != null) {
+            raid.bosses.remove(event.getEntity().getUUID());
 
-					if(world.rand.nextInt(4) != 0) {
-						stacks.add(ItemTraderCore.generate(event.getEntity().getCustomName().getString(), 100, true, ItemTraderCore.CoreType.RAFFLE));
-					}
-				}
+            // #Crimson_Fluff, AddStat
+            // TODO: addstat for # of final vault boss kills
+            // is it even possible to summon more than 1 final vault ?
+            if (raid.isFinalVault) {
+                raid.runForPlayers(world.getServer(), player -> {
+                    player.awardStat(Vault.STAT_VAULTS_FINALVAULTS, 1);
+                });
 
-				int count = EternalsData.get(world).getTotalEternals();
+                return;
+            }
 
-				if(count != 0) {
-					stacks.add(new ItemStack(ModItems.ETERNAL_SOUL, world.rand.nextInt(count) + 1));
-				}
+            raid.runForPlayers(world.getServer(), player -> {
+                player.awardStat(Vault.STAT_VAULTS_BOSSKILL, 1);        // #Crimson_Fluff
 
-				ItemStack crate = VaultCrateBlock.getCrateWithLoot(ModBlocks.VAULT_CRATE, stacks);
+                for (EquipmentSlotType slot : EquipmentSlotType.values()) {
+                    ItemStack stack = player.getItemBySlot(slot);
+                    float chance = ModAttributes.GEAR_LEVEL_CHANCE.getOrDefault(stack, 1.0F).getValue(stack);
 
-				event.getEntity().entityDropItem(crate);
+                    if (world.getRandom().nextFloat() < chance) {
+                        VaultGear.addLevel(stack, 1.0F);
+                    }
+                }
 
-				FireworkRocketEntity fireworks = new FireworkRocketEntity(world, event.getEntity().getPosX(),
-						event.getEntity().getPosY(), event.getEntity().getPosZ(), new ItemStack(Items.FIREWORK_ROCKET));
-				world.addEntity(fireworks);
-				//world.getServer().getLootTableManager().getLootTableFromLocation(Vault.id("chest/boss")).generate(ctx).forEach(stack -> {
-				//	if(!player.addItemStackToInventory(stack)) {
-				//		//TODO: drop the item at spawn
-				//	}
-				//});
+                LootContext.Builder builder = (new LootContext.Builder(world)).withRandom(world.random)
+                    .withParameter(LootParameters.THIS_ENTITY, player)
+                    .withParameter(LootParameters.ORIGIN, event.getEntity().position())
+                    .withParameter(LootParameters.DAMAGE_SOURCE, event.getSource())
+                    .withOptionalParameter(LootParameters.KILLER_ENTITY, event.getSource().getEntity())
+                    .withOptionalParameter(LootParameters.DIRECT_KILLER_ENTITY, event.getSource().getDirectEntity())
+                    .withParameter(LootParameters.LAST_DAMAGE_PLAYER, player).withLuck(player.getLuck());
 
-				raid.won = true;
-				raid.ticksLeft = 20 * 20;
-				world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, 1.0F, 1.0F);
+                LootContext ctx = builder.create(LootParameterSets.ENTITY);
 
-                TranslationTextComponent title = new TranslationTextComponent("tip.the_vault.win_cleared");
-				title.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ddd01e)));
+                NonNullList<ItemStack> stacks = NonNullList.create();
+                stacks.addAll(world.getServer().getLootTables().get(Vault.id("chest/boss")).getRandomItems(ctx));
 
-				Entity entity = event.getEntity();
+                if (raid.playerBossName != null && ! raid.playerBossName.isEmpty()) {
+                    stacks.add(LootStatueBlockItem.forVaultBoss(event.getEntity().getCustomName().getString(), StatueType.VAULT_BOSS.ordinal(), false));
 
-				IFormattableTextComponent entityName = entity instanceof FighterEntity
-						? entity.getName().deepCopy() : entity.getType().getName().deepCopy();
-				entityName.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_dd711e)));
-				IFormattableTextComponent subtitle = new TranslationTextComponent("tip.the_vault.win_defeated");
-				subtitle.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ddd01e)));
+                    if (world.random.nextInt(4) != 0) {
+                        stacks.add(ItemTraderCore.generate(event.getEntity().getCustomName().getString(), 100, true, ItemTraderCore.CoreType.RAFFLE));
+                    }
+                }
 
-                TranslationTextComponent actionBar = new TranslationTextComponent("tip.the_vault.win_teleport");
-				actionBar.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ddd01e)));
+                int count = EternalsData.get(world).getTotalEternals();
 
-				STitlePacket titlePacket = new STitlePacket(STitlePacket.Type.TITLE, title);
-				STitlePacket subtitlePacket = new STitlePacket(STitlePacket.Type.SUBTITLE, entityName.deepCopy().append(subtitle));
+                if (count != 0) {
+                    stacks.add(new ItemStack(ModItems.ETERNAL_SOUL, world.random.nextInt(count) + 1));
+                }
 
-				player.connection.sendPacket(titlePacket);
-				player.connection.sendPacket(subtitlePacket);
-				player.sendStatusMessage(actionBar, true);
+                ItemStack crate = VaultCrateBlock.getCrateWithLoot(ModBlocks.VAULT_CRATE, stacks);
 
-				IFormattableTextComponent playerName = player.getDisplayName().deepCopy();
-				playerName.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_983198)));
+                event.getEntity().spawnAtLocation(crate);
 
-                TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.win_clear");
-				text.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ffffff)));
+                FireworkRocketEntity fireworks = new FireworkRocketEntity(world, event.getEntity().getX(),
+                    event.getEntity().getY(), event.getEntity().getZ(), new ItemStack(Items.FIREWORK_ROCKET));
+                world.addFreshEntity(fireworks);
+                //world.getServer().getLootTableManager().getLootTableFromLocation(Vault.id("chest/boss")).generate(ctx).forEach(stack -> {
+                //	if(!player.addItemStackToInventory(stack)) {
+                //		//TODO: drop the item at spawn
+                //	}
+                //});
 
-				StringTextComponent punctuation = new StringTextComponent(" !");
-				punctuation.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_ffffff)));
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, 1.0F, 1.0F);
 
-				world.getServer().getPlayerList().func_232641_a_(
-						playerName.append(text).append(entityName).append(punctuation),
-						ChatType.CHAT,
-						player.getUniqueID()
-				);
+                StringTextComponent title = new StringTextComponent("Vault Cleared!");
+                title.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ddd01e)));
 
-			    // #Crimson_Fluff, AddStat
-                player.addStat(Vault.STAT_VAULTS_BOSSKILL, 1);
-			});
-		}
-	}
+                Entity entity = event.getEntity();
 
-	// #Crimson_Fluff, Don't drop anything from regular mobs if inside the vault
+                IFormattableTextComponent entityName = entity instanceof FighterEntity
+                    ? entity.getName().copy() : entity.getType().getDescription().copy();
+                entityName.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_dd711e)));
+                IFormattableTextComponent subtitle = new TranslationTextComponent(" is defeated.");
+                subtitle.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ddd01e)));
+
+                StringTextComponent actionBar = new StringTextComponent("You'll be teleported back soon...");
+                actionBar.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ddd01e)));
+
+                STitlePacket titlePacket = new STitlePacket(STitlePacket.Type.TITLE, title);
+                STitlePacket subtitlePacket = new STitlePacket(STitlePacket.Type.SUBTITLE, entityName.copy().append(subtitle));
+
+                player.connection.send(titlePacket);
+                player.connection.send(subtitlePacket);
+                player.displayClientMessage(actionBar, true);
+
+                IFormattableTextComponent playerName = player.getDisplayName().copy();
+                playerName.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_983198)));
+
+                StringTextComponent text = new StringTextComponent(" cleared a Vault by defeating ");
+                text.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ffffff)));
+
+                StringTextComponent punctuation = new StringTextComponent("!");
+                punctuation.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ffffff)));
+
+                world.getServer().getPlayerList().broadcastMessage(
+                    playerName.append(text).append(entityName).append(punctuation),
+                    ChatType.CHAT,
+                    player.getUUID()
+                );
+            });
+        }
+    }
+
     @SubscribeEvent
     public static void onEntityDrops(LivingDropsEvent event) {
-        if (event.getEntity().world.isRemote) return;
-        if (event.getEntity().world.getDimensionKey() != Vault.VAULT_KEY) return;
+        if (event.getEntity().level.isClientSide) return;
+        if (event.getEntity().level.dimension() != Vault.VAULT_KEY) return;
         if (event.getEntity() instanceof VaultGuardianEntity) return;
         if (event.getEntity() instanceof VaultFighterEntity) return;
         event.setCanceled(true);
     }
 
-    // TODO:
-    // #Crimson_Fluff, Does vault allow natural mob spawns? if so then remove them from biome for efficiency
     @SubscribeEvent
     public static void onEntitySpawn(LivingSpawnEvent.CheckSpawn event) {
-        if (event.getEntity().getEntityWorld().getDimensionKey() == Vault.VAULT_KEY && !event.isSpawner()) {
+        if (event.getEntity().getCommandSenderWorld().dimension() == Vault.VAULT_KEY && ! event.isSpawner()) {
             event.setCanceled(true);
         }
     }
 
-	@SubscribeEvent
-	public static void onPlayerDeathInVaults(LivingDeathEvent event) {
-		LivingEntity entityLiving = event.getEntityLiving();
+    @SubscribeEvent
+    public static void onPlayerDeathInVaults(LivingDeathEvent event) {
+        LivingEntity entityLiving = event.getEntityLiving();
 
-		if(entityLiving.world.isRemote)return;
-		if(!(entityLiving instanceof ServerPlayerEntity))return;
-		if(entityLiving.world.getDimensionKey() != Vault.VAULT_KEY)return;
+        if (entityLiving.level.isClientSide) return;
+        if (! (entityLiving instanceof ServerPlayerEntity)) return;
+        if (entityLiving.level.dimension() != Vault.VAULT_KEY) return;
 
-		ServerPlayerEntity player = (ServerPlayerEntity)entityLiving;
-        Vector3d position = player.getPositionVec();
-		player.getServerWorld().playSound(null, position.x, position.y, position.z,
-                ModSounds.TIMER_KILL_SFX, SoundCategory.MASTER, 0.75F, 1F);
+        ServerPlayerEntity player = (ServerPlayerEntity) entityLiving;
+        Vector3d position = player.position();
+        player.getLevel().playSound(null, position.x, position.y, position.z,
+            ModSounds.TIMER_KILL_SFX, SoundCategory.MASTER, 0.75F, 1F);
 
-		VaultRaid raid = VaultRaidData.get((ServerWorld)event.getEntity().world).getAt(player.getPosition());
-		if(raid == null)return;
-		raid.finished = true;
+        VaultRaid raid = VaultRaidData.get((ServerWorld) event.getEntity().level).getAt(player.blockPosition());
+        if (raid == null) return;
+        raid.finished = true;
 
         // #Crimson_Fluff, AddStat
         // because Out-Of-Time causes death, so distinguish between that and being killed
-        if (event.getSource() != Vault.VAULT_FAILED) player.addStat(Vault.STAT_VAULTS_KILLED, 1);
-	}
+        if (event.getSource() != Vault.VAULT_FAILED) player.awardStat(Vault.STAT_VAULTS_DIED_IN, 1);
+    }
 
-	@SubscribeEvent
-	public static void onPlayerHurt(LivingDamageEvent event) {
-		if(!(event.getEntity() instanceof PlayerEntity) || event.getEntity().world.isRemote) return;
-		ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
+    @SubscribeEvent
+    public static void onPlayerHurt(LivingDamageEvent event) {
+        if (! (event.getEntity() instanceof PlayerEntity) || event.getEntity().level.isClientSide) return;
+        ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
 
-		VaultRaid raid = VaultRaidData.get((ServerWorld) event.getEntity().world).getAt(player.getPosition());
-		if(raid == null) return;
+        VaultRaid raid = VaultRaidData.get((ServerWorld) event.getEntity().level).getAt(player.blockPosition());
+        if (raid == null) return;
 
-		// #Crimson_Fluff, or just set player to invulnerable ?
-		if(raid.won) {
-			event.setCanceled(true);
-		}
+        if (raid.won) {
+            event.setCanceled(true);
+        }
 
-		if(raid.isFinalVault) {
-			if(player.getHealth() - event.getAmount() <= 0) {
-				player.getServerWorld().playSound(null, player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ(),
-						ModSounds.TIMER_KILL_SFX, SoundCategory.MASTER, 0.75F, 1F);
-				event.setCanceled(true);
+        if (raid.isFinalVault) {
+            if (player.getHealth() - event.getAmount() <= 0) {
+                player.getLevel().playSound(null, player.blockPosition().getX(), player.blockPosition().getY(), player.blockPosition().getZ(),
+                    ModSounds.TIMER_KILL_SFX, SoundCategory.MASTER, 0.75F, 1F);
+                event.setCanceled(true);
 
-				IFormattableTextComponent text = new StringTextComponent("");
-				text.append(new StringTextComponent(player.getName().getString()).mergeStyle(TextFormatting.GREEN));
-				text.append(new StringTextComponent(" has fallen, F."));
-				player.getServer().getPlayerList().func_232641_a_(text, ChatType.CHAT, player.getUniqueID());
+                IFormattableTextComponent text = new StringTextComponent("");
+                text.append(new TranslationTextComponent("tip.the_vault.fallen", player.getName().copy().withStyle(TextFormatting.GREEN)));
+//                text.append(new StringTextComponent(" has fallen, F."));
+                player.getServer().getPlayerList().broadcastMessage(text, ChatType.CHAT, player.getUUID());
 
-				raid.addSpectator(player);
 
-                // #Crimson_Fluff, AddStat
-                player.addStat(Vault.STAT_VAULTS_KILLED, 1);
-			}
-		}
-	}
+                raid.addSpectator(player);
+            }
+        }
+    }
 
-	@SubscribeEvent
-	public static void onVaultGuardianDamage(LivingDamageEvent event) {
-		LivingEntity entityLiving = event.getEntityLiving();
+    @SubscribeEvent
+    public static void onVaultGuardianDamage(LivingDamageEvent event) {
+        LivingEntity entityLiving = event.getEntityLiving();
 
-		if(entityLiving.world.isRemote)return;
+        if (entityLiving.level.isClientSide) return;
 
-		if(entityLiving instanceof VaultGuardianEntity) {
-			Entity trueSource = event.getSource().getTrueSource();
-			if (trueSource instanceof LivingEntity) {
-				LivingEntity attacker = (LivingEntity) trueSource;
-				attacker.attackEntityFrom(DamageSource.causeThornsDamage(entityLiving), 20);
-			}
-		}
-	}
+        if (entityLiving instanceof VaultGuardianEntity) {
+            Entity trueSource = event.getSource().getEntity();
+            if (trueSource instanceof LivingEntity) {
+                LivingEntity attacker = (LivingEntity) trueSource;
+                attacker.hurt(DamageSource.thorns(entityLiving), 20);
+            }
+        }
+    }
 
-	@SubscribeEvent
-	public static void onLivingHurtCrit(LivingHurtEvent event) {
-		if(!(event.getSource().getTrueSource() instanceof LivingEntity))return;
-		LivingEntity source = (LivingEntity)event.getSource().getTrueSource();
-		if(source.world.isRemote)return;
+    @SubscribeEvent
+    public static void onLivingHurtCrit(LivingHurtEvent event) {
+        if (! (event.getSource().getEntity() instanceof LivingEntity)) return;
+        LivingEntity source = (LivingEntity) event.getSource().getEntity();
+        if (source.level.isClientSide) return;
 
-		if(source.getAttributeManager().hasAttributeInstance(ModAttributes.CRIT_CHANCE)) {
-			double chance = source.getAttributeValue(ModAttributes.CRIT_CHANCE);
+        if (source.getAttributes().hasAttribute(ModAttributes.CRIT_CHANCE)) {
+            double chance = source.getAttributeValue(ModAttributes.CRIT_CHANCE);
 
-			if(source.getAttributeManager().hasAttributeInstance(ModAttributes.CRIT_MULTIPLIER)) {
-				double multiplier = source.getAttributeValue(ModAttributes.CRIT_MULTIPLIER);
+            if (source.getAttributes().hasAttribute(ModAttributes.CRIT_MULTIPLIER)) {
+                double multiplier = source.getAttributeValue(ModAttributes.CRIT_MULTIPLIER);
 
-				if(source.world.rand.nextDouble() < chance) {
-					source.world.playSound(null, source.getPosX(), source.getPosY(), source.getPosZ(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, source.getSoundCategory(), 1.0F, 1.0F);
-					event.setAmount((float)(event.getAmount() * multiplier));
-				}
-			}
-		}
-	}
+                if (source.level.random.nextDouble() < chance) {
+                    source.level.playSound(null, source.getX(), source.getY(), source.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, source.getSoundSource(), 1.0F, 1.0F);
+                    event.setAmount((float) (event.getAmount() * multiplier));
+                }
+            }
+        }
+    }
 
     @SubscribeEvent
     public static void onLivingHurtTp(LivingHurtEvent event) {
-        if (event.getEntityLiving().world.isRemote) return;
+        if (event.getEntityLiving().level.isClientSide) return;
 
-        boolean direct = event.getSource().getImmediateSource() == event.getSource().getTrueSource();
+        boolean direct = event.getSource().getDirectEntity() == event.getSource().getEntity();
 
-        if (direct && event.getEntityLiving().getAttributeManager().hasAttributeInstance(ModAttributes.TP_CHANCE)) {
+        if (direct && event.getEntityLiving().getAttributes().hasAttribute(ModAttributes.TP_CHANCE)) {
             double chance = event.getEntityLiving().getAttributeValue(ModAttributes.TP_CHANCE);
 
-            if (event.getEntityLiving().getAttributeManager().hasAttributeInstance(ModAttributes.TP_RANGE)) {
+            if (event.getEntityLiving().getAttributes().hasAttribute(ModAttributes.TP_RANGE)) {
                 double range = event.getEntityLiving().getAttributeValue(ModAttributes.TP_RANGE);
 
-                if (event.getEntityLiving().world.rand.nextDouble() < chance) {
-                    for (int i = 0; i < 64; ++i) {
+                if (event.getEntityLiving().level.random.nextDouble() < chance) {
+                    for (int i = 0; i < 64; ++ i) {
                         if (teleportRandomly(event.getEntityLiving(), range)) {
-                            event.getEntityLiving().world.playSound(null,
-                                    event.getEntityLiving().prevPosX,
-                                    event.getEntityLiving().prevPosY,
-                                    event.getEntityLiving().prevPosZ,
-                                    ModSounds.BOSS_TP_SFX, event.getEntityLiving().getSoundCategory(), 1.0F, 1.0F);
+                            event.getEntityLiving().level.playSound(null,
+                                event.getEntityLiving().xo,
+                                event.getEntityLiving().yo,
+                                event.getEntityLiving().zo,
+                                ModSounds.BOSS_TP_SFX, event.getEntityLiving().getSoundSource(), 1.0F, 1.0F);
                             event.setCanceled(true);
                             return;
                         }
                     }
                 }
             }
-        } else if (!direct && event.getEntityLiving().getAttributeManager().hasAttributeInstance(ModAttributes.TP_INDIRECT_CHANCE)) {
+        } else if (! direct && event.getEntityLiving().getAttributes().hasAttribute(ModAttributes.TP_INDIRECT_CHANCE)) {
             double chance = event.getEntityLiving().getAttributeValue(ModAttributes.TP_INDIRECT_CHANCE);
 
-            if (event.getEntityLiving().getAttributeManager().hasAttributeInstance(ModAttributes.TP_RANGE)) {
+            if (event.getEntityLiving().getAttributes().hasAttribute(ModAttributes.TP_RANGE)) {
                 double range = event.getEntityLiving().getAttributeValue(ModAttributes.TP_RANGE);
 
-                if (event.getEntityLiving().world.rand.nextDouble() < chance) {
-                    for (int i = 0; i < 64; ++i) {
+                if (event.getEntityLiving().level.random.nextDouble() < chance) {
+                    for (int i = 0; i < 64; ++ i) {
                         if (teleportRandomly(event.getEntityLiving(), range)) {
-                            event.getEntityLiving().world.playSound(null,
-                                    event.getEntityLiving().prevPosX,
-                                    event.getEntityLiving().prevPosY,
-                                    event.getEntityLiving().prevPosZ,
-                                    ModSounds.BOSS_TP_SFX, event.getEntityLiving().getSoundCategory(), 1.0F, 1.0F);
+                            event.getEntityLiving().level.playSound(null,
+                                event.getEntityLiving().xo,
+                                event.getEntityLiving().yo,
+                                event.getEntityLiving().zo,
+                                ModSounds.BOSS_TP_SFX, event.getEntityLiving().getSoundSource(), 1.0F, 1.0F);
                             event.setCanceled(true);
                             return;
                         }
@@ -434,11 +455,11 @@ public class EntityEvents {
     }
 
     private static boolean teleportRandomly(LivingEntity entity, double range) {
-        if (!entity.world.isRemote() && entity.isAlive()) {
-            double d0 = entity.getPosX() + (entity.world.rand.nextDouble() - 0.5D) * (range * 2.0D);
-            double d1 = entity.getPosY() + (entity.world.rand.nextInt((int) (range * 2.0D)) - range);
-            double d2 = entity.getPosZ() + (entity.world.rand.nextDouble() - 0.5D) * (range * 2.0D);
-            return entity.attemptTeleport(d0, d1, d2, true);
+        if (! entity.level.isClientSide() && entity.isAlive()) {
+            double d0 = entity.getX() + (entity.level.random.nextDouble() - 0.5D) * (range * 2.0D);
+            double d1 = entity.getY() + (entity.level.random.nextInt((int) (range * 2.0D)) - range);
+            double d2 = entity.getZ() + (entity.level.random.nextDouble() - 0.5D) * (range * 2.0D);
+            return entity.randomTeleport(d0, d1, d2, true);
         }
 
         return false;

@@ -23,7 +23,7 @@ public class SetNode<T extends PlayerSet> implements INBTSerializable<CompoundNB
     }
 
     public T getSet() {
-        if (!isActive())return null;
+        if (! isActive()) return null;
         return this.getGroup().getSet(this.getLevel());
     }
 
@@ -59,7 +59,7 @@ public class SetNode<T extends PlayerSet> implements INBTSerializable<CompoundNB
         SetNode<?> that = (SetNode<?>) other;
 
         return this.level == that.level &&
-                this.group.getParentName().equals(that.group.getParentName());
+            this.group.getParentName().equals(that.group.getParentName());
     }
 
     /* ----------------------------------------- */

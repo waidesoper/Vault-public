@@ -31,201 +31,201 @@ import java.util.regex.Pattern;
 
 public class FighterEntity extends ZombieEntity {
 
-	public static final ThrowProjectilesGoal.Projectile SNOWBALLS = (world1, shooter) -> {
-		return new SnowballEntity(world1, shooter) {
-			@Override
-			protected void onEntityHit(EntityRayTraceResult raycast) {
-				Entity entity = raycast.getEntity();
-				if(entity == shooter)return;
-				int i = entity instanceof BlazeEntity ? 3 : 1;
-				entity.attackEntityFrom(DamageSource.causeIndirectDamage(this, shooter), (float)i);
-			}
-		};
-	};
+    public static final ThrowProjectilesGoal.Projectile SNOWBALLS = (world1, shooter) -> {
+        return new SnowballEntity(world1, shooter) {
+            @Override
+            protected void onHitEntity(EntityRayTraceResult raycast) {
+                Entity entity = raycast.getEntity();
+                if (entity == shooter) return;
+                int i = entity instanceof BlazeEntity ? 3 : 1;
+                entity.hurt(DamageSource.indirectMobAttack(this, shooter), (float) i);
+            }
+        };
+    };
 
-	public SkinProfile skin;
-	public String lastName = "Fighter";
-	public float sizeMultiplier = 1.0F;
+    public SkinProfile skin;
+    public String lastName = "Fighter";
+    public float sizeMultiplier = 1.0F;
 
-	public ServerBossInfo bossInfo;
+    public ServerBossInfo bossInfo;
 
-	public FighterEntity(EntityType<? extends ZombieEntity> type, World world) {
-		super(type, world);
+    public FighterEntity(EntityType<? extends ZombieEntity> type, World world) {
+        super(type, world);
 
-		if(!this.world.isRemote) {
-			this.changeSize(this.sizeMultiplier);
-			this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.rand.nextFloat() * 0.15D + 0.20D);
-		} else {
-			this.skin = new SkinProfile();
-		}
+        if (! this.level.isClientSide) {
+            this.changeSize(this.sizeMultiplier);
+            this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.random.nextFloat() * 0.15D + 0.20D);
+        } else {
+            this.skin = new SkinProfile();
+        }
 
-		this.bossInfo = new ServerBossInfo(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.PROGRESS);
-		this.bossInfo.setDarkenSky(true);
-		this.bossInfo.setVisible(false);
+        this.bossInfo = new ServerBossInfo(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.PROGRESS);
+        this.bossInfo.setDarkenScreen(true);
+        this.bossInfo.setVisible(false);
 
-		this.setCustomName(new StringTextComponent(this.lastName));
-	}
+        this.setCustomName(new StringTextComponent(this.lastName));
+    }
 
-	public ResourceLocation getLocationSkin() {
-		return this.skin.getLocationSkin();
-	}
+    public ResourceLocation getLocationSkin() {
+        return this.skin.getLocationSkin();
+    }
 
-	@Override
-	public boolean isChild() {
-		return false;
-	}
+    @Override
+    public boolean isBaby() {
+        return false;
+    }
 
-	@Override
-	protected boolean shouldBurnInDay() {
-		return false;
-	}
+    @Override
+    protected boolean isSunSensitive() {
+        return false;
+    }
 
-	@Override
-	public void tick() {
-		super.tick();
-		if(this.dead)return;
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.dead) return;
 
-		if(this.world.isRemote) {
-			String name = this.getCustomName().getString();
+        if (this.level.isClientSide) {
+            String name = this.getCustomName().getString();
 
-			if(name.startsWith("[")) {
-				String[] data = name.split(Pattern.quote("]"));
-				name = data[1].trim();
-			}
+            if (name.startsWith("[")) {
+                String[] data = name.split(Pattern.quote("]"));
+                name = data[1].trim();
+            }
 
-			if (!this.lastName.equals(name)) {
-				this.skin.updateSkin(name);
-				this.lastName = name;
-			}
-		} else {
-			double amplitude = this.getMotion().squareDistanceTo(0.0D, this.getMotion().getY(), 0.0D);
+            if (! this.lastName.equals(name)) {
+                this.skin.updateSkin(name);
+                this.lastName = name;
+            }
+        } else {
+            double amplitude = this.getDeltaMovement().distanceToSqr(0.0D, this.getDeltaMovement().y(), 0.0D);
 
-			if(amplitude > 0.004D) {
-				this.setSprinting(true);
-				//this.getJumpController().setJumping();
-			} else {
-				this.setSprinting(false);
-			}
+            if (amplitude > 0.004D) {
+                this.setSprinting(true);
+                //this.getJumpController().setJumping();
+            } else {
+                this.setSprinting(false);
+            }
 
-			this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
-		}
-	}
+            this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
+        }
+    }
 
-	@Override
-	protected SoundEvent getAmbientSound() {
-		return null;
-	}
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return null;
+    }
 
-	@Override
-	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_PLAYER_DEATH;
-	}
+    @Override
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.PLAYER_DEATH;
+    }
 
-	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-		return SoundEvents.ENTITY_PLAYER_HURT;
-	}
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
+        return SoundEvents.PLAYER_HURT;
+    }
 
-	@Override
-	public void setCustomName(ITextComponent name) {
-		super.setCustomName(name);
-		this.bossInfo.setName(this.getDisplayName());
-	}
+    @Override
+    public void setCustomName(ITextComponent name) {
+        super.setCustomName(name);
+        this.bossInfo.setName(this.getDisplayName());
+    }
 
-	@Override
-	public void writeAdditional(CompoundNBT compound) {
-		super.writeAdditional(compound);
-		compound.putFloat("SizeMultiplier", this.sizeMultiplier);
-	}
+    @Override
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putFloat("SizeMultiplier", this.sizeMultiplier);
+    }
 
-	@Override
-	public void readAdditional(CompoundNBT compound) {
-		super.readAdditional(compound);
+    @Override
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
 
-		if(compound.contains("SizeMultiplier", Constants.NBT.TAG_FLOAT)) {
-			this.changeSize(compound.getFloat("SizeMultiplier"));
-		}
+        if (compound.contains("SizeMultiplier", Constants.NBT.TAG_FLOAT)) {
+            this.changeSize(compound.getFloat("SizeMultiplier"));
+        }
 
-		this.bossInfo.setName(this.getDisplayName());
-	}
+        this.bossInfo.setName(this.getDisplayName());
+    }
 
-	@Override
-	public void addTrackingPlayer(ServerPlayerEntity player) {
-		super.addTrackingPlayer(player);
-		this.bossInfo.addPlayer(player);
-	}
+    @Override
+    public void startSeenByPlayer(ServerPlayerEntity player) {
+        super.startSeenByPlayer(player);
+        this.bossInfo.addPlayer(player);
+    }
 
-	@Override
-	public void removeTrackingPlayer(ServerPlayerEntity player) {
-		super.removeTrackingPlayer(player);
-		this.bossInfo.removePlayer(player);
-	}
+    @Override
+    public void stopSeenByPlayer(ServerPlayerEntity player) {
+        super.stopSeenByPlayer(player);
+        this.bossInfo.removePlayer(player);
+    }
 
-	@Override
-	public EntitySize getSize(Pose pose) {
-		Field sizeField = Entity.class.getDeclaredFields()[79]; //Entity.size
-		sizeField.setAccessible(true);
+    @Override
+    public EntitySize getDimensions(Pose pose) {
+        Field sizeField = Entity.class.getDeclaredFields()[79]; //Entity.size
+        sizeField.setAccessible(true);
 
-		try {
-			return (EntitySize)sizeField.get(this);
-		} catch(IllegalAccessException e) {
-			e.printStackTrace();
-			return super.getSize(pose);
-		}
-	}
+        try {
+            return (EntitySize) sizeField.get(this);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return super.getDimensions(pose);
+        }
+    }
 
-	public float getSizeMultiplier() {
-		return sizeMultiplier;
-	}
+    public float getSizeMultiplier() {
+        return sizeMultiplier;
+    }
 
-	public FighterEntity changeSize(float m) {
-		Field sizeField = Entity.class.getDeclaredFields()[79]; //Entity.size
-		sizeField.setAccessible(true);
+    public FighterEntity changeSize(float m) {
+        Field sizeField = Entity.class.getDeclaredFields()[79]; //Entity.size
+        sizeField.setAccessible(true);
 
-		try {
-			sizeField.set(this, this.getSize(Pose.STANDING).scale(this.sizeMultiplier = m));
-		} catch(IllegalAccessException e) {
-			e.printStackTrace();
-		}
+        try {
+            sizeField.set(this, this.getDimensions(Pose.STANDING).scale(this.sizeMultiplier = m));
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
 
-		this.recalculateSize();
+        this.refreshDimensions();
 
-		if(!this.world.isRemote) {
-			ModNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new FighterSizeMessage(this, this.sizeMultiplier));
-		}
+        if (! this.level.isClientSide) {
+            ModNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new FighterSizeMessage(this, this.sizeMultiplier));
+        }
 
-		return this;
-	}
+        return this;
+    }
 
-	@Override
-	protected float getStandingEyeHeight(Pose pose, EntitySize size) {
-		return super.getStandingEyeHeight(pose, size) * this.sizeMultiplier;
-	}
+    @Override
+    protected float getStandingEyeHeight(Pose pose, EntitySize size) {
+        return super.getStandingEyeHeight(pose, size) * this.sizeMultiplier;
+    }
 
-	@Override
-	public ILivingEntityData onInitialSpawn(IServerWorld world, DifficultyInstance difficulty, SpawnReason reason, ILivingEntityData spawnData, CompoundNBT dataTag) {
-		this.setCustomName(this.getCustomName());
-		this.setBreakDoorsAItask(true);
-		this.setCanPickUpLoot(true);
-		this.enablePersistence();
+    @Override
+    public ILivingEntityData finalizeSpawn(IServerWorld world, DifficultyInstance difficulty, SpawnReason reason, ILivingEntityData spawnData, CompoundNBT dataTag) {
+        this.setCustomName(this.getCustomName());
+        this.setCanBreakDoors(true);
+        this.setCanPickUpLoot(true);
+        this.setPersistenceRequired();
 
-		//Good ol' easter egg.
-		if(this.rand.nextInt(100) == 0) {
-			ChickenEntity chicken = EntityType.CHICKEN.create(this.world);
-			chicken.setLocationAndAngles(this.getPosX(), this.getPosY(), this.getPosZ(), this.rotationYaw, 0.0F);
-			chicken.onInitialSpawn(world, difficulty, reason, spawnData, dataTag);
-			chicken.setChickenJockey(true);
-			((ServerWorld)this.world).summonEntity(chicken);
-			this.startRiding(chicken);
-		}
+        //Good ol' easter egg.
+        if (this.random.nextInt(100) == 0) {
+            ChickenEntity chicken = EntityType.CHICKEN.create(this.level);
+            chicken.moveTo(this.getX(), this.getY(), this.getZ(), this.yRot, 0.0F);
+            chicken.finalizeSpawn(world, difficulty, reason, spawnData, dataTag);
+            chicken.setChickenJockey(true);
+            ((ServerWorld) this.level).addWithUUID(chicken);
+            this.startRiding(chicken);
+        }
 
-		return spawnData;
-	}
+        return spawnData;
+    }
 
-	@Override
-	protected void dropLoot(DamageSource damageSource, boolean attackedRecently) {
-		super.dropLoot(damageSource, attackedRecently);
-		if(this.world.isRemote())return;
+    @Override
+    protected void dropFromLootTable(DamageSource damageSource, boolean attackedRecently) {
+        super.dropFromLootTable(damageSource, attackedRecently);
+        if (this.level.isClientSide()) return;
 
 		/* Drop the head.
 		if(!this.lastName.equals(this.getCustomName().getString())) {
@@ -235,19 +235,19 @@ public class FighterEntity extends ZombieEntity {
 			headDrop.setTag(nbt);
 			this.entityDropItem(headDrop, 0.0F);
 		}*/
-	}
+    }
 
-	@Override
-	public boolean attackEntityAsMob(Entity entity) {
-		if (!this.world.isRemote) {
-			((ServerWorld)this.world).spawnParticle(ParticleTypes.SWEEP_ATTACK, this.getPosX(), this.getPosY(),
-					this.getPosZ(), 1, 0.0f, 0.0f, 0.0f, 0);
+    @Override
+    public boolean doHurtTarget(Entity entity) {
+        if (! this.level.isClientSide) {
+            ((ServerWorld) this.level).sendParticles(ParticleTypes.SWEEP_ATTACK, this.getX(), this.getY(),
+                this.getZ(), 1, 0.0f, 0.0f, 0.0f, 0);
 
-			this.world.playSound(null, this.getPosition(), SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP,
-					SoundCategory.PLAYERS, 1.0f, this.rand.nextFloat() - this.rand.nextFloat());
-		}
+            this.level.playSound(null, this.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP,
+                SoundCategory.PLAYERS, 1.0f, this.random.nextFloat() - this.random.nextFloat());
+        }
 
-		return super.attackEntityAsMob(entity);
-	}
+        return super.doHurtTarget(entity);
+    }
 
 }

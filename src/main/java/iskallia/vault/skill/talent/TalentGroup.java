@@ -18,8 +18,10 @@ import java.util.stream.IntStream;
 
 public class TalentGroup<T extends PlayerTalent> {
 
-    @Expose private final String name;
-    @Expose private final T[] levels;
+    @Expose
+    private final String name;
+    @Expose
+    private final T[] levels;
 
     private BiMap<String, T> registry;
 
@@ -52,7 +54,7 @@ public class TalentGroup<T extends PlayerTalent> {
     }
 
     public int cost(int level) {
-        if (level > getMaxLevel()) return -1;
+        if (level > getMaxLevel()) return - 1;
         return this.levels[level - 1].getCost();
     }
 
@@ -66,7 +68,7 @@ public class TalentGroup<T extends PlayerTalent> {
             } else if (this.getMaxLevel() > 1) {
                 for (int i = 0; i < this.getMaxLevel(); i++) {
                     this.registry.put(this.getParentName() + " " + RomanNumber.toRoman(i + 1),
-                            this.getTalent(i + 1));
+                        this.getTalent(i + 1));
                 }
             }
         }
@@ -79,8 +81,8 @@ public class TalentGroup<T extends PlayerTalent> {
     public static TalentGroup<EffectTalent> ofEffect(String name, Effect effect, EffectTalent.Type type, int maxLevel,
                                                      IntUnaryOperator cost, EffectTalent.Operator operator) {
         EffectTalent[] talents = IntStream.range(0, maxLevel)
-                .mapToObj(i -> new EffectTalent(cost.applyAsInt(i + 1), effect, i, type, operator))
-                .toArray(EffectTalent[]::new);
+            .mapToObj(i -> new EffectTalent(cost.applyAsInt(i + 1), effect, i, type, operator))
+            .toArray(EffectTalent[]::new);
         return new TalentGroup<>(name, talents);
     }
 
@@ -88,19 +90,19 @@ public class TalentGroup<T extends PlayerTalent> {
                                                            int maxLevel, IntUnaryOperator cost, IntToDoubleFunction amount,
                                                            IntFunction<AttributeModifier.Operation> operation) {
         AttributeTalent[] talents = IntStream.range(0, maxLevel)
-                .mapToObj(i -> new AttributeTalent(cost.applyAsInt(i + 1), attribute,
-                        new AttributeTalent.Modifier(
-                                modifierName + " " + RomanNumber.toRoman(i + 1),
-                                amount.applyAsDouble(i + 1),
-                                operation.apply(i + 1)
-                        )))
-                .toArray(AttributeTalent[]::new);
+            .mapToObj(i -> new AttributeTalent(cost.applyAsInt(i + 1), attribute,
+                new AttributeTalent.Modifier(
+                    modifierName + " " + RomanNumber.toRoman(i + 1),
+                    amount.applyAsDouble(i + 1),
+                    operation.apply(i + 1)
+                )))
+            .toArray(AttributeTalent[]::new);
         return new TalentGroup<>(name, talents);
     }
 
     public static <T extends PlayerTalent> TalentGroup<T> of(String name, int maxLevel, IntFunction<T> supplier) {
         PlayerTalent[] talents = IntStream.range(0, maxLevel).mapToObj(supplier).toArray(PlayerTalent[]::new);
-        return new TalentGroup<>(name, (T[])talents);
+        return new TalentGroup<>(name, (T[]) talents);
     }
 
 }

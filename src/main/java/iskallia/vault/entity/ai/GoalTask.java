@@ -9,22 +9,22 @@ import java.util.Random;
 
 public abstract class GoalTask<T extends LivingEntity> extends Goal {
 
-	private final T entity;
+    private final T entity;
 
-	public GoalTask(T entity) {
-		this.entity = entity;
-	}
+    public GoalTask(T entity) {
+        this.entity = entity;
+    }
 
-	public T getEntity() {
-		return this.entity;
-	}
+    public T getEntity() {
+        return this.entity;
+    }
 
-	public World getWorld() {
-		return this.getEntity().world;
-	}
+    public World getWorld() {
+        return this.getEntity().level;
+    }
 
-	public Random getRandom() {
-		return ObjectUtils.firstNonNull(this.getWorld().getRandom(), this.getEntity().getRNG());
-	}
+    public Random getRandom() {
+        return ObjectUtils.firstNonNull(this.getWorld().getRandom(), this.getEntity().getRandom());
+    }
 
 }

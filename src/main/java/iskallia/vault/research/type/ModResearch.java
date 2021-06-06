@@ -13,8 +13,10 @@ import java.util.Set;
 
 public class ModResearch extends Research {
 
-    @Expose protected Set<String> modIds;
-    @Expose protected Restrictions restrictions;
+    @Expose
+    protected Set<String> modIds;
+    @Expose
+    protected Restrictions restrictions;
 
     public ModResearch(String name, int cost, String... modIds) {
         super(name, cost);
@@ -47,7 +49,7 @@ public class ModResearch extends Research {
 
     @Override
     public boolean restricts(Item item, Restrictions.Type restrictionType) {
-        if (!this.restrictions.restricts(restrictionType)) return false;
+        if (! this.restrictions.restricts(restrictionType)) return false;
         ResourceLocation registryName = item.getRegistryName();
         if (registryName == null) return false;
         return modIds.contains(registryName.getNamespace());
@@ -55,7 +57,7 @@ public class ModResearch extends Research {
 
     @Override
     public boolean restricts(Block block, Restrictions.Type restrictionType) {
-        if (!this.restrictions.restricts(restrictionType)) return false;
+        if (! this.restrictions.restricts(restrictionType)) return false;
         ResourceLocation registryName = block.getRegistryName();
         if (registryName == null) return false;
         return modIds.contains(registryName.getNamespace());
@@ -63,7 +65,7 @@ public class ModResearch extends Research {
 
     @Override
     public boolean restricts(EntityType<?> entityType, Restrictions.Type restrictionType) {
-        if (!this.restrictions.restricts(restrictionType)) return false;
+        if (! this.restrictions.restricts(restrictionType)) return false;
         ResourceLocation registryName = entityType.getRegistryName();
         if (registryName == null) return false;
         return modIds.contains(registryName.getNamespace());

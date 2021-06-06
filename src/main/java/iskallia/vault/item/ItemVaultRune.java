@@ -8,8 +8,8 @@ public class ItemVaultRune extends Item {
 
     public ItemVaultRune(ItemGroup group, ResourceLocation id) {
         super(new Properties()
-                .group(group)
-                .maxStackSize(1));
+            .tab(group)
+            .stacksTo(1));
 
         this.setRegistryName(id);
     }

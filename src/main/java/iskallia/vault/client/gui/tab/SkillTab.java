@@ -52,8 +52,8 @@ public abstract class SkillTab extends Screen {
             float dx = (float) (mouseX - grabbedPos.x) / viewportScale;
             float dy = (float) (mouseY - grabbedPos.y) / viewportScale;
             this.viewportTranslation = new Vector2f(
-                    viewportTranslation.x + dx,
-                    viewportTranslation.y + dy);
+                viewportTranslation.x + dx,
+                viewportTranslation.y + dy);
             this.grabbedPos = new Vector2f((float) mouseX, (float) mouseY);
         }
     }
@@ -66,7 +66,7 @@ public abstract class SkillTab extends Screen {
         double zoomingX = (mouseX - midpoint.x) / viewportScale + viewportTranslation.x;
         double zoomingY = (mouseY - midpoint.y) / viewportScale + viewportTranslation.y;
 
-        int wheel = delta < 0 ? -1 : 1;
+        int wheel = delta < 0 ? - 1 : 1;
 
         double zoomTargetX = (zoomingX - viewportTranslation.x) / viewportScale;
         double zoomTargetY = (zoomingY - viewportTranslation.y) / viewportScale;
@@ -75,15 +75,15 @@ public abstract class SkillTab extends Screen {
         viewportScale = (float) MathHelper.clamp(viewportScale, 0.5, 5);
 
         viewportTranslation = new Vector2f(
-                (float) (-zoomTargetX * viewportScale + zoomingX),
-                (float) (-zoomTargetY * viewportScale + zoomingY)
+            (float) (- zoomTargetX * viewportScale + zoomingX),
+            (float) (- zoomTargetY * viewportScale + zoomingY)
         );
 
         return mouseScrolled;
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
         System.out.println(getClass().getSimpleName() + " closed.");
         persistedTranslations.put(getClass(), viewportTranslation);
         persistedScales.put(getClass(), viewportScale);

@@ -10,35 +10,35 @@ import java.util.function.Supplier;
 
 public class VaultInfoMessage {
 
-	private int rarity;
-	private VaultModifiers modifiers;
+    private int rarity;
+    private VaultModifiers modifiers;
 
-	public VaultInfoMessage() { }
+    public VaultInfoMessage() { }
 
-	public VaultInfoMessage(VaultRaid raid) {
-		this.rarity = raid.rarity;
-		this.modifiers = raid.modifiers;
-	}
+    public VaultInfoMessage(VaultRaid raid) {
+        this.rarity = raid.rarity;
+        this.modifiers = raid.modifiers;
+    }
 
-	public static void encode(VaultInfoMessage message, PacketBuffer buffer) {
-		buffer.writeInt(message.rarity);
-		message.modifiers.encode(buffer);
-	}
+    public static void encode(VaultInfoMessage message, PacketBuffer buffer) {
+        buffer.writeInt(message.rarity);
+        message.modifiers.encode(buffer);
+    }
 
-	public static VaultInfoMessage decode(PacketBuffer buffer) {
-		VaultInfoMessage message = new VaultInfoMessage();
-		message.rarity = buffer.readInt();
-		message.modifiers = VaultModifiers.decode(buffer);
-		return message;
-	}
+    public static VaultInfoMessage decode(PacketBuffer buffer) {
+        VaultInfoMessage message = new VaultInfoMessage();
+        message.rarity = buffer.readInt();
+        message.modifiers = VaultModifiers.decode(buffer);
+        return message;
+    }
 
-	public static void handle(VaultInfoMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
-		NetworkEvent.Context context = contextSupplier.get();
-		context.enqueueWork(() -> {
-			VaultRaidOverlay.currentRarity = message.rarity;
-			VaultModifiers.CLIENT = message.modifiers;
-		});
-		context.setPacketHandled(true);
-	}
+    public static void handle(VaultInfoMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
+        NetworkEvent.Context context = contextSupplier.get();
+        context.enqueueWork(() -> {
+            VaultRaidOverlay.currentRarity = message.rarity;
+            VaultModifiers.CLIENT = message.modifiers;
+        });
+        context.setPacketHandled(true);
+    }
 
 }

@@ -25,12 +25,12 @@ public class AbilitiesTab extends SkillTab {
     public void refresh() {
         this.abilityWidgets.clear();
 
-        AbilityTree abilityTree = parentScreen.getContainer().getAbilityTree();
+        AbilityTree abilityTree = parentScreen.getMenu().getAbilityTree();
         ModConfigs.ABILITIES_GUI.getStyles().forEach((abilityName, style) -> {
             this.abilityWidgets.add(new AbilityWidget(
-                    ModConfigs.ABILITIES.getByName(abilityName),
-                    abilityTree,
-                    style
+                ModConfigs.ABILITIES.getByName(abilityName),
+                abilityTree,
+                style
             ));
         });
     }
@@ -44,7 +44,7 @@ public class AbilitiesTab extends SkillTab {
         int containerMouseY = (int) ((mouseY - midpoint.y) / viewportScale - viewportTranslation.y);
         for (AbilityWidget abilityWidget : abilityWidgets) {
             if (abilityWidget.isMouseOver(containerMouseX, containerMouseY)
-                    && abilityWidget.mouseClicked(containerMouseX, containerMouseY, button)) {
+                && abilityWidget.mouseClicked(containerMouseX, containerMouseY, button)) {
                 if (this.selectedWidget != null) this.selectedWidget.deselect();
                 this.selectedWidget = abilityWidget;
                 this.selectedWidget.select();
@@ -62,7 +62,7 @@ public class AbilitiesTab extends SkillTab {
 
         Vector2f midpoint = parentScreen.getContainerBounds().midpoint();
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(midpoint.x, midpoint.y, 0);
         matrixStack.scale(viewportScale, viewportScale, 1);
         matrixStack.translate(viewportTranslation.x, viewportTranslation.y, 0);
@@ -74,7 +74,7 @@ public class AbilitiesTab extends SkillTab {
             abilityWidget.render(matrixStack, containerMouseX, containerMouseY, partialTicks);
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
 }

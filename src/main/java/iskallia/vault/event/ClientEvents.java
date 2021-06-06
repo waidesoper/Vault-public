@@ -9,9 +9,9 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = {Dist.CLIENT})
 public class ClientEvents {
 
-	@SubscribeEvent
-	public static void onColorHandlerRegister(ColorHandlerEvent.Item event) {
-		ModModels.registerItemColors(event.getItemColors());
-	}
+    @SubscribeEvent
+    public static void onColorHandlerRegister(ColorHandlerEvent.Item event) {
+        ModModels.registerItemColors(event.getItemColors());
+    }
 
 }

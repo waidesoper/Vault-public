@@ -21,7 +21,7 @@ public class NBTHelper {
         }
 
         for (int i = 0; i < uuidList.size(); i++) {
-            res.put(UUID.fromString(uuidList.get(i).getString()), mapper.apply((N) valuesList.get(i)));
+            res.put(UUID.fromString(uuidList.get(i).getAsString()), mapper.apply((N) valuesList.get(i)));
         }
 
         return res;
@@ -43,7 +43,7 @@ public class NBTHelper {
         ListNBT listNBT = (ListNBT) nbt.get(name);
 
         for (int i = 0; i < listNBT.size(); i++) {
-            res.add(mapper.apply((N)listNBT.get(i)));
+            res.add(mapper.apply((N) listNBT.get(i)));
         }
 
         return res;

@@ -29,13 +29,17 @@ import java.util.stream.Collectors;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EffectTalent extends PlayerTalent {
 
-    @Expose private final String effect;
-    @Expose private final int amplifier;
-    @Expose private final String type;
-    @Expose private final String operator;
+    @Expose
+    private final String effect;
+    @Expose
+    private final int amplifier;
+    @Expose
+    private final String type;
+    @Expose
+    private final String operator;
 
     public EffectTalent(int cost, Effect effect, int amplifier, Type type, Operator operator) {
-        this(cost, Registry.EFFECTS.getKey(effect).toString(), amplifier, type.toString(), operator.toString());
+        this(cost, Registry.MOB_EFFECT.getKey(effect).toString(), amplifier, type.toString(), operator.toString());
     }
 
     public EffectTalent(int cost, String effect, int amplifier, String type, String operator) {
@@ -47,7 +51,7 @@ public class EffectTalent extends PlayerTalent {
     }
 
     public Effect getEffect() {
-        return Registry.EFFECTS.getOrDefault(new ResourceLocation(this.effect));
+        return Registry.MOB_EFFECT.get(new ResourceLocation(this.effect));
     }
 
     public int getAmplifier() {
@@ -64,36 +68,36 @@ public class EffectTalent extends PlayerTalent {
 
     @Override
     public void tick(PlayerEntity player) {
-        Tuple<Integer, EffectTalent> data = getData(player, (ServerWorld) player.world, this.getEffect());
-        EffectInstance activeEffect = player.getActivePotionEffect(this.getEffect());
+        Tuple<Integer, EffectTalent> data = getData(player, (ServerWorld) player.level, this.getEffect());
+        EffectInstance activeEffect = player.getEffect(this.getEffect());
 
         if (data.getA() >= 0) {
             EffectInstance newEffect = new EffectInstance(this.getEffect(), 100, data.getA(),
-                    false, data.getB().getType().showParticles, data.getB().getType().showIcon);
+                false, data.getB().getType().showParticles, data.getB().getType().showIcon);
 
             if (activeEffect == null || activeEffect.getAmplifier() < newEffect.getAmplifier()) {
-                player.addPotionEffect(newEffect);
+                player.addEffect(newEffect);
             }
         }
     }
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.player.world.isRemote) return;
+        if (event.player.level.isClientSide) return;
         ForgeRegistries.POTIONS.forEach(effect -> {
-            Tuple<Integer, EffectTalent> data = getData(event.player, (ServerWorld) event.player.world, effect);
+            Tuple<Integer, EffectTalent> data = getData(event.player, (ServerWorld) event.player.level, effect);
 
-            EffectInstance activeEffect = event.player.getActivePotionEffect(effect);
+            EffectInstance activeEffect = event.player.getEffect(effect);
 
             if (data.getA() >= 0) {
                 EffectInstance newEffect = new EffectInstance(effect, 339, data.getA(),
-                        false, data.getB().getType().showParticles, data.getB().getType().showIcon);
+                    false, data.getB().getType().showParticles, data.getB().getType().showIcon);
 
                 if (activeEffect == null || activeEffect.getAmplifier() < newEffect.getAmplifier()) {
-                    event.player.addPotionEffect(newEffect);
+                    event.player.addEffect(newEffect);
                 } else {
                     if (activeEffect.getDuration() <= 259) {
-                        event.player.addPotionEffect(newEffect);
+                        event.player.addEffect(newEffect);
                     }
                 }
             }
@@ -108,7 +112,7 @@ public class EffectTalent extends PlayerTalent {
         List<EffectTalent> addends = new ArrayList<>();
 
         for (TalentNode<?> node : abilities.getNodes()) {
-            if (!(node.getTalent() instanceof EffectTalent)) continue;
+            if (! (node.getTalent() instanceof EffectTalent)) continue;
             EffectTalent talent = (EffectTalent) node.getTalent();
             if (talent.getEffect() != effect) continue;
 
@@ -120,7 +124,7 @@ public class EffectTalent extends PlayerTalent {
         }
 
         for (SetNode<?> node : sets.getNodes()) {
-            if (!(node.getSet() instanceof EffectSet)) continue;
+            if (! (node.getSet() instanceof EffectSet)) continue;
             EffectSet set = (EffectSet) node.getSet();
             if (set.getChild().getEffect() != effect) continue;
 
@@ -132,7 +136,7 @@ public class EffectTalent extends PlayerTalent {
         }
 
         for (EquipmentSlotType slot : EquipmentSlotType.values()) {
-            ItemStack stack = player.getItemStackFromSlot(slot);
+            ItemStack stack = player.getItemBySlot(slot);
             List<EffectTalent> effects = ModAttributes.EXTRA_EFFECTS.getOrDefault(stack, new ArrayList<>()).getValue(stack);
 
             for (EffectTalent effect1 : effects) {
@@ -147,22 +151,22 @@ public class EffectTalent extends PlayerTalent {
         }
 
         if (overrides.isEmpty() && addends.isEmpty()) {
-            return new Tuple<>(-1, null);
+            return new Tuple<>(- 1, null);
         }
 
-        int newAmplifier = overrides.isEmpty() ? -1 : overrides.stream().mapToInt(EffectTalent::getAmplifier).max().getAsInt();
+        int newAmplifier = overrides.isEmpty() ? - 1 : overrides.stream().mapToInt(EffectTalent::getAmplifier).max().getAsInt();
         newAmplifier += addends.stream().mapToInt(EffectTalent::getAmplifier).sum();
 
         EffectTalent priority = overrides.isEmpty()
-                ? addends.stream().max(Comparator.comparingInt(EffectTalent::getAmplifier)).get()
-                : overrides.stream().max(Comparator.comparingInt(EffectTalent::getAmplifier)).get();
+            ? addends.stream().max(Comparator.comparingInt(EffectTalent::getAmplifier)).get()
+            : overrides.stream().max(Comparator.comparingInt(EffectTalent::getAmplifier)).get();
 
         return new Tuple<>(newAmplifier, priority);
     }
 
     @Override
     public void onRemoved(PlayerEntity player) {
-        player.removePotionEffect(this.getEffect());
+        player.removeEffect(this.getEffect());
     }
 
     public enum Type {
@@ -172,7 +176,7 @@ public class EffectTalent extends PlayerTalent {
         ALL("all", true, true);
 
         private static Map<String, Type> STRING_TO_TYPE = Arrays.stream(values())
-                .collect(Collectors.toMap(Type::toString, o -> o));
+            .collect(Collectors.toMap(Type::toString, o -> o));
 
         public final String name;
         public final boolean showParticles;
@@ -198,7 +202,7 @@ public class EffectTalent extends PlayerTalent {
         SET("set"), ADD("add");
 
         private static Map<String, Operator> STRING_TO_TYPE = Arrays.stream(values())
-                .collect(Collectors.toMap(Operator::toString, o -> o));
+            .collect(Collectors.toMap(Operator::toString, o -> o));
 
         public final String name;
 

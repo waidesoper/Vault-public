@@ -34,8 +34,8 @@ public class AbilityTree implements INBTSerializable<CompoundNBT> {
     public AbilityTree(UUID uuid) {
         this.uuid = uuid;
         this.add(null, ModConfigs.ABILITIES.getAll().stream()
-                .map(abilityGroup -> new AbilityNode<>(abilityGroup, 0))
-                .toArray(AbilityNode[]::new));
+            .map(abilityGroup -> new AbilityNode<>(abilityGroup, 0))
+            .toArray(AbilityNode[]::new));
     }
 
     public List<AbilityNode<?>> getNodes() {
@@ -44,8 +44,8 @@ public class AbilityTree implements INBTSerializable<CompoundNBT> {
 
     public List<AbilityNode<?>> learnedNodes() {
         return nodes.stream()
-                .filter(AbilityNode::isLearned)
-                .collect(Collectors.toList());
+            .filter(AbilityNode::isLearned)
+            .collect(Collectors.toList());
     }
 
     public AbilityNode<?> getFocusedAbility() {
@@ -60,7 +60,7 @@ public class AbilityTree implements INBTSerializable<CompoundNBT> {
 
     public AbilityNode<?> getNodeByName(String name) {
         Optional<AbilityNode<?>> abilityWrapped = this.nodes.stream().filter(node -> node.getGroup().getParentName().equals(name)).findFirst();
-        if (!abilityWrapped.isPresent()) {
+        if (! abilityWrapped.isPresent()) {
             AbilityNode<?> abilityNode = new AbilityNode<>(ModConfigs.ABILITIES.getByName(name), 0);
             this.nodes.add(abilityNode);
             return abilityNode;
@@ -183,7 +183,7 @@ public class AbilityTree implements INBTSerializable<CompoundNBT> {
         PlayerAbility.Behavior behavior = focusedAbility.getAbility().getBehavior();
 
         if (behavior == PlayerAbility.Behavior.PRESS_TO_TOGGLE) {
-            active = !active;
+            active = ! active;
             NetcodeUtils.runIfPresent(server, this.uuid, player -> {
                 focusedAbility.getAbility().onAction(player, active);
                 putOnCooldown(server, focusedAbilityIndex, ModConfigs.ABILITIES.cooldownOf(getFocusedAbility(), player));
@@ -277,7 +277,8 @@ public class AbilityTree implements INBTSerializable<CompoundNBT> {
             this.nodes.add(upgradedAbilityNode);
         }
 
-        this.focusedAbilityIndex = MathHelper.clamp(this.focusedAbilityIndex,0, learnedNodes().size() - 1);
+        this.focusedAbilityIndex = MathHelper.clamp(this.focusedAbilityIndex,
+            0, learnedNodes().size() - 1);
 
         return this;
     }
@@ -295,7 +296,7 @@ public class AbilityTree implements INBTSerializable<CompoundNBT> {
         }
 
         this.focusedAbilityIndex = MathHelper.clamp(this.focusedAbilityIndex,
-                0, learnedNodes().size() - 1);
+            0, learnedNodes().size() - 1);
 
         return this;
     }
@@ -315,7 +316,7 @@ public class AbilityTree implements INBTSerializable<CompoundNBT> {
         }
 
         this.focusedAbilityIndex = MathHelper.clamp(this.focusedAbilityIndex,
-                0, learnedNodes().size() - 1);
+            0, learnedNodes().size() - 1);
 
         return this;
     }
@@ -345,9 +346,9 @@ public class AbilityTree implements INBTSerializable<CompoundNBT> {
     public void syncTree(MinecraftServer server) {
         NetcodeUtils.runIfPresent(server, this.uuid, player -> {
             ModNetwork.CHANNEL.sendTo(
-                    new AbilityKnownOnesMessage(this),
-                    player.connection.netManager,
-                    NetworkDirection.PLAY_TO_CLIENT
+                new AbilityKnownOnesMessage(this),
+                player.connection.connection,
+                NetworkDirection.PLAY_TO_CLIENT
             );
         });
     }
@@ -355,18 +356,18 @@ public class AbilityTree implements INBTSerializable<CompoundNBT> {
     public void syncFocusedIndex(MinecraftServer server) {
         NetcodeUtils.runIfPresent(server, this.uuid, player -> {
             ModNetwork.CHANNEL.sendTo(
-                    new AbilityFocusMessage(this.focusedAbilityIndex),
-                    player.connection.netManager,
-                    NetworkDirection.PLAY_TO_CLIENT
+                new AbilityFocusMessage(this.focusedAbilityIndex),
+                player.connection.connection,
+                NetworkDirection.PLAY_TO_CLIENT
             );
         });
     }
 
     public void notifyActivity(MinecraftServer server) {
         notifyActivity(server,
-                this.focusedAbilityIndex,
-                this.cooldowns.getOrDefault(this.focusedAbilityIndex, 0),
-                this.active);
+            this.focusedAbilityIndex,
+            this.cooldowns.getOrDefault(this.focusedAbilityIndex, 0),
+            this.active);
     }
 
     public void notifyCooldown(MinecraftServer server, int abilityIndex, int cooldown) {
@@ -380,9 +381,9 @@ public class AbilityTree implements INBTSerializable<CompoundNBT> {
     public void notifyActivity(MinecraftServer server, int abilityIndex, int cooldown, int activeFlag) {
         NetcodeUtils.runIfPresent(server, this.uuid, player -> {
             ModNetwork.CHANNEL.sendTo(
-                    new AbilityActivityMessage(abilityIndex, cooldown, activeFlag),
-                    player.connection.netManager,
-                    NetworkDirection.PLAY_TO_CLIENT
+                new AbilityActivityMessage(abilityIndex, cooldown, activeFlag),
+                player.connection.connection,
+                NetworkDirection.PLAY_TO_CLIENT
             );
         });
     }
@@ -407,7 +408,7 @@ public class AbilityTree implements INBTSerializable<CompoundNBT> {
             this.add(null, AbilityNode.fromNBT(list.getCompound(i), PlayerAbility.class));
         }
         this.focusedAbilityIndex = MathHelper.clamp(nbt.getInt("FocusedIndex"),
-                0, learnedNodes().size() - 1);
+            0, learnedNodes().size() - 1);
     }
 
 }

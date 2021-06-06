@@ -10,8 +10,8 @@ public class ItemBit extends Item {
 
     public ItemBit(ItemGroup group, ResourceLocation id, int value) {
         super(new Properties()
-                .group(group)
-                .maxStackSize(64));
+            .tab(group)
+            .stacksTo(64));
 
         this.setRegistryName(id);
 

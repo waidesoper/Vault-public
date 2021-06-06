@@ -20,11 +20,11 @@ public class VaultPortalConfig extends Config {
     @Override
     protected void reset() {
 
-        VALID_BLOCKS = new String[]{
-                Blocks.BLACKSTONE.getRegistryName().toString(),
-                Blocks.POLISHED_BLACKSTONE.getRegistryName().toString(),
-                Blocks.POLISHED_BLACKSTONE_BRICKS.getRegistryName().toString(),
-                Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getRegistryName().toString(),
+        VALID_BLOCKS = new String[] {
+            Blocks.BLACKSTONE.getRegistryName().toString(),
+            Blocks.POLISHED_BLACKSTONE.getRegistryName().toString(),
+            Blocks.POLISHED_BLACKSTONE_BRICKS.getRegistryName().toString(),
+            Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getRegistryName().toString(),
         };
 
     }

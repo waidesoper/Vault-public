@@ -15,49 +15,49 @@ import java.util.function.Consumer;
 
 public class SkinProfile {
 
-	public static final ExecutorService SERVICE = Executors.newFixedThreadPool(4);
+    public static final ExecutorService SERVICE = Executors.newFixedThreadPool(4);
 
-	private String latestNickname;
-	public AtomicReference<GameProfile> gameProfile = new AtomicReference<>();
-	public AtomicReference<NetworkPlayerInfo> playerInfo = new AtomicReference<>();
+    private String latestNickname;
+    public AtomicReference<GameProfile> gameProfile = new AtomicReference<>();
+    public AtomicReference<NetworkPlayerInfo> playerInfo = new AtomicReference<>();
 
-	public String getLatestNickname() {
-		return this.latestNickname;
-	}
+    public String getLatestNickname() {
+        return this.latestNickname;
+    }
 
-	public void updateSkin(String name) {
-		if(name.equals(this.latestNickname))return;
-		this.latestNickname = name;
+    public void updateSkin(String name) {
+        if (name.equals(this.latestNickname)) return;
+        this.latestNickname = name;
 
-		SERVICE.submit(() -> {
-			gameProfile.set(new GameProfile(null, name));
-			gameProfile.set(SkullTileEntity.updateGameProfile(gameProfile.get()));
-			AddPlayerData data = new SPlayerListItemPacket().new AddPlayerData(gameProfile.get(), 0, null, null);
-			playerInfo.set(new NetworkPlayerInfo(data));
+        SERVICE.submit(() -> {
+            gameProfile.set(new GameProfile(null, name));
+            gameProfile.set(SkullTileEntity.updateGameprofile(gameProfile.get()));
+            AddPlayerData data = new SPlayerListItemPacket().new AddPlayerData(gameProfile.get(), 0, null, null);
+            playerInfo.set(new NetworkPlayerInfo(data));
 
-		});
-	}
+        });
+    }
 
-	public ResourceLocation getLocationSkin() {
-		if (this.playerInfo == null || this.playerInfo.get() == null) {
-			return DefaultPlayerSkin.getDefaultSkinLegacy();
-		}
+    public ResourceLocation getLocationSkin() {
+        if (this.playerInfo == null || this.playerInfo.get() == null) {
+            return DefaultPlayerSkin.getDefaultSkin();
+        }
 
-		try {
-			return this.playerInfo.get().getLocationSkin();
-		} catch (Exception e) {
-			System.err.println("stupid! how did you even do this?");
-			e.printStackTrace();
-		}
+        try {
+            return this.playerInfo.get().getSkinLocation();
+        } catch (Exception e) {
+            System.err.println("stupid! how did you even do this?");
+            e.printStackTrace();
+        }
 
-		return DefaultPlayerSkin.getDefaultSkinLegacy();
-	}
+        return DefaultPlayerSkin.getDefaultSkin();
+    }
 
-	public static void updateGameProfile(GameProfile input, Consumer<GameProfile> consumer) {
-		SERVICE.submit(() -> {
-			GameProfile output = SkullTileEntity.updateGameProfile(input);
-			consumer.accept(output);
-		});
-	}
+    public static void updateGameProfile(GameProfile input, Consumer<GameProfile> consumer) {
+        SERVICE.submit(() -> {
+            GameProfile output = SkullTileEntity.updateGameprofile(input);
+            consumer.accept(output);
+        });
+    }
 
 }

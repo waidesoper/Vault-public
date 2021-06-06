@@ -24,7 +24,7 @@ public class AbilityNode<T extends PlayerAbility> implements INBTSerializable<Co
     }
 
     public T getAbility() {
-        if (!isLearned()) return null;
+        if (! isLearned()) return null;
         return this.group.getAbility(this.level);
     }
 
@@ -60,7 +60,7 @@ public class AbilityNode<T extends PlayerAbility> implements INBTSerializable<Co
         AbilityNode<?> that = (AbilityNode<?>) other;
 
         return this.level == that.level
-                && this.group.getParentName().equals(that.group.getParentName());
+            && this.group.getParentName().equals(that.group.getParentName());
     }
 
     /* ----------------------------------------- */

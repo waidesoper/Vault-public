@@ -13,8 +13,10 @@ import java.util.Random;
 
 public class VaultRelicsConfig extends Config {
 
-    @Expose private int extraTickPerSet;
-    @Expose private List<Relic> relicDrops;
+    @Expose
+    private int extraTickPerSet;
+    @Expose
+    private List<Relic> relicDrops;
 
     @Override
     public String getName() {
@@ -33,11 +35,11 @@ public class VaultRelicsConfig extends Config {
 
         for (Relic relicDrop : relicDrops) {
             if (random < relicDrop.WEIGHT)
-                return (RelicPartItem) Registry.ITEM.getOrDefault(new ResourceLocation(relicDrop.NAME));
+                return (RelicPartItem) Registry.ITEM.get(new ResourceLocation(relicDrop.NAME));
             random -= relicDrop.WEIGHT;
         }
 
-        return (RelicPartItem) Registry.ITEM.getOrDefault(new ResourceLocation(relicDrops.get(relicDrops.size() - 1).NAME));
+        return (RelicPartItem) Registry.ITEM.get(new ResourceLocation(relicDrops.get(relicDrops.size() - 1).NAME));
     }
 
     @Override
@@ -93,8 +95,10 @@ public class VaultRelicsConfig extends Config {
     }
 
     public static class Relic {
-        @Expose public String NAME;
-        @Expose public int WEIGHT;
+        @Expose
+        public String NAME;
+        @Expose
+        public int WEIGHT;
 
         public Relic(String name, int weight) {
             this.NAME = name;

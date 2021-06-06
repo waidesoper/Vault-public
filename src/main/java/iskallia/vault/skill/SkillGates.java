@@ -12,7 +12,8 @@ import java.util.*;
 
 public class SkillGates {
 
-    @Expose private Map<String, Entry> entries;
+    @Expose
+    private Map<String, Entry> entries;
 
     public SkillGates() {
         this.entries = new HashMap<>();
@@ -94,7 +95,7 @@ public class SkillGates {
         List<String> researchesDone = researchTree.getResearchesDone();
 
         for (Research dependencyResearch : gates.getDependencyResearches(researchName)) {
-            if (!researchesDone.contains(dependencyResearch.getName()))
+            if (! researchesDone.contains(dependencyResearch.getName()))
                 return true;
         }
 
@@ -110,7 +111,7 @@ public class SkillGates {
         SkillGates gates = ModConfigs.SKILL_GATES.getGates();
 
         for (TalentGroup<?> dependencyTalent : gates.getDependencyTalents(talent.getParentName())) {
-            if (!talentTree.getNodeOf(dependencyTalent).isLearned())
+            if (! talentTree.getNodeOf(dependencyTalent).isLearned())
                 return true;
         }
 
@@ -123,8 +124,10 @@ public class SkillGates {
     }
 
     public static class Entry {
-        @Expose private List<String> dependsOn;
-        @Expose private List<String> lockedBy;
+        @Expose
+        private List<String> dependsOn;
+        @Expose
+        private List<String> lockedBy;
 
         public Entry() {
             this.dependsOn = new LinkedList<>();

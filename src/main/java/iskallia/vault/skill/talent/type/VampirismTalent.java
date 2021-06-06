@@ -12,7 +12,6 @@ import iskallia.vault.skill.talent.TalentTree;
 import iskallia.vault.util.MathUtilities;
 import iskallia.vault.world.data.PlayerSetsData;
 import iskallia.vault.world.data.PlayerTalentsData;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
@@ -24,7 +23,8 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber
 public class VampirismTalent extends PlayerTalent {
 
-    @Expose private final float leechRatio;
+    @Expose
+    private final float leechRatio;
 
     public VampirismTalent(int cost, float leechRatio) {
         super(cost);
@@ -35,46 +35,45 @@ public class VampirismTalent extends PlayerTalent {
         return this.leechRatio;
     }
 
-    // #Crimson_Fluff, duplicated method ?
-//    public void onDamagedEntity(PlayerEntity player, LivingHurtEvent event) {
-//        player.heal(event.getAmount() * this.getLeechRatio());
-//
-//        if (player.getRNG().nextFloat() <= 0.2) {
-//            float pitch = MathUtilities.randomFloat(1f, 1.5f);
-//            player.world.playSound(player, player.getPosX(), player.getPosY(), player.getPosZ(),
-//                    ModSounds.VAMPIRE_HISSING_SFX, SoundCategory.MASTER, 0.2f * 0.1f, pitch);
-//            player.playSound(ModSounds.VAMPIRE_HISSING_SFX, SoundCategory.MASTER, 0.2f * 0.1f, pitch);
-//        }
-//    }
+/*    public void onDamagedEntity(PlayerEntity player, LivingHurtEvent event) {
+        player.heal(event.getAmount() * this.getLeechRatio());
+
+        if (player.getRandom().nextFloat() <= 0.2) {
+            float pitch = MathUtilities.randomFloat(1f, 1.5f);
+            player.level.playSound(player, player.getX(), player.getY(), player.getZ(),
+                ModSounds.VAMPIRE_HISSING_SFX, SoundCategory.MASTER, 0.2f * 0.1f, pitch);
+            player.playNotifySound(ModSounds.VAMPIRE_HISSING_SFX, SoundCategory.MASTER, 0.2f * 0.1f, pitch);
+        }
+    }*/
 
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
-        if(event.getSource() == null) return;
-        if (!(event.getSource().getTrueSource() instanceof ServerPlayerEntity)) return;
-        ServerPlayerEntity player = (ServerPlayerEntity) event.getSource().getTrueSource();
-        TalentTree abilities = PlayerTalentsData.get(player.getServerWorld()).getTalents(player);
+        if (event.getSource() == null) return;
+        if (! (event.getSource().getEntity() instanceof ServerPlayerEntity)) return;
+        ServerPlayerEntity player = (ServerPlayerEntity) event.getSource().getEntity();
+        TalentTree abilities = PlayerTalentsData.get(player.getLevel()).getTalents(player);
 
         float leech = 0f;
         for (TalentNode<?> node : abilities.getNodes()) {
-            if (!(node.getTalent() instanceof VampirismTalent)) continue;
+            if (! (node.getTalent() instanceof VampirismTalent)) continue;
             VampirismTalent vampirism = (VampirismTalent) node.getTalent();
             leech += vampirism.getLeechRatio();
         }
-        SetTree sets = PlayerSetsData.get(player.getServerWorld()).getSets(player);
+        SetTree sets = PlayerSetsData.get(player.getLevel()).getSets(player);
 
         for (SetNode<?> node : sets.getNodes()) {
-            if (!(node.getSet() instanceof VampirismSet)) continue;
+            if (! (node.getSet() instanceof VampirismSet)) continue;
             VampirismSet set = (VampirismSet) node.getSet();
             Vault.LOGGER.info("Set: " + set.getLeechRatio());
             leech += set.getLeechRatio();
         }
 
         for (EquipmentSlotType slot : EquipmentSlotType.values()) {
-            ItemStack stack = player.getItemStackFromSlot(slot);
+            ItemStack stack = player.getItemBySlot(slot);
             leech += ModAttributes.EXTRA_LEECH_RATIO.getOrDefault(stack, 0.0F).getValue(stack);
         }
 
-        if(leech <= 0.0f) return;
+        if (leech <= 0.0f) return;
         onDamagedEntity(event, player, leech);
 
     }
@@ -83,12 +82,12 @@ public class VampirismTalent extends PlayerTalent {
         player.heal(event.getAmount() * leech);
 
         // #Crimson_Fluff, addStat
-        player.addStat(Vault.STAT_DAMAGE_VAMPIRED, (int)(event.getAmount() * leech));
+        player.awardStat(Vault.STAT_DAMAGE_VAMPIRED, (int)(event.getAmount() * leech));
 
-        if (player.getRNG().nextFloat() <= 0.2) {
+        if (player.getRandom().nextFloat() <= 0.2) {
             float pitch = MathUtilities.randomFloat(1f, 1.5f);
-            player.world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(),
-                    ModSounds.VAMPIRE_HISSING_SFX, SoundCategory.MASTER, 0.2f * 0.1f, pitch);
+            player.level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                ModSounds.VAMPIRE_HISSING_SFX, SoundCategory.MASTER, 0.2f * 0.1f, pitch);
         }
     }
 

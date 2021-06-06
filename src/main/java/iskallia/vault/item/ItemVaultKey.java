@@ -8,8 +8,8 @@ public class ItemVaultKey extends Item {
 
     public ItemVaultKey(ItemGroup group, ResourceLocation id) {
         super(new Properties()
-                .group(group)
-                .maxStackSize(64));
+            .tab(group)
+            .stacksTo(64));
 
         this.setRegistryName(id);
     }

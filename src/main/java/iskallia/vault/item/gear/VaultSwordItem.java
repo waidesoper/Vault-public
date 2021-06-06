@@ -20,63 +20,63 @@ import java.util.List;
 
 public class VaultSwordItem extends SwordItem implements VaultGear<VaultSwordItem> {
 
-	public VaultSwordItem(ResourceLocation id, Properties builder) {
-		super(Tier.INSTANCE, 0, -2.4F, builder);
-		this.setRegistryName(id);
-	}
+    public VaultSwordItem(ResourceLocation id, Properties builder) {
+        super(Tier.INSTANCE, 0, - 2.4F, builder);
+        this.setRegistryName(id);
+    }
 
-	@Override
-	public int getModelsFor(Rarity rarity) {
-		return rarity == Rarity.SCRAPPY ? 2 : 2;
-	}
+    @Override
+    public int getModelsFor(Rarity rarity) {
+        return rarity == Rarity.SCRAPPY ? 2 : 2;
+    }
 
-	//===========================================================================================================//
+    //===========================================================================================================//
 
-	@Override
-	public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
-		return this.getAttributeModifiers(this, slot, stack, super.getAttributeModifiers(slot, stack));
-	}
+    @Override
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
+        return this.getAttributeModifiers(this, slot, stack, super.getAttributeModifiers(slot, stack));
+    }
 
-	@Override
-	public boolean isDamageable(ItemStack stack) {
-		return this.isDamageable(this, stack);
-	}
+    @Override
+    public boolean isDamageable(ItemStack stack) {
+        return this.isDamageable(this, stack);
+    }
 
-	@Override
-	public int getMaxDamage(ItemStack stack) {
-		return this.getMaxDamage(this, stack, super.getMaxDamage(stack));
-	}
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return this.getMaxDamage(this, stack, super.getMaxDamage(stack));
+    }
 
-	@Override
-	public ITextComponent getDisplayName(ItemStack itemStack) {
-		return this.getDisplayName(this, itemStack, super.getDisplayName(itemStack));
-	}
+    @Override
+    public ITextComponent getName(ItemStack itemStack) {
+        return this.getDisplayName(this, itemStack, super.getName(itemStack));
+    }
 
-	@Override
-	public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
-		return this.onItemRightClick(this, world, player, hand, super.onItemRightClick(world, player, hand));
-	}
+    @Override
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        return this.onItemRightClick(this, world, player, hand, super.use(world, player, hand));
+    }
 
-	@Override
-	public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
-		super.inventoryTick(stack, world, entity, itemSlot, isSelected);
-		this.inventoryTick(this, stack, world, entity, itemSlot, isSelected);
-	}
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+        super.inventoryTick(stack, world, entity, itemSlot, isSelected);
+        this.inventoryTick(this, stack, world, entity, itemSlot, isSelected);
+    }
 
-	@Override
-	public void addInformation(ItemStack stack, World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
-		super.addInformation(stack, world, tooltip, flag);
-		this.addInformation(this, stack, world, tooltip, flag);
-	}
+    @Override
+    public void appendHoverText(ItemStack stack, World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.appendHoverText(stack, world, tooltip, flag);
+        this.addInformation(this, stack, world, tooltip, flag);
+    }
 
-	@Override
-	public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
-		return this.canElytraFly(this, stack, entity);
-	}
+    @Override
+    public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
+        return this.canElytraFly(this, stack, entity);
+    }
 
-	@Override
-	public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
-		return this.elytraFlightTick(this, stack, entity, flightTicks);
-	}
+    @Override
+    public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
+        return this.elytraFlightTick(this, stack, entity, flightTicks);
+    }
 
 }

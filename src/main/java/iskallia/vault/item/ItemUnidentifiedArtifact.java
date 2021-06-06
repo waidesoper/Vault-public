@@ -12,8 +12,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -23,63 +23,63 @@ public class ItemUnidentifiedArtifact extends Item {
 
     public ItemUnidentifiedArtifact(ItemGroup group, ResourceLocation id) {
         super(new Properties()
-                .group(group)
-                .maxStackSize(64));
+            .tab(group)
+            .stacksTo(64));
 
         this.setRegistryName(id);
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
-        if (!world.isRemote) {
-            ItemStack heldStack = player.getHeldItem(hand);
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        if (! world.isClientSide) {
+            ItemStack heldStack = player.getItemInHand(hand);
 
-//            Vector3d position = player.getPositionVec();
+/*            Vector3d position = player.position();
 
-//            ((ServerWorld) world).playSound(
-//                    null,
-//                    position.x,
-//                    position.y,
-//                    position.z,
-//                    ModSounds.BOOSTER_PACK_SUCCESS_SFX,
-//                    SoundCategory.PLAYERS,
-//                    1f, 1f
-//            );
-//
-//            ((ServerWorld) world).spawnParticle(ParticleTypes.DRAGON_BREATH,
-//                    position.x,
-//                    position.y,
-//                    position.z,
-//                    500,
-//                    1, 1, 1,
-//                    0.5
-//            );
+            ((ServerWorld) world).playSound(
+                null,
+                position.x,
+                position.y,
+                position.z,
+                ModSounds.BOOSTER_PACK_SUCCESS_SFX,
+                SoundCategory.PLAYERS,
+                1f, 1f
+            );
 
-            ItemRelicBoosterPack.successEffectsAsItem(world, player.getPositionVec(), heldStack);
+            ((ServerWorld) world).sendParticles(ParticleTypes.DRAGON_BREATH,
+                position.x,
+                position.y,
+                position.z,
+                500,
+                1, 1, 1,
+                0.5
+            );*/
 
-            int randomIndex = world.rand.nextInt(16) + 1;
-            Item item = Registry.ITEM.getOrDefault(Vault.id("artifact_" + randomIndex));
+            ItemRelicBoosterPack.successEffectsAsItem(world, player.position(), heldStack);   // #Crimson_Fluff
+
+            int randomIndex = world.random.nextInt(16) + 1;
+            Item item = Registry.ITEM.get(Vault.id("artifact_" + randomIndex));
             ItemStack artifactStack = new ItemStack(item);
 
-            player.dropItem(artifactStack, false, false);
+            player.drop(artifactStack, false, false);
 
             heldStack.shrink(1);
         }
 
-        return super.onItemRightClick(world, player, hand);
+        return super.use(world, player, hand);
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.artifact_identify");
-        text.setStyle(Style.EMPTY.setColor(Color.fromInt(0xFF_ffdb00)));
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        StringTextComponent text = new StringTextComponent("Right click to identify.");
+        text.setStyle(Style.EMPTY.withColor(Color.fromRgb(0xFF_ffdb00)));
         tooltip.add(text);
 
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
     @Override
-    public boolean hasEffect(ItemStack stack) {
+    public boolean isFoil(ItemStack stack) {
         return true;
     }
 

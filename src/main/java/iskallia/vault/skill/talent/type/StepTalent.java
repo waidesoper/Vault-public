@@ -16,58 +16,59 @@ import net.minecraftforge.fml.network.NetworkDirection;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class StepTalent extends PlayerTalent {
 
-	@Expose private final float stepHeightAddend;
+    @Expose
+    private final float stepHeightAddend;
 
-	public StepTalent(int cost, float stepHeightAddend) {
-		super(cost);
-		this.stepHeightAddend = stepHeightAddend;
-	}
+    public StepTalent(int cost, float stepHeightAddend) {
+        super(cost);
+        this.stepHeightAddend = stepHeightAddend;
+    }
 
-	public float getStepHeightAddend() {
-		return this.stepHeightAddend;
-	}
+    public float getStepHeightAddend() {
+        return this.stepHeightAddend;
+    }
 
-	@Override
-	public void onAdded(PlayerEntity player) {
-		//System.out.println(player.stepHeisght);
-//		player.stepHeight += this.stepHeightAddend;
-		set((ServerPlayerEntity)player, player.stepHeight + this.stepHeightAddend);
-		//System.out.println(player.stepHeight);
-	}
+    @Override
+    public void onAdded(PlayerEntity player) {
+        //System.out.println(player.stepHeisght);
+//        player.maxUpStep += this.stepHeightAddend;
+        set((ServerPlayerEntity) player, player.maxUpStep + this.stepHeightAddend);
+        //System.out.println(player.stepHeight);
+    }
 
-	@Override
-	public void tick(PlayerEntity player) {
-		//System.out.println(player.stepHeight);
-	}
+    @Override
+    public void tick(PlayerEntity player) {
+        //System.out.println(player.stepHeight);
+    }
 
-	@Override
-	public void onRemoved(PlayerEntity player) {
-		set((ServerPlayerEntity)player, player.stepHeight - this.stepHeightAddend);
-	}
+    @Override
+    public void onRemoved(PlayerEntity player) {
+        set((ServerPlayerEntity) player, player.maxUpStep - this.stepHeightAddend);
+    }
 
-	@SubscribeEvent
-	public static void onEntityCreated(EntityJoinWorldEvent event) {
-		if(event.getEntity().world.isRemote)return;
-		if(!(event.getEntity() instanceof PlayerEntity))return;
+    @SubscribeEvent
+    public static void onEntityCreated(EntityJoinWorldEvent event) {
+        if (event.getEntity().level.isClientSide) return;
+        if (! (event.getEntity() instanceof PlayerEntity)) return;
 
-		ServerPlayerEntity player = (ServerPlayerEntity)event.getEntity();
-		TalentTree abilities = PlayerTalentsData.get(player.getServerWorld()).getTalents(player);
-		float totalStepHeight = 0.0F;
+        ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
+        TalentTree abilities = PlayerTalentsData.get(player.getLevel()).getTalents(player);
+        float totalStepHeight = 0.0F;
 
-		for(TalentNode<?> node : abilities.getNodes()) {
-			if(!(node.getTalent() instanceof StepTalent))continue;
-			StepTalent talent = (StepTalent)node.getTalent();
-			totalStepHeight += talent.getStepHeightAddend();
-		}
+        for (TalentNode<?> node : abilities.getNodes()) {
+            if (! (node.getTalent() instanceof StepTalent)) continue;
+            StepTalent talent = (StepTalent) node.getTalent();
+            totalStepHeight += talent.getStepHeightAddend();
+        }
 
-		if(totalStepHeight != 0.0F) {
-			set(player, 1.0F + totalStepHeight);
-		}
-	}
+        if (totalStepHeight != 0.0F) {
+            set(player, 1.0F + totalStepHeight);
+        }
+    }
 
-	public static void set(ServerPlayerEntity player, float stepHeight) {
-		ModNetwork.CHANNEL.sendTo(new StepHeightMessage(stepHeight), player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
-		player.stepHeight = stepHeight;
-	}
+    public static void set(ServerPlayerEntity player, float stepHeight) {
+        ModNetwork.CHANNEL.sendTo(new StepHeightMessage(stepHeight), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+        player.maxUpStep = stepHeight;
+    }
 
 }

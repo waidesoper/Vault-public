@@ -21,34 +21,34 @@ public class ItemSkillOrb extends Item {
 
     public ItemSkillOrb(ItemGroup group) {
         super(new Properties()
-                .group(group)
-                .maxStackSize(64));
+            .tab(group)
+            .stacksTo(64));
 
         this.setRegistryName(Vault.id("skill_orb"));
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
-        ItemStack heldItemStack = player.getHeldItem(hand);
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        ItemStack heldItemStack = player.getItemInHand(hand);
 
-        world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(),
-                SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.NEUTRAL,
-                0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+        world.playSound(null, player.getX(), player.getY(), player.getZ(),
+            SoundEvents.PLAYER_LEVELUP, SoundCategory.NEUTRAL,
+            0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
 
-        if (!world.isRemote) {
+        if (! world.isClientSide) {
             PlayerVaultStatsData statsData = PlayerVaultStatsData.get((ServerWorld) world);
             statsData.addSkillPoint(((ServerPlayerEntity) player), 1);
 
             // #Crimson_Fluff
-            ((ServerWorld) world).spawnParticle(new ItemParticleData(ParticleTypes.ITEM, heldItemStack), player.getPosX(),player.getPosY() + 1, player.getPosZ(), 250, 1D, 1D , 1D, 0d);
+            ((ServerWorld) world).sendParticles(new ItemParticleData(ParticleTypes.ITEM, heldItemStack), player.blockPosition().getX(),player.blockPosition().getY() + 1, player.blockPosition().getZ(), 250, 1D, 1D , 1D, 0d);
         }
 
-        player.addStat(Stats.ITEM_USED.get(this));
-        if (!player.abilities.isCreativeMode) {
+        player.awardStat(Stats.ITEM_USED.get(this));
+        if (! player.abilities.instabuild) {
             heldItemStack.shrink(1);
         }
 
-        return ActionResult.func_233538_a_(heldItemStack, world.isRemote());
+        return ActionResult.sidedSuccess(heldItemStack, world.isClientSide());
     }
 
 }

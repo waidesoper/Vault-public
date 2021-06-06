@@ -10,44 +10,48 @@ import java.util.Random;
 
 public abstract class VaultModifier {
 
-	public static final Random RANDOM = new Random();
+    public static final Random RANDOM = new Random();
 
-	@Expose private final String name;
-	@Expose private final String icon;
-	@Expose private String color = String.valueOf(0x00FFFF);
-	@Expose private String description = "This is a description.";
+    @Expose
+    private final String name;
+    @Expose
+    private final String icon;
+    @Expose
+    private String color = String.valueOf(0x00FFFF);
+    @Expose
+    private String description = "This is a description.";
 
-	public VaultModifier(String name, ResourceLocation icon) {
-		this.name = name;
-		this.icon = icon.toString();
-	}
+    public VaultModifier(String name, ResourceLocation icon) {
+        this.name = name;
+        this.icon = icon.toString();
+    }
 
-	public VaultModifier format(int color, String description) {
-		this.color = String.valueOf(color);
-		this.description = description;
-		return this;
-	}
+    public VaultModifier format(int color, String description) {
+        this.color = String.valueOf(color);
+        this.description = description;
+        return this;
+    }
 
-	public String getName() {
-		return this.name;
-	}
+    public String getName() {
+        return this.name;
+    }
 
-	public ResourceLocation getIcon() {
-		return new ResourceLocation(this.icon);
-	}
+    public ResourceLocation getIcon() {
+        return new ResourceLocation(this.icon);
+    }
 
-	public int getColor() {
-		return Integer.parseInt(this.color);
-	}
+    public int getColor() {
+        return Integer.parseInt(this.color);
+    }
 
-	public String getDescription() {
-		return this.description;
-	}
+    public String getDescription() {
+        return this.description;
+    }
 
-	public abstract void apply(VaultRaid raid);
+    public abstract void apply(VaultRaid raid);
 
-	public void tick(ServerWorld world, PlayerEntity player) {
+    public void tick(ServerWorld world, PlayerEntity player) {
 
-	}
+    }
 
 }

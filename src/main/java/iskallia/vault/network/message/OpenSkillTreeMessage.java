@@ -40,34 +40,34 @@ public class OpenSkillTreeMessage {
 
             if (sender == null) return;
 
-            PlayerAbilitiesData playerAbilitiesData = PlayerAbilitiesData.get((ServerWorld) sender.world);
+            PlayerAbilitiesData playerAbilitiesData = PlayerAbilitiesData.get((ServerWorld) sender.level);
             AbilityTree abilityTree = playerAbilitiesData.getAbilities(sender);
 
-            PlayerTalentsData playerTalentsData = PlayerTalentsData.get((ServerWorld) sender.world);
+            PlayerTalentsData playerTalentsData = PlayerTalentsData.get((ServerWorld) sender.level);
             TalentTree talentTree = playerTalentsData.getTalents(sender);
 
-            PlayerResearchesData playerResearchesData = PlayerResearchesData.get((ServerWorld) sender.world);
+            PlayerResearchesData playerResearchesData = PlayerResearchesData.get((ServerWorld) sender.level);
             ResearchTree researchTree = playerResearchesData.getResearches(sender);
 
             NetworkHooks.openGui(
-                    sender,
-                    new INamedContainerProvider() {
-                        @Override
-                        public ITextComponent getDisplayName() {
-                            return new TranslationTextComponent("container.vault.ability_tree");
-                        }
-
-                        @Nullable
-                        @Override
-                        public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-                            return new SkillTreeContainer(i, abilityTree, talentTree, researchTree);
-                        }
-                    },
-                    (buffer) -> {
-                        buffer.writeCompoundTag(abilityTree.serializeNBT());
-                        buffer.writeCompoundTag(talentTree.serializeNBT());
-                        buffer.writeCompoundTag(researchTree.serializeNBT());
+                sender,
+                new INamedContainerProvider() {
+                    @Override
+                    public ITextComponent getDisplayName() {
+                        return new TranslationTextComponent("container.vault.ability_tree");
                     }
+
+                    @Nullable
+                    @Override
+                    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+                        return new SkillTreeContainer(i, abilityTree, talentTree, researchTree);
+                    }
+                },
+                (buffer) -> {
+                    buffer.writeNbt(abilityTree.serializeNBT());
+                    buffer.writeNbt(talentTree.serializeNBT());
+                    buffer.writeNbt(researchTree.serializeNBT());
+                }
             );
         });
         context.setPacketHandled(true);

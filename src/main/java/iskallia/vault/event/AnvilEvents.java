@@ -39,12 +39,12 @@ public class AnvilEvents {
         Map<Enchantment, Integer> bookEnchantments = OverlevelEnchantHelper.getEnchantments(enchantedBook);
         int overlevels = OverlevelEnchantHelper.getOverlevels(enchantedBook);
 
-        if (overlevels == -1) return; // No over-levels, let vanilla do its thing
+        if (overlevels == - 1) return; // No over-levels, let vanilla do its thing
 
         Map<Enchantment, Integer> enchantmentsToApply = new HashMap<>(equipmentEnchantments);
 
         for (Enchantment bookEnchantment : bookEnchantments.keySet()) {
-            if (!equipmentEnchantments.containsKey(bookEnchantment)) continue;
+            if (! equipmentEnchantments.containsKey(bookEnchantment)) continue;
             int currentLevel = equipmentEnchantments.getOrDefault(bookEnchantment, 0);
             int bookLevel = bookEnchantments.get(bookEnchantment);
             int nextLevel = currentLevel == bookLevel ? currentLevel + 1 : Math.max(currentLevel, bookLevel);
@@ -64,10 +64,10 @@ public class AnvilEvents {
 
     @SubscribeEvent
     public static void onUnlockCrystal(AnvilUpdateEvent event) {
-        if(event.getLeft().getItem() instanceof ItemVaultCrystal && event.getRight().getItem() == ModItems.VOID_CORE) {
+        if (event.getLeft().getItem() instanceof ItemVaultCrystal && event.getRight().getItem() == ModItems.VOID_CORE) {
             ItemStack output = event.getLeft().copy();
 
-            if(ItemVaultCrystal.getData(output).addModifier("Locked", CrystalData.Modifier.Operation.REMOVE, 1.0F)) {
+            if (ItemVaultCrystal.getData(output).addModifier("Locked", CrystalData.Modifier.Operation.REMOVE, 1.0F)) {
                 event.setOutput(output);
                 event.setCost(1);
             }
@@ -76,7 +76,7 @@ public class AnvilEvents {
 
     @SubscribeEvent
     public static void onApplyEtching(AnvilUpdateEvent event) {
-        if(event.getLeft().getItem() instanceof VaultArmorItem && event.getRight().getItem() == ModItems.ETCHING) {
+        if (event.getLeft().getItem() instanceof VaultArmorItem && event.getRight().getItem() == ModItems.ETCHING) {
             ItemStack output = event.getLeft().copy();
             VaultGear.Set set = ModAttributes.GEAR_SET.getOrDefault(event.getRight(), VaultGear.Set.NONE).getValue(event.getRight());
             ModAttributes.GEAR_SET.create(output, set);
@@ -87,24 +87,24 @@ public class AnvilEvents {
 
     @SubscribeEvent
     public static void onApplyPog(AnvilUpdateEvent event) {
-        if(event.getRight().getItem() != ModItems.OMEGA_POG)return;
+        if (event.getRight().getItem() != ModItems.OMEGA_POG) return;
         ResourceLocation name = event.getLeft().getItem().getRegistryName();
 
-        if(event.getLeft().getItem() instanceof VaultGear<?>) {
+        if (event.getLeft().getItem() instanceof VaultGear<?>) {
             ItemStack output = event.getLeft().copy();
-            int maxRepairs = ModAttributes.MAX_REPAIRS.getOrDefault(output, -1).getValue(output);
+            int maxRepairs = ModAttributes.MAX_REPAIRS.getOrDefault(output, - 1).getValue(output);
             int curRepairs = ModAttributes.CURRENT_REPAIRS.getOrDefault(output, 0).getValue(output);
 
-            if(maxRepairs != -1 && curRepairs >= maxRepairs) {
+            if (maxRepairs != - 1 && curRepairs >= maxRepairs) {
                 return;
             }
 
             ModAttributes.CURRENT_REPAIRS.create(output, curRepairs + 1);
-            output.setDamage(0);
+            output.setDamageValue(0);
             event.setOutput(output);
             event.setMaterialCost(1);
             event.setCost(1);
-        } else if(name.getNamespace().equals(Vault.MOD_ID) && name.getPath().startsWith("artifact")) {
+        } else if (name.getNamespace().equals(Vault.MOD_ID) && name.getPath().startsWith("artifact")) {
             event.setOutput(new ItemStack(ModItems.UNIDENTIFIED_ARTIFACT));
             event.setMaterialCost(1);
             event.setCost(1);

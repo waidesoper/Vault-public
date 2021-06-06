@@ -28,9 +28,9 @@ public class ModKeybinds {
 
     private static KeyBinding createKeyBinding(String name, int key) {
         return new KeyBinding(
-                "key." + Vault.MOD_ID + "." + name,
-                key,
-                "key.category." + Vault.MOD_ID
+            "key." + Vault.MOD_ID + "." + name,
+            key,
+            "key.category." + Vault.MOD_ID
         );
     }
 }

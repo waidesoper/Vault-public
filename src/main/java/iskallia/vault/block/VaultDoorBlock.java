@@ -1,13 +1,11 @@
 package iskallia.vault.block;
 
 import iskallia.vault.init.ModItems;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
-import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -30,16 +28,16 @@ public class VaultDoorBlock extends DoorBlock {
     protected Item keyItem;
 
     public VaultDoorBlock(Item keyItem) {
-        super(Properties.create(Material.WOOD, MaterialColor.DIAMOND)
-                .hardnessAndResistance(-1.0F, 3600000.0F)
-                .sound(SoundType.METAL)
-                .notSolid());
-        this.setDefaultState(this.getStateContainer().getBaseState()
-                .with(FACING, Direction.NORTH)
-                .with(OPEN, Boolean.FALSE)
-                .with(HINGE, DoorHingeSide.LEFT)
-                .with(POWERED, Boolean.FALSE)
-                .with(HALF, DoubleBlockHalf.LOWER));
+        super(Properties.of(Material.WOOD, MaterialColor.DIAMOND)
+            .strength(- 1.0F, 3600000.0F)
+            .sound(SoundType.METAL)
+            .noOcclusion());
+        this.registerDefaultState(this.getStateDefinition().any()
+            .setValue(FACING, Direction.NORTH)
+            .setValue(OPEN, Boolean.FALSE)
+            .setValue(HINGE, DoorHingeSide.LEFT)
+            .setValue(POWERED, Boolean.FALSE)
+            .setValue(HALF, DoubleBlockHalf.LOWER));
         this.keyItem = keyItem;
         VAULT_DOORS.add(this);
     }
@@ -49,27 +47,19 @@ public class VaultDoorBlock extends DoorBlock {
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        ItemStack heldStack = player.getHeldItem(hand);
-        Boolean isOpen = state.get(OPEN);
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        ItemStack heldStack = player.getItemInHand(hand);
+        Boolean isOpen = state.getValue(OPEN);
 
-        if (!isOpen) {
+        // #Crimson_Fluff
+        if (! isOpen) {
             if (heldStack.getItem() == getKeyItem() || heldStack.getItem() == ModItems.SKELLY_KEY) {
-                if (! player.abilities.isCreativeMode) heldStack.shrink(1);
-                return super.onBlockActivated(state, world, pos, player, hand, hit);
+
+                if (! player.isCreative()) heldStack.shrink(1);
+                return super.use(state, world, pos, player, hand, hit);
             }
         }
 
         return ActionResultType.PASS;
-    }
-
-    @Override
-    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        //Not reacting to neighbor changes, esp. not redstone
-    }
-
-    @Override
-    public PushReaction getPushReaction(BlockState state) {
-        return PushReaction.IGNORE;
     }
 }

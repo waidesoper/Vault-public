@@ -13,7 +13,7 @@ public class RegenAfterAWhile<T extends LivingEntity> {
     public int ticksUntilNextPulse;
 
     public RegenAfterAWhile(T entity) {
-        this(entity, (int)(4.5 * 20), 10, 0.05F);
+        this(entity, (int) (4.5 * 20), 10, 0.05F);
     }
 
     public RegenAfterAWhile(T entity, int startTicksUntilRegen, int ticksUntilPulse, float regenPercentage) {
@@ -37,13 +37,13 @@ public class RegenAfterAWhile<T extends LivingEntity> {
     }
 
     public void tick() {
-        if(this.ticksUntilRegen <= 0) {
-            if(this.ticksUntilNextPulse <= 0) {
+        if (this.ticksUntilRegen <= 0) {
+            if (this.ticksUntilNextPulse <= 0) {
                 float maxHealth = entity.getMaxHealth();
                 float currentHealth = entity.getHealth();
 
                 this.entity.setHealth(
-                        Math.min(maxHealth, currentHealth + maxHealth * this.regenPercentage)
+                    Math.min(maxHealth, currentHealth + maxHealth * this.regenPercentage)
                 );
 
                 this.resetPulseTicks();

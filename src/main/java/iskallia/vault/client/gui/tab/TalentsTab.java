@@ -25,12 +25,12 @@ public class TalentsTab extends SkillTab {
     public void refresh() {
         this.talentWidgets.clear();
 
-        TalentTree talentTree = parentScreen.getContainer().getTalentTree();
+        TalentTree talentTree = parentScreen.getMenu().getTalentTree();
         ModConfigs.TALENTS_GUI.getStyles().forEach((abilityName, style) -> {
             this.talentWidgets.add(new TalentWidget(
-                    ModConfigs.TALENTS.getByName(abilityName),
-                    talentTree,
-                    style
+                ModConfigs.TALENTS.getByName(abilityName),
+                talentTree,
+                style
             ));
         });
     }
@@ -44,7 +44,7 @@ public class TalentsTab extends SkillTab {
         int containerMouseY = (int) ((mouseY - midpoint.y) / viewportScale - viewportTranslation.y);
         for (TalentWidget abilityWidget : talentWidgets) {
             if (abilityWidget.isMouseOver(containerMouseX, containerMouseY)
-                    && abilityWidget.mouseClicked(containerMouseX, containerMouseY, button)) {
+                && abilityWidget.mouseClicked(containerMouseX, containerMouseY, button)) {
                 if (this.selectedWidget != null) this.selectedWidget.deselect();
                 this.selectedWidget = abilityWidget;
                 this.selectedWidget.select();
@@ -62,7 +62,7 @@ public class TalentsTab extends SkillTab {
 
         Vector2f midpoint = parentScreen.getContainerBounds().midpoint();
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(midpoint.x, midpoint.y, 0);
         matrixStack.scale(viewportScale, viewportScale, 1);
         matrixStack.translate(viewportTranslation.x, viewportTranslation.y, 0);
@@ -74,7 +74,7 @@ public class TalentsTab extends SkillTab {
             abilityWidget.render(matrixStack, containerMouseX, containerMouseY, partialTicks);
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
 }

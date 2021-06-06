@@ -1,7 +1,6 @@
 package iskallia.vault.recipe;
 
 import iskallia.vault.block.item.RelicStatueBlockItem;
-import iskallia.vault.init.ModRecipes;
 import iskallia.vault.item.RelicPartItem;
 import iskallia.vault.util.RelicSet;
 import net.minecraft.inventory.CraftingInventory;
@@ -18,57 +17,57 @@ import java.util.Set;
 
 public class UnidentifiedGearRecipe extends SpecialRecipe {
 
-	public UnidentifiedGearRecipe(ResourceLocation id) {
-		super(id);
-	}
+    public UnidentifiedGearRecipe(ResourceLocation id) {
+        super(id);
+    }
 
-	@Override
-	public boolean matches(CraftingInventory inv, World world) {
-		RelicSet set = null;
-		Set<RelicPartItem> parts = new HashSet<>();
+    @Override
+    public boolean matches(CraftingInventory inv, World world) {
+        RelicSet set = null;
+        Set<RelicPartItem> parts = new HashSet<>();
 
-		for(int i = 0; i < inv.getSizeInventory(); ++i) {
-			ItemStack stack = inv.getStackInSlot(i);
+        for (int i = 0; i < inv.getContainerSize(); ++ i) {
+            ItemStack stack = inv.getItem(i);
 
-			if(stack.getItem() instanceof RelicPartItem) {
-				if(set != null && ((RelicPartItem)stack.getItem()).getRelicSet() != set) {
-					return false;
-				}
+            if (stack.getItem() instanceof RelicPartItem) {
+                if (set != null && ((RelicPartItem) stack.getItem()).getRelicSet() != set) {
+                    return false;
+                }
 
-				set = ((RelicPartItem)stack.getItem()).getRelicSet();
-				parts.add((RelicPartItem)stack.getItem());
-			} else if(!stack.isEmpty()) {
-				return false;
-			}
-		}
+                set = ((RelicPartItem) stack.getItem()).getRelicSet();
+                parts.add((RelicPartItem) stack.getItem());
+            } else if (! stack.isEmpty()) {
+                return false;
+            }
+        }
 
-		return set != null && parts.size() == set.getItemSet().size();
-	}
+        return set != null && parts.size() == set.getItemSet().size();
+    }
 
-	@Override
-	public ItemStack getCraftingResult(CraftingInventory inv) {
-		for(int i = 0; i < inv.getSizeInventory(); ++i) {
-			ItemStack stack = inv.getStackInSlot(i);
+    @Override
+    public ItemStack assemble(CraftingInventory inv) {
+        for (int i = 0; i < inv.getContainerSize(); ++ i) {
+            ItemStack stack = inv.getItem(i);
 
-			if(stack.getItem() instanceof RelicPartItem) {
-				RelicSet set = ((RelicPartItem)stack.getItem()).getRelicSet();
-				return RelicStatueBlockItem.withRelicSet(set);
-			}
-		}
+            if (stack.getItem() instanceof RelicPartItem) {
+                RelicSet set = ((RelicPartItem) stack.getItem()).getRelicSet();
+                return RelicStatueBlockItem.withRelicSet(set);
+            }
+        }
 
-		return ItemStack.EMPTY;
-	}
+        return ItemStack.EMPTY;
+    }
 
-	@Override
-	public boolean canFit(int width, int height) {
-		Optional<RelicSet> min = RelicSet.getAll().stream().min(Comparator.comparingInt(o -> o.getItemSet().size()));
-		return min.isPresent() && width * height >= min.get().getItemSet().size();
-	}
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        Optional<RelicSet> min = RelicSet.getAll().stream().min(Comparator.comparingInt(o -> o.getItemSet().size()));
+        return min.isPresent() && width * height >= min.get().getItemSet().size();
+    }
 
-	@Override
-	public IRecipeSerializer<?> getSerializer() {
-		return null;
-		//		return ModRecipes.Serializer.CRAFTING_SPECIAL_RELIC_SET;
-	}
+    @Override
+    public IRecipeSerializer<?> getSerializer() {
+        return null;
+//        return ModRecipes.Serializer.CRAFTING_SPECIAL_RELIC_SET;
+    }
 
 }

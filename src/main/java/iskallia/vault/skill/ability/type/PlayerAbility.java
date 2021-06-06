@@ -7,9 +7,12 @@ import net.minecraft.entity.player.PlayerEntity;
 
 public abstract class PlayerAbility {
 
-    @Expose private int cost;
-    @Expose protected int cooldown;
-    @Expose protected Behavior behavior;
+    @Expose
+    private int cost;
+    @Expose
+    protected int cooldown;
+    @Expose
+    protected Behavior behavior;
 
     public PlayerAbility(int cost, Behavior behavior) {
         this.cost = cost;
@@ -26,7 +29,7 @@ public abstract class PlayerAbility {
     }
 
     public int getCooldown(PlayerEntity player) {
-        if(PlayerSet.isActive(VaultGear.Set.RIFT, player)) {
+        if (PlayerSet.isActive(VaultGear.Set.RIFT, player)) {
             return this.cooldown / 2;
         }
 

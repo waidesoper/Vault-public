@@ -4,7 +4,8 @@ import com.google.gson.annotations.Expose;
 
 public class VaultItemsConfig extends Config {
 
-    @Expose public VaultBurger VAULT_BURGER;
+    @Expose
+    public VaultBurger VAULT_BURGER;
 
     @Override
     public String getName() {
@@ -19,8 +20,10 @@ public class VaultItemsConfig extends Config {
     }
 
     public static class VaultBurger {
-        @Expose public float minExpPercent;
-        @Expose public float maxExpPercent;
+        @Expose
+        public float minExpPercent;
+        @Expose
+        public float maxExpPercent;
     }
 
 }

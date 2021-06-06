@@ -25,18 +25,18 @@ public class ItemLegendaryTreasure extends Item {
 
     public ItemLegendaryTreasure(ItemGroup group, ResourceLocation id, VaultRarity vaultRarity) {
         super(new Properties()
-                .group(group)
-                .maxStackSize(1));
+            .tab(group)
+            .stacksTo(1));
 
         this.setRegistryName(id);
         this.vaultRarity = vaultRarity;
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if (worldIn.isRemote) return super.onItemRightClick(worldIn, playerIn, handIn);
-        if (handIn != Hand.MAIN_HAND) return super.onItemRightClick(worldIn, playerIn, handIn);
-        ItemStack stack = playerIn.getHeldItemMainhand();
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        if (worldIn.isClientSide) return super.use(worldIn, playerIn, handIn);
+        if (handIn != Hand.MAIN_HAND) return super.use(worldIn, playerIn, handIn);
+        ItemStack stack = playerIn.getMainHandItem();
         if (stack.getItem() instanceof ItemLegendaryTreasure) {
             ItemLegendaryTreasure item = (ItemLegendaryTreasure) stack.getItem();
             ItemStack toDrop = ItemStack.EMPTY;
@@ -54,32 +54,31 @@ public class ItemLegendaryTreasure extends Item {
                     toDrop = ModConfigs.LEGENDARY_TREASURE_OMEGA.getRandom();
                     break;
             }
-
-            playerIn.dropItem(toDrop, false);
-            ItemRelicBoosterPack.successEffectsAsItem(worldIn, playerIn.getPositionVec(), stack);
+            playerIn.drop(toDrop, false);
+            ItemRelicBoosterPack.successEffectsAsItem(worldIn, playerIn.position(), stack);     // #Crimson_Fluff
             stack.shrink(1);
         }
 
-        return super.onItemRightClick(worldIn, playerIn, handIn);
+        return super.use(worldIn, playerIn, handIn);
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         if (stack.getItem() instanceof ItemLegendaryTreasure) {
             ItemLegendaryTreasure item = (ItemLegendaryTreasure) stack.getItem();
-            tooltip.add(new TranslationTextComponent("tip.the_vault.artifact_identify").mergeStyle(TextFormatting.GOLD));
-            tooltip.add(new TranslationTextComponent("tip.the_vault.rarity", new StringTextComponent(item.getRarity().name()).mergeStyle(item.getRarity().color)));
+            tooltip.add(new TranslationTextComponent("tip.the_vault.artifact_identify").withStyle(TextFormatting.GOLD));
+            tooltip.add(new TranslationTextComponent("tip.the_vault.rarity", new StringTextComponent(item.getRarity().name()).withStyle(item.getRarity().color)));
         }
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
     @Override
-    public ITextComponent getDisplayName(ItemStack stack) {
+    public ITextComponent getName(ItemStack stack) {
         if (stack.getItem() instanceof ItemLegendaryTreasure) {
             ItemLegendaryTreasure item = (ItemLegendaryTreasure) stack.getItem();
-            return new StringTextComponent(item.getRarity().color + "Legendary Treasure");
+            return new TranslationTextComponent("item.the_vault.legendary_treasure").withStyle(item.getRarity().color);
         }
-        return super.getDisplayName(stack);
+        return super.getName(stack);
     }
 
     public VaultRarity getRarity() {

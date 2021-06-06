@@ -13,7 +13,8 @@ import net.minecraft.world.server.ServerWorld;
 
 public class DashAbility extends PlayerAbility {
 
-    @Expose private final int extraRadius;
+    @Expose
+    private final int extraRadius;
 
     public DashAbility(int cost, int extraRadius) {
         super(cost, Behavior.RELEASE_TO_PERFORM);
@@ -26,15 +27,15 @@ public class DashAbility extends PlayerAbility {
 
     @Override
     public void onAction(PlayerEntity player, boolean active) {
-        Vector3d lookVector = player.getLookVec();
+        Vector3d lookVector = player.getLookAngle();
 
         double magnitude = (10 + extraRadius) * 0.15;
         double extraPitch = 10;
 
         Vector3d dashVector = new Vector3d(
-                lookVector.getX(),
-                lookVector.getY(),
-                lookVector.getZ()
+            lookVector.x(),
+            lookVector.y(),
+            lookVector.z()
         );
 
         float initialYaw = (float) MathUtilities.extractYaw(dashVector);
@@ -47,39 +48,39 @@ public class DashAbility extends PlayerAbility {
             dashVector = new Vector3d(0, 1, 0);
             dashPitch = 90;
         } else {
-            dashVector = MathUtilities.rotateRoll(dashVector, (float) Math.toRadians(-extraPitch));
-            dashVector = MathUtilities.rotateYaw(dashVector, -initialYaw);
+            dashVector = MathUtilities.rotateRoll(dashVector, (float) Math.toRadians(- extraPitch));
+            dashVector = MathUtilities.rotateYaw(dashVector, - initialYaw);
             dashVector = dashVector.normalize();
         }
 
         double coef = 1.6 - MathUtilities.map(Math.abs(dashPitch),
-                0.0d, 90.0d,
-                0.6, 1.0d);
+            0.0d, 90.0d,
+            0.6, 1.0d);
 
         dashVector = dashVector.scale(magnitude * coef);
 
-        player.addVelocity(
-                dashVector.getX(),
-                dashVector.getY(),
-                dashVector.getZ()
+        player.push(
+            dashVector.x(),
+            dashVector.y(),
+            dashVector.z()
         );
 
-        player.velocityChanged = true;
+        player.hurtMarked = true;
 
-        ((ServerWorld) player.world).spawnParticle(ParticleTypes.POOF,
-                player.getPosX(), player.getPosY(), player.getPosZ(),
-                50, 1D, 0.5D, 1D, 0.0D);
+        ((ServerWorld) player.level).sendParticles(ParticleTypes.POOF,
+            player.getX(), player.getY(), player.getZ(),
+            50, 1D, 0.5D, 1D, 0.0D);
 
         if (GrasshopperNinja.isGrasshopperShape(player)) {
-            player.world.playSound(player, player.getPosX(), player.getPosY(), player.getPosZ(),
-                    ModSounds.GRASSHOPPER_BRRR, SoundCategory.MASTER, 1f, 1f);
-            player.playSound(ModSounds.GRASSHOPPER_BRRR, SoundCategory.MASTER, 1f, 1f);
+            player.level.playSound(player, player.getX(), player.getY(), player.getZ(),
+                ModSounds.GRASSHOPPER_BRRR, SoundCategory.MASTER, 1f, 1f);
+            player.playNotifySound(ModSounds.GRASSHOPPER_BRRR, SoundCategory.MASTER, 1f, 1f);
             GrasshopperNinja.achieve((ServerPlayerEntity) player);
 
         } else {
-            player.world.playSound(player, player.getPosX(), player.getPosY(), player.getPosZ(),
-                    ModSounds.DASH_SFX, SoundCategory.MASTER, 1f, 1f);
-            player.playSound(ModSounds.DASH_SFX, SoundCategory.MASTER, 1f, 1f);
+            player.level.playSound(player, player.getX(), player.getY(), player.getZ(),
+                ModSounds.DASH_SFX, SoundCategory.MASTER, 1f, 1f);
+            player.playNotifySound(ModSounds.DASH_SFX, SoundCategory.MASTER, 1f, 1f);
         }
 
     }

@@ -21,8 +21,8 @@ public class RelicPartItem extends Item {
 
     public RelicPartItem(ItemGroup group, ResourceLocation id) {
         super(new Properties()
-                .group(group)
-                .maxStackSize(64));
+            .tab(group)
+            .stacksTo(64));
 
         this.setRegistryName(id);
     }
@@ -36,13 +36,13 @@ public class RelicPartItem extends Item {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
         StringTextComponent line = new StringTextComponent("Vault Relic - " + this.relicSet.getName());
-        line.setStyle(Style.EMPTY.setColor(Color.fromInt(0xFF_c6b11e)));
+        line.setStyle(Style.EMPTY.withColor(Color.fromRgb(0xFF_c6b11e)));
         tooltip.add(new StringTextComponent(""));
         tooltip.add(line);
 
-        super.addInformation(stack, world, tooltip, flag);
+        super.appendHoverText(stack, world, tooltip, flag);
     }
 
 }

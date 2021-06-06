@@ -5,7 +5,8 @@ import iskallia.vault.util.MathUtilities;
 
 public class PlayerExpConfig extends Config {
 
-    @Expose private int expPerVaultBoss;
+    @Expose
+    private int expPerVaultBoss;
 
     public int getRelicBoosterPackExp() {
         return (int) (expPerVaultBoss * MathUtilities.randomFloat(0.01f, 0.20f));

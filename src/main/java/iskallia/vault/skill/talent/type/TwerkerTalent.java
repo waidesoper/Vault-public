@@ -1,8 +1,6 @@
 package iskallia.vault.skill.talent.type;
 
 import com.google.gson.annotations.Expose;
-import iskallia.vault.skill.talent.TalentTree;
-import iskallia.vault.world.data.PlayerTalentsData;
 import net.minecraft.block.Block;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.block.SaplingBlock;
@@ -16,10 +14,14 @@ import net.minecraft.world.server.ServerWorld;
 
 public class TwerkerTalent extends PlayerTalent {
 
-    @Expose private final int tickDelay = 5;
-    @Expose private final int xRange = 2;
-    @Expose private final int yRange = 1;
-    @Expose private final int zRange = 2;
+    @Expose
+    private final int tickDelay = 5;
+    @Expose
+    private final int xRange = 2;
+    @Expose
+    private final int yRange = 1;
+    @Expose
+    private final int zRange = 2;
 
     public TwerkerTalent(int cost) {
         super(cost);
@@ -44,23 +46,24 @@ public class TwerkerTalent extends PlayerTalent {
     @Override
     public void tick(PlayerEntity player) {
         if (player.isCrouching()) {
-            BlockPos playerPos = player.getPosition();
+            BlockPos playerPos = player.blockPosition();
 
             BlockPos pos = new BlockPos(
-                    playerPos.getX() + player.getRNG().nextInt(this.getXRange() * 2 + 1) - this.getXRange(),
-                    playerPos.getY() - player.getRNG().nextInt(this.getYRange() * 2 + 1) + this.getYRange(),
-                    playerPos.getZ() + player.getRNG().nextInt(this.getZRange() * 2 + 1) - this.getZRange());
+                playerPos.getX() + player.getRandom().nextInt(this.getXRange() * 2 + 1) - this.getXRange(),
+                playerPos.getY() - player.getRandom().nextInt(this.getYRange() * 2 + 1) + this.getYRange(),
+                playerPos.getZ() + player.getRandom().nextInt(this.getZRange() * 2 + 1) - this.getZRange());
 
-            Block block = player.world.getBlockState(pos).getBlock();
+            Block block = player.level.getBlockState(pos).getBlock();
 
-            PlayerTalentsData playerTalentsData = PlayerTalentsData.get((ServerWorld) player.world);
-            TalentTree talentTree = playerTalentsData.getTalents(player);
-
-            //player.sendMessage(new StringTextComponent("LEVEL: " + talentTree.getNodeOf(ModConfigs.TALENTS.TWERKER).getLevel()), player.getUniqueID());
+// #Crimson_Fluff, different levels bone meal different crops ?
+//            PlayerTalentsData playerTalentsData = PlayerTalentsData.get((ServerWorld) player.world);
+//            TalentTree talentTree = playerTalentsData.getTalents(player);
+//            player.sendMessage(new StringTextComponent("LEVEL: " + talentTree.getNodeOf(ModConfigs.TALENTS.TWERKER).getLevel()), player.getUniqueID());
 
             if (block instanceof CropsBlock || block instanceof SaplingBlock) {
-                if (BoneMealItem.applyBonemeal(new ItemStack(Items.BONE_MEAL), player.world, pos, player)) {
-                    ((ServerWorld) player.world).spawnParticle(ParticleTypes.HAPPY_VILLAGER, pos.getX(), pos.getY(), pos.getZ(), 25, 1D, 0.5D, 1D, 0.0D);
+                if (BoneMealItem.applyBonemeal(new ItemStack(Items.BONE_MEAL), player.level, pos, player)) {
+                    ((ServerWorld) player.level).sendParticles(ParticleTypes.HAPPY_VILLAGER, pos.getX(), pos.getY(), pos.getZ(),
+                        25, 1D, 0.5D, 1D, 0.0D);
                 }
             }
         }

@@ -12,17 +12,17 @@ import net.minecraft.inventory.EquipmentSlotType;
 public class GrasshopperNinja {
 
     public static void achieve(ServerPlayerEntity playerEntity) {
-        Advancement advancement = playerEntity.getServer().getAdvancementManager()
-                .getAdvancement(Vault.id("grasshopper_ninja"));
+        Advancement advancement = playerEntity.getServer().getAdvancements()
+            .getAdvancement(Vault.id("grasshopper_ninja"));
         playerEntity.getAdvancements()
-                .grantCriterion(advancement, "hopped");
+            .award(advancement, "hopped");
     }
 
     public static boolean isGrasshopperShape(PlayerEntity playerEntity) {
         return PlayerSet.allMatch(playerEntity,
-                (slotType, itemStack) -> ModAttributes.GEAR_MODEL.getOrDefault(itemStack, -1).getValue(itemStack) == 0
-                        && isGrasshopperGreen(((VaultArmorItem) itemStack.getItem()).getColor(itemStack)),
-                EquipmentSlotType.HEAD, EquipmentSlotType.CHEST, EquipmentSlotType.LEGS, EquipmentSlotType.FEET
+            (slotType, itemStack) -> ModAttributes.GEAR_MODEL.getOrDefault(itemStack, - 1).getValue(itemStack) == 0
+                && isGrasshopperGreen(((VaultArmorItem) itemStack.getItem()).getColor(itemStack)),
+            EquipmentSlotType.HEAD, EquipmentSlotType.CHEST, EquipmentSlotType.LEGS, EquipmentSlotType.FEET
         );
     }
 

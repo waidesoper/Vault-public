@@ -23,7 +23,9 @@ public class ReloadConfigsCommand extends Command {
     }
 
     private int reloadConfigs(CommandContext<CommandSource> context) {
-        try { ModConfigs.register(); } catch (Exception e) {
+        try {
+            ModConfigs.register();
+        } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }

@@ -60,6 +60,8 @@ public class ModConfigs {
     public static VaultFightersConfig VAULT_FIGHTERS;
 
     public static void register() {
+        VAULT_FIGHTERS = (VaultFightersConfig) new VaultFightersConfig().readConfig();
+
         ABILITIES = (AbilitiesConfig) new AbilitiesConfig().readConfig();
         ABILITIES_GUI = (AbilitiesGUIConfig) new AbilitiesGUIConfig().readConfig();
         TALENTS = (TalentsConfig) new TalentsConfig().readConfig();
@@ -108,9 +110,6 @@ public class ModConfigs {
         GLOBAL_TRADER = (GlobalTraderConfig) new GlobalTraderConfig().readConfig();
         PLAYER_EXP = (PlayerExpConfig) new PlayerExpConfig().readConfig();
         FINAL_VAULT_GENERAL = (FinalVaultGeneralConfig) new FinalVaultGeneralConfig().readConfig();
-
-        VAULT_FIGHTERS = (VaultFightersConfig) new VaultFightersConfig().readConfig();
-
         Vault.LOGGER.info("Vault Configs are loaded successfully!");
     }
 

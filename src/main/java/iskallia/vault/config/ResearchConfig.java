@@ -11,8 +11,10 @@ import java.util.List;
 
 public class ResearchConfig extends Config {
 
-    @Expose public List<ModResearch> MOD_RESEARCHES;
-    @Expose public List<CustomResearch> CUSTOM_RESEARCHES;
+    @Expose
+    public List<ModResearch> MOD_RESEARCHES;
+    @Expose
+    public List<CustomResearch> CUSTOM_RESEARCHES;
 
     @Override
     public String getName() {

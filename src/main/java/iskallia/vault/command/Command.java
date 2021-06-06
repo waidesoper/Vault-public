@@ -7,16 +7,16 @@ import net.minecraft.util.text.StringTextComponent;
 
 public abstract class Command {
 
-	public abstract String getName();
+    public abstract String getName();
 
-	public abstract int getRequiredPermissionLevel();
+    public abstract int getRequiredPermissionLevel();
 
-	public abstract void build(LiteralArgumentBuilder<CommandSource> builder);
+    public abstract void build(LiteralArgumentBuilder<CommandSource> builder);
 
-	public abstract boolean isDedicatedServerOnly();
+    public abstract boolean isDedicatedServerOnly();
 
-	protected final void sendFeedback(CommandContext<CommandSource> context, String message, boolean showOps) {
-		context.getSource().sendFeedback(new StringTextComponent(message), showOps);
-	}
+    protected final void sendFeedback(CommandContext<CommandSource> context, String message, boolean showOps) {
+        context.getSource().sendSuccess(new StringTextComponent(message), showOps);
+    }
 
 }

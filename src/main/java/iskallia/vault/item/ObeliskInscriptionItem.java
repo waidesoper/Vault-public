@@ -6,9 +6,9 @@ import net.minecraft.util.ResourceLocation;
 
 public class ObeliskInscriptionItem extends Item {
 
-	public ObeliskInscriptionItem(ItemGroup group, ResourceLocation id) {
-		super(new Properties().group(group));
-		this.setRegistryName(id);
-	}
+    public ObeliskInscriptionItem(ItemGroup group, ResourceLocation id) {
+        super(new Properties().tab(group));
+        this.setRegistryName(id);
+    }
 
 }

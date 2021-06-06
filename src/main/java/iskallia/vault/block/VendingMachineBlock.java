@@ -47,33 +47,36 @@ import javax.annotation.Nullable;
 
 public class VendingMachineBlock extends Block {
 
-    public static final DirectionProperty FACING = HorizontalBlock.HORIZONTAL_FACING;
+    public static final DirectionProperty FACING = HorizontalBlock.FACING;
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
 
     public VendingMachineBlock() {
-        this(Properties.create(Material.IRON, MaterialColor.IRON)
-                .hardnessAndResistance(2.0F, 3600000.0F)
-                .sound(SoundType.METAL)
-                .notSolid());
+        this(Properties.of(Material.METAL, MaterialColor.METAL)
+            .strength(2.0F, 3600000.0F)
+            .sound(SoundType.METAL)
+            .noOcclusion());
 
     }
 
     public VendingMachineBlock(Properties properties) {
         super(properties);
 
-        this.setDefaultState(this.stateContainer.getBaseState()
-                .with(FACING, Direction.NORTH)
-                .with(HALF, DoubleBlockHalf.LOWER));
+        this.registerDefaultState(this.stateDefinition.any()
+            .setValue(FACING, Direction.NORTH)
+            .setValue(HALF, DoubleBlockHalf.LOWER));
     }
 
     @Override
     public boolean hasTileEntity(BlockState state) {
-        return state.get(HALF) == DoubleBlockHalf.LOWER;
+        if (state.getValue(HALF) == DoubleBlockHalf.LOWER)
+            return true;
+
+        return false;
     }
 
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        if (state.get(HALF) == DoubleBlockHalf.LOWER)
+        if (state.getValue(HALF) == DoubleBlockHalf.LOWER)
             return ModBlocks.VENDING_MACHINE_TILE_ENTITY.create();
 
         return null;
@@ -82,62 +85,62 @@ public class VendingMachineBlock extends Block {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
-        BlockPos pos = context.getPos();
-        World world = context.getWorld();
-        if (pos.getY() < 255 && world.getBlockState(pos.up()).isReplaceable(context)) {
-            return this.getDefaultState().with(FACING, context.getPlacementHorizontalFacing()).with(HALF, DoubleBlockHalf.LOWER);
+        BlockPos pos = context.getClickedPos();
+        World world = context.getLevel();
+        if (pos.getY() < 255 && world.getBlockState(pos.above()).canBeReplaced(context)) {
+            return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection()).setValue(HALF, DoubleBlockHalf.LOWER);
         } else {
             return null;
         }
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(HALF);
         builder.add(FACING);
     }
 
     @Override
-    public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
-        if (!worldIn.isRemote && player.isCreative()) {
-            DoubleBlockHalf half = state.get(HALF);
+    public void playerWillDestroy(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
+        if (! worldIn.isClientSide && player.isCreative()) {
+            DoubleBlockHalf half = state.getValue(HALF);
             if (half == DoubleBlockHalf.UPPER) {
-                BlockPos blockpos = pos.down();
+                BlockPos blockpos = pos.below();
                 BlockState blockstate = worldIn.getBlockState(blockpos);
-                if (blockstate.getBlock() == state.getBlock() && blockstate.get(HALF) == DoubleBlockHalf.LOWER) {
-                    worldIn.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 35);
-                    worldIn.playEvent(player, 2001, blockpos, Block.getStateId(blockstate));
+                if (blockstate.getBlock() == state.getBlock() && blockstate.getValue(HALF) == DoubleBlockHalf.LOWER) {
+                    worldIn.setBlock(blockpos, Blocks.AIR.defaultBlockState(), 35);
+                    worldIn.levelEvent(player, 2001, blockpos, Block.getId(blockstate));
                 }
             }
         }
 
-        super.onBlockHarvested(worldIn, pos, state, player);
+        super.playerWillDestroy(worldIn, pos, state, player);
     }
 
     @Override
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        DoubleBlockHalf half = stateIn.get(HALF);
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        DoubleBlockHalf half = stateIn.getValue(HALF);
         if (facing.getAxis() == Direction.Axis.Y && half == DoubleBlockHalf.LOWER == (facing == Direction.UP)) {
-            return facingState.isIn(this) && facingState.get(HALF) != half ? stateIn.with(FACING, facingState.get(FACING)) : Blocks.AIR.getDefaultState();
+            return facingState.is(this) && facingState.getValue(HALF) != half ? stateIn.setValue(FACING, facingState.getValue(FACING)) : Blocks.AIR.defaultBlockState();
         } else {
-            return half == DoubleBlockHalf.LOWER && facing == Direction.DOWN && !stateIn.isValidPosition(worldIn, currentPos) ? Blocks.AIR.getDefaultState() : super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+            return half == DoubleBlockHalf.LOWER && facing == Direction.DOWN && ! stateIn.canSurvive(worldIn, currentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
         }
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        worldIn.setBlockState(pos.up(), state.with(HALF, DoubleBlockHalf.UPPER), 3);
+    public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        worldIn.setBlock(pos.above(), state.setValue(HALF, DoubleBlockHalf.UPPER), 3);
     }
 
     @Override
-    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (worldIn.isRemote) return;
-        if (!newState.isAir()) return;
+    public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (worldIn.isClientSide) return;
+        if (! newState.isAir()) return;
 
         VendingMachineTileEntity machine = (VendingMachineTileEntity) getBlockTileEntity(worldIn, pos, state);
         if (machine == null) return;
 
-        if (state.get(HALF) == DoubleBlockHalf.LOWER) {
+        if (state.getValue(HALF) == DoubleBlockHalf.LOWER) {
             ItemStack stack = new ItemStack(getBlock());
             CompoundNBT machineNBT = machine.serializeNBT();
             CompoundNBT stackNBT = new CompoundNBT();
@@ -147,26 +150,26 @@ public class VendingMachineBlock extends Block {
             dropVendingMachine(stack, worldIn, pos);
         }
 
-        super.onReplaced(state, worldIn, pos, newState, isMoving);
+        super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 
     private void dropVendingMachine(ItemStack stack, World world, BlockPos pos) {
         ItemEntity entity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack);
-        world.addEntity(entity);
+        world.addFreshEntity(entity);
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        ItemStack heldStack = player.getHeldItem(hand);
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        ItemStack heldStack = player.getItemInHand(hand);
 
         VendingMachineTileEntity machine = (VendingMachineTileEntity) getBlockTileEntity(world, pos, state);
         if (machine == null) return ActionResultType.SUCCESS;
 
-        if (!world.isRemote() && player.isSneaking()) {
+        if (! world.isClientSide() && player.isShiftKeyDown()) {
             ItemStack core = machine.getTraderCoreStack();
-            playOpenSound();    // #Crimson_Fluff a sound indication that trader card is inserted/removed
-            if (!player.addItemStackToInventory(core)) {
-                player.dropItem(core, false);
+            playOpenSound();                    // #Crimson_Fluff a sound indication that trader card is inserted/removed
+            if (! player.addItem(core)) {
+                player.drop(core, false);
             }
             machine.sendUpdates();
             return ActionResultType.SUCCESS;
@@ -175,67 +178,68 @@ public class VendingMachineBlock extends Block {
         if (heldStack.getItem() instanceof ItemTraderCore) {
             TraderCore lastCore = machine.getLastCore();
             TraderCore coreToInsert = ItemTraderCore.getCoreFromStack(heldStack);
-            if(coreToInsert == null || coreToInsert.getTrade() == null) return ActionResultType.FAIL;
+            if (coreToInsert == null || coreToInsert.getTrade() == null) return ActionResultType.FAIL;
             if (lastCore == null || lastCore.getName().equalsIgnoreCase(coreToInsert.getName())) {
                 machine.addCore(coreToInsert);
                 playOpenSound();                    // #Crimson_Fluff a sound indication that trader card is inserted/removed
-                heldStack.shrink(1);        // #Crimson_Fluff TODO: Not in Creative ?
+                heldStack.shrink(1);
             } else {
                 TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.vending_occupied");
-                text.setStyle(Style.EMPTY.setColor(Color.fromInt(0xFF_ffd800)));
-                player.sendStatusMessage(text, true);
+                text.setStyle(Style.EMPTY.withColor(Color.fromRgb(0xFF_ffd800)));
+                player.displayClientMessage(text, true);
             }
 
             return ActionResultType.SUCCESS;
 
         } else {
-            if (world.isRemote) {
-//                playOpenSound();      // #Crimson_Fluff Don't be silly we don't need an opening sound
+            if (world.isClientSide) {
+//                playOpenSound();
                 return ActionResultType.SUCCESS;
             }
 
             NetworkHooks.openGui(
-                    (ServerPlayerEntity) player,
-                    new INamedContainerProvider() {
-                        @Override
-                        public ITextComponent getDisplayName() {
-                            return new TranslationTextComponent("block.the_vault.vending_machine");
-                        }
+                (ServerPlayerEntity) player,
+                new INamedContainerProvider() {
+                    @Override
+                    public ITextComponent getDisplayName() {
+                        return new TranslationTextComponent("block.the_vault.vending_machine"); }
 
-                        @Nullable
-                        @Override
-                        public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-                            BlockState blockState = world.getBlockState(pos);
-                            BlockPos vendingMachinePos = getTileEntityPos(blockState, pos);
-                            return new VendingMachineContainer(windowId, world, vendingMachinePos, playerInventory, playerEntity);
-                        }
-                    },
-                    (buffer) -> {
+                    @Nullable
+                    @Override
+                    public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
                         BlockState blockState = world.getBlockState(pos);
-                        buffer.writeBlockPos(getTileEntityPos(blockState, pos));
+                        BlockPos vendingMachinePos = getTileEntityPos(blockState, pos);
+                        return new VendingMachineContainer(windowId, world, vendingMachinePos, playerInventory, playerEntity);
                     }
+                },
+                (buffer) -> {
+                    BlockState blockState = world.getBlockState(pos);
+                    buffer.writeBlockPos(getTileEntityPos(blockState, pos));
+                }
             );
         }
-        return super.onBlockActivated(state, world, pos, player, hand, hit);
+        return super.use(state, world, pos, player, hand, hit);
     }
 
     @OnlyIn(Dist.CLIENT)
     public static void playOpenSound() {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.getSoundHandler().play(SimpleSound.master(
-                ModSounds.VENDING_MACHINE_SFX, 1f, 1f
+        minecraft.getSoundManager().play(SimpleSound.forUI(
+            ModSounds.VENDING_MACHINE_SFX, 1f, 1f
         ));
     }
 
     public static BlockPos getTileEntityPos(BlockState state, BlockPos pos) {
-        return state.get(HALF) == DoubleBlockHalf.UPPER
-                ? pos.down() : pos;
+        return state.getValue(HALF) == DoubleBlockHalf.UPPER
+            ? pos.below() : pos;
     }
 
     public static TileEntity getBlockTileEntity(World world, BlockPos pos, BlockState state) {
         BlockPos vendingMachinePos = getTileEntityPos(state, pos);
 
-        return world.getTileEntity(vendingMachinePos);
+        TileEntity tileEntity = world.getBlockEntity(vendingMachinePos);
+
+        return tileEntity;
     }
 
 }

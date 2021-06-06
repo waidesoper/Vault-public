@@ -12,7 +12,7 @@ public class RelicSet {
 
     public static final Map<ResourceLocation, RelicSet> REGISTRY = new HashMap<>();
     public static RelicSet DRAGON, MINER, WARRIOR, RICHITY,
-            TWITCH, CUPCAKE, ELEMENT, TWOLF999, SHIELDMANH;
+        TWITCH, CUPCAKE, ELEMENT, TWOLF999, SHIELDMANH;
 
     private String name;
     private ResourceLocation id;

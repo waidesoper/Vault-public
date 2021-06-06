@@ -82,9 +82,9 @@ public class VaultAltarConfig extends Config {
 
     public List<RequiredItem> generateItems(ServerWorld world, PlayerEntity player) {
 
-        // return getRequiredItemsFromJson();
+        return getRequiredItemsFromJson();
 
-        return getRequiredItemsFromTables(world, player);
+        //return getRequiredItemsFromTables(world, player);
     }
 
     private List<RequiredItem> getRequiredItemsFromJson() {
@@ -104,16 +104,16 @@ public class VaultAltarConfig extends Config {
 
     private List<RequiredItem> getRequiredItemsFromTables(ServerWorld world, PlayerEntity player) {
         LootContext ctx = new LootContext.Builder(world)
-                .withParameter(LootParameters.THIS_ENTITY, player)
-                .withRandom(world.rand).withLuck(player.getLuck())
-                .build(LootParameterSets.field_237453_h_); //Barter set
+            .withParameter(LootParameters.THIS_ENTITY, player)
+            .withRandom(world.random).withLuck(player.getLuck())
+            .create(LootParameterSets.PIGLIN_BARTER); //Barter set
 
-        List<ItemStack> stacks = world.getServer().getLootTableManager().getLootTableFromLocation(Vault.id("chest/altar")).generate(ctx);
+        List<ItemStack> stacks = world.getServer().getLootTables().get(Vault.id("chest/altar")).getRandomItems(ctx);
 
         List<RequiredItem> items = stacks.stream()
-                .map(stack -> new RequiredItem(new ItemStack(stack.getItem()), 0, stack.getCount()))
-                .sorted(Comparator.comparingInt(o -> o.getItem().getItem().getRegistryName().hashCode()))
-                .collect(Collectors.toList());
+            .map(stack -> new RequiredItem(new ItemStack(stack.getItem()), 0, stack.getCount()))
+            .sorted(Comparator.comparingInt(o -> o.getItem().getItem().getRegistryName().hashCode()))
+            .collect(Collectors.toList());
 
         List<RequiredItem> stackedItems = new ArrayList<>();
 

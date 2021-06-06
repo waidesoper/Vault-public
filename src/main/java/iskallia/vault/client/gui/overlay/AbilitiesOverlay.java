@@ -49,83 +49,83 @@ public class AbilitiesOverlay {
 
         MatrixStack matrixStack = event.getMatrixStack();
         Minecraft minecraft = Minecraft.getInstance();
-        int bottom = minecraft.getMainWindow().getScaledHeight();
+        int bottom = minecraft.getWindow().getGuiScaledHeight();
         int barWidth = 62;
         int barHeight = 22;
 
-        minecraft.getProfiler().startSection("abilityBar");
-        matrixStack.push();
+        minecraft.getProfiler().push("abilityBar");
+        matrixStack.pushPose();
 
         RenderSystem.enableBlend();
         matrixStack.translate(10, bottom - barHeight, 0);
 
-        minecraft.getTextureManager().bindTexture(HUD_RESOURCE);
-        minecraft.ingameGUI.blit(matrixStack,
-                0, 0,
-                1, 13, barWidth, barHeight);
+        minecraft.getTextureManager().bind(HUD_RESOURCE);
+        minecraft.gui.blit(matrixStack,
+            0, 0,
+            1, 13, barWidth, barHeight);
 
-        minecraft.getTextureManager().bindTexture(ABILITIES_RESOURCE);
+        minecraft.getTextureManager().bind(ABILITIES_RESOURCE);
         AbilityNode<?> focusedAbility = learnedAbilities.get(focusedIndex);
         SkillStyle focusedStyle = ModConfigs.ABILITIES_GUI.getStyles().get(focusedAbility.getGroup().getParentName());
-        GlStateManager.color4f(1, 1, 1, cooldowns.getOrDefault(focusedIndex, 0) > 0 ? 0.4f : 1);
-        minecraft.ingameGUI.blit(matrixStack,
-                23, 3,
-                focusedStyle.u, focusedStyle.v,
-                16, 16);
+        GlStateManager._color4f(1, 1, 1, cooldowns.getOrDefault(focusedIndex, 0) > 0 ? 0.4f : 1);
+        minecraft.gui.blit(matrixStack,
+            23, 3,
+            focusedStyle.u, focusedStyle.v,
+            16, 16);
 
         if (cooldowns.getOrDefault(focusedIndex, 0) > 0) {
             float cooldownPercent = (float) cooldowns.get(focusedIndex) / ModConfigs.ABILITIES.cooldownOf(focusedAbility, minecraft.player);
             int cooldownHeight = (int) (16 * cooldownPercent);
             AbstractGui.fill(matrixStack,
-                    23, 3 + (16 - cooldownHeight),
-                    23 + 16, 3 + 16,
-                    0x99_FFFFFF);
+                23, 3 + (16 - cooldownHeight),
+                23 + 16, 3 + 16,
+                0x99_FFFFFF);
             RenderSystem.enableBlend();
         }
 
-        GlStateManager.color4f(0.7f, 0.7f, 0.7f, 0.5f);
+        GlStateManager._color4f(0.7f, 0.7f, 0.7f, 0.5f);
         AbilityNode<?> previousAbility = learnedAbilities.get(previousIndex);
         if (cooldowns.getOrDefault(previousIndex, 0) > 0) {
             float cooldownPercent = (float) cooldowns.get(previousIndex) / ModConfigs.ABILITIES.cooldownOf(previousAbility, minecraft.player);
             int cooldownHeight = (int) (16 * cooldownPercent);
             AbstractGui.fill(matrixStack,
-                    43, 3 + (16 - cooldownHeight),
-                    43 + 16, 3 + 16,
-                    0x99_FFFFFF);
+                43, 3 + (16 - cooldownHeight),
+                43 + 16, 3 + 16,
+                0x99_FFFFFF);
             RenderSystem.enableBlend();
         }
         SkillStyle previousStyle = ModConfigs.ABILITIES_GUI.getStyles().get(previousAbility.getGroup().getParentName());
-        minecraft.ingameGUI.blit(matrixStack,
-                43, 3,
-                previousStyle.u, previousStyle.v,
-                16, 16);
+        minecraft.gui.blit(matrixStack,
+            43, 3,
+            previousStyle.u, previousStyle.v,
+            16, 16);
 
         AbilityNode<?> nextAbility = learnedAbilities.get(nextIndex);
         if (cooldowns.getOrDefault(nextIndex, 0) > 0) {
             float cooldownPercent = (float) cooldowns.get(nextIndex) / ModConfigs.ABILITIES.cooldownOf(nextAbility, minecraft.player);
             int cooldownHeight = (int) (16 * cooldownPercent);
             AbstractGui.fill(matrixStack,
-                    3, 3 + (16 - cooldownHeight),
-                    3 + 16, 3 + 16,
-                    0x99_FFFFFF);
+                3, 3 + (16 - cooldownHeight),
+                3 + 16, 3 + 16,
+                0x99_FFFFFF);
             RenderSystem.enableBlend();
         }
         SkillStyle nextStyle = ModConfigs.ABILITIES_GUI.getStyles().get(nextAbility.getGroup().getParentName());
-        minecraft.ingameGUI.blit(matrixStack,
-                3, 3,
-                nextStyle.u, nextStyle.v,
-                16, 16);
+        minecraft.gui.blit(matrixStack,
+            3, 3,
+            nextStyle.u, nextStyle.v,
+            16, 16);
 
-        minecraft.getTextureManager().bindTexture(HUD_RESOURCE);
-        GlStateManager.color4f(1, 1, 1, 1);
-        minecraft.ingameGUI.blit(matrixStack,
-                19, -1,
-                64 + (cooldowns.getOrDefault(focusedIndex, 0) > 0 ? 50 : active ? 25 : 0),
-                13,
-                24, 24);
+        minecraft.getTextureManager().bind(HUD_RESOURCE);
+        GlStateManager._color4f(1, 1, 1, 1);
+        minecraft.gui.blit(matrixStack,
+            19, - 1,
+            64 + (cooldowns.getOrDefault(focusedIndex, 0) > 0 ? 50 : active ? 25 : 0),
+            13,
+            24, 24);
 
-        matrixStack.pop();
-        minecraft.getProfiler().endSection();
+        matrixStack.popPose();
+        minecraft.getProfiler().pop();
     }
 
 }

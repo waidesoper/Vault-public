@@ -28,128 +28,128 @@ import java.util.List;
 
 public class VaultDaggerItem extends SwordItem implements VaultGear<VaultDaggerItem> {
 
-	public VaultDaggerItem(ResourceLocation id, Properties builder) {
-		super(Tier.INSTANCE, 0, -2.4F, builder);
-		this.setRegistryName(id);
-	}
+    public VaultDaggerItem(ResourceLocation id, Properties builder) {
+        super(Tier.INSTANCE, 0, - 2.4F, builder);
+        this.setRegistryName(id);
+    }
 
-	@Override
-	public int getModelsFor(Rarity rarity) {
-		return rarity == Rarity.SCRAPPY ? 1 : 1;
-	}
+    @Override
+    public int getModelsFor(Rarity rarity) {
+        return rarity == Rarity.SCRAPPY ? 1 : 1;
+    }
 
-	public void attackOffHand() {
-		Minecraft mc = Minecraft.getInstance();
+    public void attackOffHand() {
+        Minecraft mc = Minecraft.getInstance();
 
-		if(Minecraft.getInstance().world != null && Minecraft.getInstance().currentScreen == null
-				&& !Minecraft.getInstance().isGamePaused() && mc.player != null && !mc.player.isActiveItemStackBlocking()) {
-			RayTraceResult rayTrace = getEntityMouseOverExtended(6.0F);
+        if (Minecraft.getInstance().level != null && Minecraft.getInstance().screen == null
+            && ! Minecraft.getInstance().isPaused() && mc.player != null && ! mc.player.isBlocking()) {
+            RayTraceResult rayTrace = getEntityMouseOverExtended(6.0F);
 
-			if(rayTrace instanceof EntityRayTraceResult) {
-				EntityRayTraceResult entityRayTrace = (EntityRayTraceResult)rayTrace;
-				Entity entityHit = entityRayTrace.getEntity();
+            if (rayTrace instanceof EntityRayTraceResult) {
+                EntityRayTraceResult entityRayTrace = (EntityRayTraceResult) rayTrace;
+                Entity entityHit = entityRayTrace.getEntity();
 
-				if(entityHit != mc.player && entityHit != mc.player.getRidingEntity()) {
-					ModNetwork.CHANNEL.sendTo(new AttackOffHandMessage(entityHit.getEntityId()), mc.player.connection.getNetworkManager(), NetworkDirection.PLAY_TO_SERVER);
-				}
-			}
-		}
-	}
+                if (entityHit != mc.player && entityHit != mc.player.getVehicle()) {
+                    ModNetwork.CHANNEL.sendTo(new AttackOffHandMessage(entityHit.getId()), mc.player.connection.getConnection(), NetworkDirection.PLAY_TO_SERVER);
+                }
+            }
+        }
+    }
 
-	//===========================================================================================================//
+    //===========================================================================================================//
 
-	@Override
-	public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
-		return this.getAttributeModifiers(this, slot, stack, super.getAttributeModifiers(slot, stack));
-	}
+    @Override
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
+        return this.getAttributeModifiers(this, slot, stack, super.getAttributeModifiers(slot, stack));
+    }
 
-	@Override
-	public boolean isDamageable(ItemStack stack) {
-		return this.isDamageable(this, stack);
-	}
+    @Override
+    public boolean isDamageable(ItemStack stack) {
+        return this.isDamageable(this, stack);
+    }
 
-	@Override
-	public int getMaxDamage(ItemStack stack) {
-		return this.getMaxDamage(this, stack, super.getMaxDamage(stack));
-	}
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return this.getMaxDamage(this, stack, super.getMaxDamage(stack));
+    }
 
-	@Override
-	public ITextComponent getDisplayName(ItemStack itemStack) {
-		return this.getDisplayName(this, itemStack, super.getDisplayName(itemStack));
-	}
+    @Override
+    public ITextComponent getName(ItemStack itemStack) {
+        return this.getDisplayName(this, itemStack, super.getName(itemStack));
+    }
 
-	@Override
-	public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
-		return this.onItemRightClick(this, world, player, hand, super.onItemRightClick(world, player, hand));
-	}
+    @Override
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        return this.onItemRightClick(this, world, player, hand, super.use(world, player, hand));
+    }
 
-	@Override
-	public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
-		super.inventoryTick(stack, world, entity, itemSlot, isSelected);
-		this.inventoryTick(this, stack, world, entity, itemSlot, isSelected);
-	}
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+        super.inventoryTick(stack, world, entity, itemSlot, isSelected);
+        this.inventoryTick(this, stack, world, entity, itemSlot, isSelected);
+    }
 
-	@Override
-	public void addInformation(ItemStack stack, World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
-		super.addInformation(stack, world, tooltip, flag);
-		this.addInformation(this, stack, world, tooltip, flag);
-	}
+    @Override
+    public void appendHoverText(ItemStack stack, World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.appendHoverText(stack, world, tooltip, flag);
+        this.addInformation(this, stack, world, tooltip, flag);
+    }
 
-	@Override
-	public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
-		return this.canElytraFly(this, stack, entity);
-	}
+    @Override
+    public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
+        return this.canElytraFly(this, stack, entity);
+    }
 
-	@Override
-	public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
-		return this.elytraFlightTick(this, stack, entity, flightTicks);
-	}
+    @Override
+    public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
+        return this.elytraFlightTick(this, stack, entity, flightTicks);
+    }
 
-	//===========================================================================================================//
+    //===========================================================================================================//
 
-	private static RayTraceResult getEntityMouseOverExtended(float reach) {
-		RayTraceResult result = null;
-		Minecraft mc = Minecraft.getInstance();
-		Entity viewEntity = mc.renderViewEntity;
+    private static RayTraceResult getEntityMouseOverExtended(float reach) {
+        RayTraceResult result = null;
+        Minecraft mc = Minecraft.getInstance();
+        Entity viewEntity = mc.cameraEntity;
 
-		if(viewEntity != null && mc.world != null) {
-			double reachDistance = reach;
-			RayTraceResult rayTrace = viewEntity.pick(reachDistance, 0.0F, false);
-			Vector3d eyePos = viewEntity.getEyePosition(0.0F);
-			boolean hasExtendedReach = false;
-			double attackReach;
+        if (viewEntity != null && mc.level != null) {
+            double reachDistance = reach;
+            RayTraceResult rayTrace = viewEntity.pick(reachDistance, 0.0F, false);
+            Vector3d eyePos = viewEntity.getEyePosition(0.0F);
+            boolean hasExtendedReach = false;
+            double attackReach;
 
-			if(mc.playerController != null) {
-				if (mc.playerController.extendedReach() && reachDistance < 6.0D) {
-					attackReach = 6.0D;
-					reachDistance = attackReach;
-				} else if (reachDistance > (double)reach) {
-					hasExtendedReach = true;
-				}
-			}
+            if (mc.gameMode != null) {
+                if (mc.gameMode.hasFarPickRange() && reachDistance < 6.0D) {
+                    attackReach = 6.0D;
+                    reachDistance = attackReach;
+                } else if (reachDistance > (double) reach) {
+                    hasExtendedReach = true;
+                }
+            }
 
-			attackReach = rayTrace.getHitVec().squareDistanceTo(eyePos);
+            attackReach = rayTrace.getLocation().distanceToSqr(eyePos);
 
-			Vector3d lookVec = viewEntity.getLook(1.0F);
-			Vector3d attackVec = eyePos.add(lookVec.x * reachDistance, lookVec.y * reachDistance, lookVec.z * reachDistance);
-			AxisAlignedBB axisAlignedBB = viewEntity.getBoundingBox().expand(lookVec.scale(reachDistance)).grow(1.0D, 1.0D, 1.0D);
-			EntityRayTraceResult entityRayTrace = ProjectileHelper.rayTraceEntities(viewEntity, eyePos, attackVec, axisAlignedBB, (entity) -> !entity.isSpectator() && entity.canBeCollidedWith(), attackReach);
+            Vector3d lookVec = viewEntity.getViewVector(1.0F);
+            Vector3d attackVec = eyePos.add(lookVec.x * reachDistance, lookVec.y * reachDistance, lookVec.z * reachDistance);
+            AxisAlignedBB axisAlignedBB = viewEntity.getBoundingBox().expandTowards(lookVec.scale(reachDistance)).inflate(1.0D, 1.0D, 1.0D);
+            EntityRayTraceResult entityRayTrace = ProjectileHelper.getEntityHitResult(viewEntity, eyePos, attackVec, axisAlignedBB, (entity) -> ! entity.isSpectator() && entity.isPickable(), attackReach);
 
-			if(entityRayTrace != null) {
-				Vector3d hitVec = entityRayTrace.getHitVec();
-				double squareDistanceTo = eyePos.squareDistanceTo(hitVec);
+            if (entityRayTrace != null) {
+                Vector3d hitVec = entityRayTrace.getLocation();
+                double squareDistanceTo = eyePos.distanceToSqr(hitVec);
 
-				if(hasExtendedReach && squareDistanceTo > (double)(reach * reach)) {
-					result = BlockRayTraceResult.createMiss(hitVec, Direction.getFacingFromVector(lookVec.x, lookVec.y, lookVec.z), new BlockPos(hitVec));
-				} else if(squareDistanceTo < attackReach) {
-					result = entityRayTrace;
-				}
-			} else {
-				result = BlockRayTraceResult.createMiss(attackVec, Direction.getFacingFromVector(lookVec.x, lookVec.y, lookVec.z), new BlockPos(attackVec));
-			}
-		}
+                if (hasExtendedReach && squareDistanceTo > (double) (reach * reach)) {
+                    result = BlockRayTraceResult.miss(hitVec, Direction.getNearest(lookVec.x, lookVec.y, lookVec.z), new BlockPos(hitVec));
+                } else if (squareDistanceTo < attackReach) {
+                    result = entityRayTrace;
+                }
+            } else {
+                result = BlockRayTraceResult.miss(attackVec, Direction.getNearest(lookVec.x, lookVec.y, lookVec.z), new BlockPos(attackVec));
+            }
+        }
 
-		return result;
-	}
+        return result;
+    }
 
 }

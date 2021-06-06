@@ -4,15 +4,16 @@ import com.google.gson.annotations.Expose;
 
 public class CarapaceTalent extends PlayerTalent {
 
-	@Expose private float resistanceBonus;
+    @Expose
+    private float resistanceBonus;
 
-	public CarapaceTalent(int cost, float resistanceBonus) {
-		super(cost);
-		this.resistanceBonus = resistanceBonus;
-	}
+    public CarapaceTalent(int cost, float resistanceBonus) {
+        super(cost);
+        this.resistanceBonus = resistanceBonus;
+    }
 
-	public float getResistanceBonus() {
-		return this.resistanceBonus;
-	}
+    public float getResistanceBonus() {
+        return this.resistanceBonus;
+    }
 
 }

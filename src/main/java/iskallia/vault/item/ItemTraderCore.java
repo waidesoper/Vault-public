@@ -39,8 +39,8 @@ public class ItemTraderCore extends Item {
 
     public ItemTraderCore(ItemGroup group, ResourceLocation id) {
         super(new Properties()
-                .group(group)
-                .maxStackSize(1));
+            .tab(group)
+            .stacksTo(1));
 
         this.setRegistryName(id);
     }
@@ -103,7 +103,7 @@ public class ItemTraderCore extends Item {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         CompoundNBT nbt = stack.getOrCreateTag();
         if (nbt.contains("core")) {
             TraderCore core;
@@ -117,79 +117,79 @@ public class ItemTraderCore extends Item {
             Trade trade = core.getTrade();
             if (trade == null) {
 //                tooltip.add(new StringTextComponent(""));
+//                tooltip.add(new StringTextComponent("Trader: "));
+//                StringTextComponent tip = new StringTextComponent(" Right-click to generate trade!");
                 TranslationTextComponent tip = new TranslationTextComponent("tip.the_vault.trader_core_click");
-                tip.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_FFAA00)));
+                tip.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_FFAA00)));
                 tooltip.add(tip);
                 return;
             }
-            if (!trade.isValid()) return;
+            if (! trade.isValid()) return;
 
-            makeTooltip(core, tooltip);
+            Product buy = trade.getBuy();
+            Product extra = trade.getExtra();
+            Product sell = trade.getSell();
+//            tooltip.add(new StringTextComponent(""));
+//            tooltip.add(new StringTextComponent("Trader: "));
+//            StringTextComponent traderName = new StringTextComponent(" " + core.getName());
+//            traderName.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_FFAA00)));
+//            tooltip.add(traderName);
+            tooltip.add(new StringTextComponent(""));
+            tooltip.add(new TranslationTextComponent("tip.the_vault.vending_trades").append(":"));
+            if (buy != null && buy.isValid()) {
+                TranslationTextComponent comp = new TranslationTextComponent("tip.the_vault.trade_buy");
+                TranslationTextComponent name = new TranslationTextComponent(buy.getItem().getDescriptionId());
+                name.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_FFAA00)));
+                comp.append(name).append(new StringTextComponent(" x" + buy.getAmount()));
+                tooltip.add(comp);
+            }
+            if (extra != null && extra.isValid()) {
+                TranslationTextComponent comp = new TranslationTextComponent("tip.the_vault.trade_ex");
+                TranslationTextComponent name = new TranslationTextComponent(extra.getItem().getDescriptionId());
+                name.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_FFAA00)));
+                comp.append(name).append(new StringTextComponent(" x" + extra.getAmount()));
+                tooltip.add(comp);
+            }
+            if (sell != null && sell.isValid()) {
+                TranslationTextComponent comp = new TranslationTextComponent("tip.the_vault.trade_sell");
+                TranslationTextComponent name = new TranslationTextComponent(sell.getItem().getDescriptionId());
+                name.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_FFAA00)));
+                comp.append(name).append(new StringTextComponent(" x" + sell.getAmount()));
+                tooltip.add(comp);
+            }
+
+            if (core.isMegahead()) {
+                tooltip.add(new StringTextComponent(""));
+                TranslationTextComponent comp = new TranslationTextComponent("tip.the_vault.trade_head");
+                comp.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_00FF00)));
+                tooltip.add(comp);
+            }
+
+            tooltip.add(new StringTextComponent(""));
+            if (trade.getTradesLeft() == 0) {
+                TranslationTextComponent comp = new TranslationTextComponent("tip.the_vault.trader_soldout");
+                comp.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_FF0000)));
+                tooltip.add(comp);
+            } else if (trade.getTradesLeft() == - 1) {
+                TranslationTextComponent comp = new TranslationTextComponent("tip.the_vault.trader_infinite");
+                comp.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_00AAFF)));
+                tooltip.add(comp);
+            } else {
+                TranslationTextComponent comp = new TranslationTextComponent("tip.the_vault.trader_limited","[" + trade.getTradesLeft() + "]");
+                comp.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_FFAA00)));
+                tooltip.add(comp);
+            }
         } else {
 //            tooltip.add(new StringTextComponent(""));
+//            tooltip.add(new StringTextComponent("Trader: "));
+//            StringTextComponent tip = new StringTextComponent(" Right-click to generate trade!");
             TranslationTextComponent tip = new TranslationTextComponent("tip.the_vault.trader_core_click");
-            tip.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_FFAA00)));
+            tip.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_FFAA00)));
             tooltip.add(tip);
             return;
         }
-        super.addInformation(stack, worldIn, tooltip, flagIn);
-    }
 
-    public static void makeTooltip(TraderCore core, List<ITextComponent> tooltip) {
-        Trade trade = core.getTrade();
-        Product buy = trade.getBuy();
-        Product extra = trade.getExtra();
-        Product sell = trade.getSell();
-//            tooltip.add(new StringTextComponent(""));
-//            tooltip.add(new TranslationTextComponent("tip.the_vault.trader"));
-//            StringTextComponent traderName = new StringTextComponent(" " + core.getName());
-//            traderName.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_FFAA00)));
-//            tooltip.add(traderName);
-        tooltip.add(new StringTextComponent(""));
-        tooltip.add(new StringTextComponent("Trades: "));
-        if (buy != null && buy.isValid()) {
-            StringTextComponent comp = new StringTextComponent(" - Buy: ");
-            TranslationTextComponent name = new TranslationTextComponent(buy.getItem().getTranslationKey());
-            name.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_FFAA00)));
-            comp.append(name).append(new StringTextComponent(" x" + buy.getAmount()));
-            tooltip.add(comp);
-        }
-        if (extra != null && extra.isValid()) {
-            StringTextComponent comp = new StringTextComponent(" - Extra: ");
-            TranslationTextComponent name = new TranslationTextComponent(extra.getItem().getTranslationKey());
-            name.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_FFAA00)));
-            comp.append(name).append(new StringTextComponent(" x" + extra.getAmount()));
-            tooltip.add(comp);
-        }
-        if (sell != null && sell.isValid()) {
-            StringTextComponent comp = new StringTextComponent(" - Sell: ");
-            TranslationTextComponent name = new TranslationTextComponent(sell.getItem().getTranslationKey());
-            name.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_FFAA00)));
-            comp.append(name).append(new StringTextComponent(" x" + sell.getAmount()));
-            tooltip.add(comp);
-        }
-
-        if (core.isMegahead()) {
-            tooltip.add(new StringTextComponent(""));
-            StringTextComponent comp = new StringTextComponent("MEGAHEAD!");
-            comp.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_00FF00)));
-            tooltip.add(comp);
-        }
-
-        tooltip.add(new StringTextComponent(""));
-        if (trade.getTradesLeft() == 0) {
-            TranslationTextComponent comp = new TranslationTextComponent("tip.the_vault.trader_soldout");
-            comp.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_FF0000)));
-            tooltip.add(comp);
-        } else if (trade.getTradesLeft() == -1) {
-            TranslationTextComponent comp = new TranslationTextComponent("tip.the_vault.trader_infinite");
-            comp.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_00AAFF)));
-            tooltip.add(comp);
-        } else {
-            TranslationTextComponent comp = new TranslationTextComponent("tip.the_vault.trader_limited","[" + trade.getTradesLeft() + "]");
-            comp.setStyle(Style.EMPTY.setColor(Color.fromInt(0x00_FFAA00)));
-            tooltip.add(comp);
-        }
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
     @Override
@@ -198,8 +198,8 @@ public class ItemTraderCore extends Item {
     }
 
     @Override
-    public ITextComponent getDisplayName(ItemStack stack) {
-        ITextComponent text = super.getDisplayName(stack);
+    public ITextComponent getName(ItemStack stack) {
+        ITextComponent text = super.getName(stack);
         CompoundNBT nbt = stack.getOrCreateTag();
 
         if (nbt.contains("core", Constants.NBT.TAG_COMPOUND)) {
@@ -215,32 +215,30 @@ public class ItemTraderCore extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity player, Hand handIn) {
-        if (worldIn.isRemote) return super.onItemRightClick(worldIn, player, handIn);
-        if (handIn == Hand.OFF_HAND) return super.onItemRightClick(worldIn, player, handIn);
-        ItemStack stack = player.getHeldItemMainhand();
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity player, Hand handIn) {
+        if (worldIn.isClientSide) return super.use(worldIn, player, handIn);
+        if (handIn == Hand.OFF_HAND) return super.use(worldIn, player, handIn);
+        ItemStack stack = player.getMainHandItem();
 
-        if (player.isSneaking()) {
+        if (player.isShiftKeyDown()) {
             CompoundNBT nbt = new CompoundNBT();
             nbt.putInt("RenameType", RenameType.TRADER_CORE.ordinal());
             nbt.put("Data", stack.serializeNBT());
             NetworkHooks.openGui(
-                    (ServerPlayerEntity) player,
-                    new INamedContainerProvider() {
-                        @Override
-                        public ITextComponent getDisplayName() {
-                            return new TranslationTextComponent("item.the_vault.trader_core");
-                        }
+                (ServerPlayerEntity) player,
+                new INamedContainerProvider() {
+                    @Override
+                    public ITextComponent getDisplayName() { return new TranslationTextComponent("item.the_vault.trader_core"); }
 
-                        @Nullable
-                        @Override
-                        public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-                            return new RenamingContainer(windowId, nbt);
-                        }
-                    },
-                    (buffer) -> {
-                        buffer.writeCompoundTag(nbt);
+                    @Nullable
+                    @Override
+                    public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+                        return new RenamingContainer(windowId, nbt);
                     }
+                },
+                (buffer) -> {
+                    buffer.writeNbt(nbt);
+                }
             );
         } else {
             CompoundNBT nbt = stack.getOrCreateTag();
@@ -250,24 +248,24 @@ public class ItemTraderCore extends Item {
                     core = NBTSerializer.deserialize(TraderCore.class, nbt.getCompound("core"));
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return super.onItemRightClick(worldIn, player, handIn);
+                    return super.use(worldIn, player, handIn);
                 }
                 if (core.getTrade() == null) {
-                    String name = new TranslationTextComponent("item.the_vault.trader_core").getString();
-                    if (core.getName() != null && !core.getName().isEmpty()) {
+                    String name = "Trader";
+                    if (core.getName() != null && ! core.getName().isEmpty()) {
                         name = core.getName();
                     }
                     ItemStack newTraderCore = generate(name, 1, false, CoreType.COMMON);
-                    player.setHeldItem(Hand.MAIN_HAND, newTraderCore);
+                    player.setItemInHand(Hand.MAIN_HAND, newTraderCore);
                 }
             } else {
-                ItemStack newTraderCore = generate(new TranslationTextComponent("item.the_vault.trader_core").getString(), 1, false, CoreType.COMMON);
-                player.setHeldItem(Hand.MAIN_HAND, newTraderCore);
+                ItemStack newTraderCore = generate("Trader", 1, false, CoreType.COMMON);
+                player.setItemInHand(Hand.MAIN_HAND, newTraderCore);
             }
 
-            ItemRelicBoosterPack.successEffectsAsItem(worldIn, player.getPositionVec(), stack);
+            ItemRelicBoosterPack.successEffectsAsItem(worldIn, player.position(), stack);     // #Crimson_Fluff
         }
-        return super.onItemRightClick(worldIn, player, handIn);
+        return super.use(worldIn, player, handIn);
     }
 
     public static String getTraderName(ItemStack stack) {

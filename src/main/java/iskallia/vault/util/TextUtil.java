@@ -4,14 +4,14 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 public class TextUtil {
-    static final TextFormatting[] rainbow = new TextFormatting[]{
-            TextFormatting.RED,
-            TextFormatting.GOLD,
-            TextFormatting.YELLOW,
-            TextFormatting.GREEN,
-            TextFormatting.BLUE,
-            TextFormatting.LIGHT_PURPLE,
-            TextFormatting.DARK_PURPLE
+    static final TextFormatting[] rainbow = new TextFormatting[] {
+        TextFormatting.RED,
+        TextFormatting.GOLD,
+        TextFormatting.YELLOW,
+        TextFormatting.GREEN,
+        TextFormatting.BLUE,
+        TextFormatting.LIGHT_PURPLE,
+        TextFormatting.DARK_PURPLE
     };
 
     public static StringTextComponent applyRainbowTo(String text) {

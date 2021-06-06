@@ -9,6 +9,6 @@ import java.util.Random;
 @FunctionalInterface
 public interface BlockPlacer {
 
-	BlockState getState(BlockPos pos, Random random, Direction facing);
+    BlockState getState(BlockPos pos, Random random, Direction facing);
 
 }

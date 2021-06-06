@@ -32,59 +32,59 @@ import javax.annotation.Nullable;
 public class GlobalTraderBlock extends VendingMachineBlock {
 
     public GlobalTraderBlock() {
-        super(Properties.create(Material.IRON, MaterialColor.IRON)
-                .hardnessAndResistance(-1.0f, 3600000.0F)
-                .notSolid()
-                .sound(SoundType.METAL));
+        super(Properties.of(Material.METAL, MaterialColor.METAL)
+            .strength(- 1.0f, 3600000.0F)
+            .noOcclusion()
+            .sound(SoundType.METAL));
     }
 
     @Override
     public boolean hasTileEntity(BlockState state) {
-        return state.get(HALF) == DoubleBlockHalf.LOWER;
+        return state.getValue(HALF) == DoubleBlockHalf.LOWER;
     }
 
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return state.get(HALF) == DoubleBlockHalf.LOWER ? ModBlocks.GLOBAL_TRADER_TILE_ENTITY.create() : null;
+        return state.getValue(HALF) == DoubleBlockHalf.LOWER ? ModBlocks.GLOBAL_TRADER_TILE_ENTITY.create() : null;
     }
 
     @Override
-    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
 
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        if (world.isRemote) {
-//                playOpenSound();      // #Crimson_Fluff Don't be silly we don't need an opening sound
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        if (world.isClientSide) {
+//            playOpenSound();
             return ActionResultType.SUCCESS;
         }
 
         ListNBT playerTrades = GlobalTraderData.get((ServerWorld) world).getPlayerTradesAsNbt(player);
 
         NetworkHooks.openGui(
-                (ServerPlayerEntity) player,
-                new INamedContainerProvider() {
-                    @Override
-                    public ITextComponent getDisplayName() {
-                        return new TranslationTextComponent("tip.the_vault.global");
-                    }
-
-                    @Nullable
-                    @Override
-                    public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-                        BlockState blockState = world.getBlockState(pos);
-                        BlockPos position = getTileEntityPos(blockState, pos);
-                        return new GlobalTraderContainer(windowId, world, position, playerInventory, playerEntity, playerTrades);
-                    }
-                },
-                (buffer) -> {
-                    CompoundNBT nbt = new CompoundNBT();
-                    nbt.put("PlayerTradesList", playerTrades);
-                    BlockState blockState = world.getBlockState(pos);
-                    buffer.writeBlockPos(getTileEntityPos(blockState, pos));
-                    buffer.writeCompoundTag(nbt);
+            (ServerPlayerEntity) player,
+            new INamedContainerProvider() {
+                @Override
+                public ITextComponent getDisplayName() {
+                    return new TranslationTextComponent("tip.the_vault.global");
                 }
+
+                @Nullable
+                @Override
+                public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+                    BlockState blockState = world.getBlockState(pos);
+                    BlockPos position = getTileEntityPos(blockState, pos);
+                    return new GlobalTraderContainer(windowId, world, position, playerInventory, playerEntity, playerTrades);
+                }
+            },
+            (buffer) -> {
+                CompoundNBT nbt = new CompoundNBT();
+                nbt.put("PlayerTradesList", playerTrades);
+                BlockState blockState = world.getBlockState(pos);
+                buffer.writeBlockPos(getTileEntityPos(blockState, pos));
+                buffer.writeNbt(nbt);
+            }
         );
         return ActionResultType.SUCCESS;
     }

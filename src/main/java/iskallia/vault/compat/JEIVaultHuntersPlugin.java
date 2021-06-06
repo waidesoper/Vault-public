@@ -1,9 +1,9 @@
 package iskallia.vault.compat;
+
 //
 // Created by BONNe
 // Copyright - 2021
 //
-
 
 import iskallia.vault.Vault;
 import iskallia.vault.client.gui.screen.KeyPressScreen;
@@ -25,8 +25,8 @@ import net.minecraft.util.ResourceLocation;
 
 
 @JeiPlugin
-public class JEIVaultHuntersPlugin implements IModPlugin
-{
+public class JEIVaultHuntersPlugin implements IModPlugin {
+
     private IRecipeCategory<KeyPressRecipe> keyPressCategory;
 
 
@@ -64,7 +64,7 @@ public class JEIVaultHuntersPlugin implements IModPlugin
         IJeiHelpers jeiHelpers = registration.getJeiHelpers();
         IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
         registration.addRecipeCategories(
-            keyPressCategory = new JEIKeyPressCategory(guiHelper)
+            keyPressCategory = new KeyPressCategory(guiHelper)
         );
     }
 
@@ -73,8 +73,9 @@ public class JEIVaultHuntersPlugin implements IModPlugin
     public void registerRecipes(IRecipeRegistration registration)
     {
         IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
-        registration.addRecipes(AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory), VanillaRecipeCategoryUid.ANVIL);
-        registration.addRecipes(Minecraft.getInstance().world.getRecipeManager().getRecipesForType(ModRecipes.KEY_PRESS_RECIPE), Vault.id("key_press_recipe"));
+        registration.addRecipes(JEIAnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory), VanillaRecipeCategoryUid.ANVIL);
+
+        registration.addRecipes(Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(ModRecipes.KEY_PRESS_RECIPE), Vault.id("key_press_recipe"));
     }
 
 

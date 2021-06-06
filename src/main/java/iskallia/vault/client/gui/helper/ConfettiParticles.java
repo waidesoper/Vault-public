@@ -11,10 +11,10 @@ import java.util.Random;
 public class ConfettiParticles {
 
     public static final int[] PARTICLE_COLORS = {
-            0xFF_be1ed9, 0xFF_cf224e,
-            0xFF_1ec621, 0xFF_463fd3,
-            0xFF_7c454e, 0xFF_e2950f,
-            0xFF_ec3423, 0xFF_f1d00c
+        0xFF_be1ed9, 0xFF_cf224e,
+        0xFF_1ec621, 0xFF_463fd3,
+        0xFF_7c454e, 0xFF_e2950f,
+        0xFF_ec3423, 0xFF_f1d00c
     };
 
     protected Random random;
@@ -106,14 +106,14 @@ public class ConfettiParticles {
 
     public void render(MatrixStack matrixStack) {
         for (ConfettiParticle particle : particles) {
-            double x0 = particle.pos.getX() - particle.size / 2.0;
-            double y0 = particle.pos.getY() - particle.size / 2.0;
+            double x0 = particle.pos.x() - particle.size / 2.0;
+            double y0 = particle.pos.y() - particle.size / 2.0;
             double x1 = x0 + particle.size;
             double y1 = y0 + particle.size;
             AbstractGui.fill(matrixStack,
-                    (int) x0, (int) y0,
-                    (int) x1, (int) y1,
-                    particle.color);
+                (int) x0, (int) y0,
+                (int) x1, (int) y1,
+                particle.color);
         }
     }
 
@@ -124,8 +124,8 @@ public class ConfettiParticles {
             ConfettiParticle particle = new ConfettiParticle();
             particle.pos = new Vector3d(spawnerPos.x, spawnerPos.y, 0);
             particle.velocity = new Vector3d(1, 0, 0)
-                    .rotateRoll(-randf(angleMin, angleMax))
-                    .scale(randf(speedMin, speedMax));
+                .zRot(- randf(angleMin, angleMax))
+                .scale(randf(speedMin, speedMax));
             particle.size = randi(sizeMin, sizeMax);
             particle.color = PARTICLE_COLORS[random.nextInt(PARTICLE_COLORS.length)];
             particle.tickDelay = randi(delayMin, delayMax);

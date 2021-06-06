@@ -13,26 +13,26 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class GiftBombOverlay {
 
     private static ConfettiParticles leftConfettiPopper = new ConfettiParticles()
-            .angleRange(200 + 90, 265 + 90)
-            .quantityRange(60, 80)
-            .delayRange(0, 10)
-            .lifespanRange(20, 20 * 5)
-            .sizeRange(2, 5)
-            .speedRange(2, 10);
+        .angleRange(200 + 90, 265 + 90)
+        .quantityRange(60, 80)
+        .delayRange(0, 10)
+        .lifespanRange(20, 20 * 5)
+        .sizeRange(2, 5)
+        .speedRange(2, 10);
 
     private static ConfettiParticles rightConfettiPopper = new ConfettiParticles()
-            .angleRange(200, 265)
-            .quantityRange(60, 80)
-            .delayRange(0, 10)
-            .lifespanRange(20, 20 * 5)
-            .sizeRange(2, 5)
-            .speedRange(2, 10);
+        .angleRange(200, 265)
+        .quantityRange(60, 80)
+        .delayRange(0, 10)
+        .lifespanRange(20, 20 * 5)
+        .sizeRange(2, 5)
+        .speedRange(2, 10);
 
     @OnlyIn(Dist.CLIENT)
     public static void pop() {
-        Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(
-                ModSounds.CONFETTI_SFX,
-                1.0F
+        Minecraft.getInstance().getSoundManager().play(SimpleSound.forUI(
+            ModSounds.CONFETTI_SFX,
+            1.0F
         ));
         leftConfettiPopper.pop();
         rightConfettiPopper.pop();
@@ -47,19 +47,19 @@ public class GiftBombOverlay {
         Minecraft minecraft = Minecraft.getInstance();
         MatrixStack matrixStack = event.getMatrixStack();
 
-        int width = minecraft.getMainWindow().getScaledWidth();
-        int height = minecraft.getMainWindow().getScaledHeight();
+        int width = minecraft.getWindow().getGuiScaledWidth();
+        int height = minecraft.getWindow().getGuiScaledHeight();
 
         int midX = width / 2;
         int midY = height / 2;
 
         leftConfettiPopper.spawnedPosition(
-                10,
-                midY
+            10,
+            midY
         );
         rightConfettiPopper.spawnedPosition(
-                width - 10,
-                midY
+            width - 10,
+            midY
         );
 
         leftConfettiPopper.tick();

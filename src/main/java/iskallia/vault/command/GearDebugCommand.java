@@ -33,46 +33,46 @@ public class GearDebugCommand extends Command {
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
         builder
-                .then(literal("helmet")
-                        .then(argument("model", IntegerArgumentType.integer(0, 12 - 1))
-                                .executes(ctx -> giveHelmet(ctx, IntegerArgumentType.getInteger(ctx, "model")))))
-                .then(literal("chestplate")
-                        .then(argument("model", IntegerArgumentType.integer(0, 12 - 1))
-                                .executes(ctx -> giveChestplate(ctx, IntegerArgumentType.getInteger(ctx, "model")))))
-                .then(literal("leggings")
-                        .then(argument("model", IntegerArgumentType.integer(0, 12 - 1))
-                                .executes(ctx -> giveLeggings(ctx, IntegerArgumentType.getInteger(ctx, "model")))))
-                .then(literal("boots")
-                        .then(argument("model", IntegerArgumentType.integer(0, 12 - 1))
-                                .executes(ctx -> giveBoots(ctx, IntegerArgumentType.getInteger(ctx, "model")))))
-                .build();
+            .then(literal("helmet")
+                .then(argument("model", IntegerArgumentType.integer(0, 12 - 1))
+                    .executes(ctx -> giveHelmet(ctx, IntegerArgumentType.getInteger(ctx, "model")))))
+            .then(literal("chestplate")
+                .then(argument("model", IntegerArgumentType.integer(0, 12 - 1))
+                    .executes(ctx -> giveChestplate(ctx, IntegerArgumentType.getInteger(ctx, "model")))))
+            .then(literal("leggings")
+                .then(argument("model", IntegerArgumentType.integer(0, 12 - 1))
+                    .executes(ctx -> giveLeggings(ctx, IntegerArgumentType.getInteger(ctx, "model")))))
+            .then(literal("boots")
+                .then(argument("model", IntegerArgumentType.integer(0, 12 - 1))
+                    .executes(ctx -> giveBoots(ctx, IntegerArgumentType.getInteger(ctx, "model")))))
+            .build();
     }
 
     private int giveHelmet(CommandContext<CommandSource> context, int model) throws CommandSyntaxException {
         ItemStack helmetStack = new ItemStack(ModItems.HELMET);
         configureGear(helmetStack, model);
-        EntityHelper.giveItem(context.getSource().asPlayer(), helmetStack);
+        EntityHelper.giveItem(context.getSource().getPlayerOrException(), helmetStack);
         return 0;
     }
 
     private int giveChestplate(CommandContext<CommandSource> context, int model) throws CommandSyntaxException {
         ItemStack chestStack = new ItemStack(ModItems.CHESTPLATE);
         configureGear(chestStack, model);
-        EntityHelper.giveItem(context.getSource().asPlayer(), chestStack);
+        EntityHelper.giveItem(context.getSource().getPlayerOrException(), chestStack);
         return 0;
     }
 
     private int giveLeggings(CommandContext<CommandSource> context, int model) throws CommandSyntaxException {
         ItemStack leggingsStack = new ItemStack(ModItems.LEGGINGS);
         configureGear(leggingsStack, model);
-        EntityHelper.giveItem(context.getSource().asPlayer(), leggingsStack);
+        EntityHelper.giveItem(context.getSource().getPlayerOrException(), leggingsStack);
         return 0;
     }
 
     private int giveBoots(CommandContext<CommandSource> context, int model) throws CommandSyntaxException {
         ItemStack bootsStack = new ItemStack(ModItems.BOOTS);
         configureGear(bootsStack, model);
-        EntityHelper.giveItem(context.getSource().asPlayer(), bootsStack);
+        EntityHelper.giveItem(context.getSource().getPlayerOrException(), bootsStack);
         return 0;
     }
 

@@ -34,7 +34,7 @@ public class SetTree implements INBTSerializable<CompoundNBT> {
 
     public SetNode<?> getNodeByName(String name) {
         Optional<SetNode<?>> talentWrapped = this.nodes.stream().filter(node -> node.getGroup().getParentName().equals(name)).findFirst();
-        if (!talentWrapped.isPresent()) {
+        if (! talentWrapped.isPresent()) {
             SetNode<?> talentNode = new SetNode<>(ModConfigs.SETS.getByName(name), 0);
             this.nodes.add(talentNode);
             return talentNode;
@@ -62,29 +62,29 @@ public class SetTree implements INBTSerializable<CompoundNBT> {
             this.nodes.removeIf(node -> node.getLevel() == 0);
 
             List<SetNode<?>> toRemove = this.nodes.stream()
-                    .filter(SetNode::isActive)
-                    .filter(setNode -> !setNode.getSet().shouldBeActive(player))
-                    .collect(Collectors.toList());
+                .filter(SetNode::isActive)
+                .filter(setNode -> ! setNode.getSet().shouldBeActive(player))
+                .collect(Collectors.toList());
 
             toRemove.forEach(setNode -> this.remove(server, setNode));
 
             ModConfigs.SETS.getAll().stream()
-                    .filter(setGroup -> this.nodes.stream()
-                            .map(setNode -> setNode.getGroup().getName())
-                            .noneMatch(s -> s.equals(setGroup.getName())))
-                    .forEach(setGroup -> {
-                        for(int i = setGroup.getMaxLevel(); i > 0; i--) {
-                            PlayerSet set = setGroup.getSet(i);
+                .filter(setGroup -> this.nodes.stream()
+                    .map(setNode -> setNode.getGroup().getName())
+                    .noneMatch(s -> s.equals(setGroup.getName())))
+                .forEach(setGroup -> {
+                    for (int i = setGroup.getMaxLevel(); i > 0; i--) {
+                        PlayerSet set = setGroup.getSet(i);
 
-                            if(set.shouldBeActive(player)) {
-                                this.add(server, new SetNode<>(setGroup, i));
-                                break;
-                            }
+                        if (set.shouldBeActive(player)) {
+                            this.add(server, new SetNode<>(setGroup, i));
+                            break;
                         }
-                    });
+                    }
+                });
 
             this.nodes.forEach(setNode -> setNode.getSet().onTick(player));
-         });
+        });
 
         return this;
     }

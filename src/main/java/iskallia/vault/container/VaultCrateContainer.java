@@ -7,8 +7,6 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -25,7 +23,7 @@ public class VaultCrateContainer extends Container {
 
     public VaultCrateContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity player) {
         super(ModContainers.VAULT_CRATE_CONTAINER, windowId);
-        tileEntity = world.getTileEntity(pos);
+        tileEntity = world.getBlockEntity(pos);
         this.playerEntity = player;
         this.playerInventory = new InvWrapper(playerInventory);
 
@@ -34,19 +32,19 @@ public class VaultCrateContainer extends Container {
                 this.crateInventory = h;
                 int i = (6 - 4) * 18;
 
-                for(int j = 0; j < 6; ++j) {
-                    for(int k = 0; k < 9; ++k) {
+                for (int j = 0; j < 6; ++ j) {
+                    for (int k = 0; k < 9; ++ k) {
                         this.addSlot(new SlotItemHandler(h, k + j * 9, 8 + k * 18, 18 + j * 18));
                     }
                 }
 
-                for(int l = 0; l < 3; ++l) {
-                    for(int j1 = 0; j1 < 9; ++j1) {
+                for (int l = 0; l < 3; ++ l) {
+                    for (int j1 = 0; j1 < 9; ++ j1) {
                         this.addSlot(new Slot(playerInventory, j1 + l * 9 + 9, 8 + j1 * 18, 103 + l * 18 + i));
                     }
                 }
 
-                for(int i1 = 0; i1 < 9; ++i1) {
+                for (int i1 = 0; i1 < 9; ++ i1) {
                     this.addSlot(new Slot(playerInventory, i1, 8 + i1 * 18, 161 + i));
                 }
             });
@@ -54,24 +52,24 @@ public class VaultCrateContainer extends Container {
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+    public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
         ItemStack stack = ItemStack.EMPTY;
-        Slot slot = this.inventorySlots.get(index);
-        if (slot != null && slot.getHasStack()) {
-            ItemStack stackInSlot = slot.getStack();
+        Slot slot = this.slots.get(index);
+        if (slot != null && slot.hasItem()) {
+            ItemStack stackInSlot = slot.getItem();
             stack = stackInSlot.copy();
             if (index < this.crateInventory.getSlots()) {
-                if (!this.mergeItemStack(stackInSlot, this.crateInventory.getSlots(), this.inventorySlots.size(), true)) {
+                if (! this.moveItemStackTo(stackInSlot, this.crateInventory.getSlots(), this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.mergeItemStack(stackInSlot, 0, this.crateInventory.getSlots(), false)) {
+            } else if (! this.moveItemStackTo(stackInSlot, 0, this.crateInventory.getSlots(), false)) {
                 return ItemStack.EMPTY;
             }
 
             if (stackInSlot.isEmpty()) {
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             } else {
-                slot.onSlotChanged();
+                slot.setChanged();
             }
         }
 
@@ -80,7 +78,7 @@ public class VaultCrateContainer extends Container {
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) {
+    public boolean stillValid(PlayerEntity player) {
         return true;
     }
 
@@ -100,14 +98,4 @@ public class VaultCrateContainer extends Container {
         }
         return index;
     }
-
-    // #Crimson_Fluff
-// TODO: this is also called when containers close when in JEI, find a better way of playing close sound
-//    @Override
-//    public void onContainerClosed(PlayerEntity playerIn) {
-//        playerIn.playSound(SoundEvents.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 1f, 1f);
-//
-//        super.onContainerClosed(playerIn);
-//    }
 }
-

@@ -5,7 +5,8 @@ import net.minecraft.entity.player.PlayerEntity;
 
 public abstract class PlayerTalent {
 
-    @Expose private int cost;
+    @Expose
+    private int cost;
 
     public PlayerTalent(int cost) {
         this.cost = cost;

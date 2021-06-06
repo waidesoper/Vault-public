@@ -7,8 +7,8 @@ import net.minecraft.util.ResourceLocation;
 public class ItemSkellingtonKey extends Item {
     public ItemSkellingtonKey(ItemGroup group, ResourceLocation id) {
         super(new Properties()
-            .group(group)
-            .maxStackSize(1));
+            .tab(group)
+            .stacksTo(1));
 
         this.setRegistryName(id);
     }

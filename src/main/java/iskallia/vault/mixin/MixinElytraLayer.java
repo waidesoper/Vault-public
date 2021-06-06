@@ -15,17 +15,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ElytraLayer.class)
-public abstract class MixinElytraLayer<T extends LivingEntity, M extends EntityModel<T>> extends LayerRenderer<T, M>  {
+public abstract class MixinElytraLayer<T extends LivingEntity, M extends EntityModel<T>> extends LayerRenderer<T, M> {
 
-	public MixinElytraLayer(IEntityRenderer<T, M> renderer) {
-		super(renderer);
-	}
+    public MixinElytraLayer(IEntityRenderer<T, M> renderer) {
+        super(renderer);
+    }
 
-	@Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true, remap = false)
-	public void shouldRender(ItemStack stack, T entity, CallbackInfoReturnable<Boolean> ci) {
-		if(entity instanceof PlayerEntity && PlayerSet.isActive(VaultGear.Set.DRAGON, (PlayerEntity)entity)) {
-			ci.setReturnValue(true);
-		}
-	}
+    @Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true, remap = false)
+    public void shouldRender(ItemStack stack, T entity, CallbackInfoReturnable<Boolean> ci) {
+        if (entity instanceof PlayerEntity && PlayerSet.isActive(VaultGear.Set.DRAGON, (PlayerEntity) entity)) {
+            ci.setReturnValue(true);
+        }
+    }
 
 }

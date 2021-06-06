@@ -6,7 +6,8 @@ import net.minecraft.util.EntityDamageSource;
 
 public class SelfSustainAbility extends PlayerAbility {
 
-    @Expose private final int sustain;
+    @Expose
+    private final int sustain;
 
     public SelfSustainAbility(int cost, int sustain) {
         super(cost, Behavior.RELEASE_TO_PERFORM);
@@ -20,9 +21,9 @@ public class SelfSustainAbility extends PlayerAbility {
     @Override
     public void onAction(PlayerEntity player, boolean active) {
         float health = player.getHealth();
-        player.attackEntityFrom(EntityDamageSource.causePlayerDamage(player), 1);
+        player.hurt(EntityDamageSource.playerAttack(player), 1);
         player.setHealth(health - sustain);
-        player.getFoodStats().addStats(sustain, sustain / 5f);
+        player.getFoodData().eat(sustain, sustain / 5f);
     }
 
 }

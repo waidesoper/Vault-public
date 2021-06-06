@@ -34,7 +34,7 @@ public class VaultArmorItem extends DyeableArmorItem implements VaultGear<VaultA
 
     @Override
     public EquipmentSlotType getEquipmentSlot(ItemStack stack) {
-        return this.getEquipmentSlot();
+        return this.getSlot();
     }
 
     @Override
@@ -60,16 +60,16 @@ public class VaultArmorItem extends DyeableArmorItem implements VaultGear<VaultA
     }
 
     @Override
-    public ITextComponent getDisplayName(ItemStack itemStack) {
-        return this.getDisplayName(this, itemStack, super.getDisplayName(itemStack));
+    public ITextComponent getName(ItemStack itemStack) {
+        return this.getDisplayName(this, itemStack, super.getName(itemStack));
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
-        ItemStack heldStack = player.getHeldItem(hand);
-        EquipmentSlotType slot = MobEntity.getSlotForItemStack(heldStack);
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        ItemStack heldStack = player.getItemInHand(hand);
+        EquipmentSlotType slot = MobEntity.getEquipmentSlotForItem(heldStack);
         return this.onItemRightClick(this, world, player, hand,
-                this.canEquip(heldStack, slot, player) ? super.onItemRightClick(world, player, hand) : ActionResult.resultFail(heldStack));
+            this.canEquip(heldStack, slot, player) ? super.use(world, player, hand) : ActionResult.fail(heldStack));
     }
 
     @Override
@@ -79,8 +79,8 @@ public class VaultArmorItem extends DyeableArmorItem implements VaultGear<VaultA
     }
 
     @Override
-    public void addInformation(ItemStack itemStack, World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
-        super.addInformation(itemStack, world, tooltip, flag);
+    public void appendHoverText(ItemStack itemStack, World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.appendHoverText(itemStack, world, tooltip, flag);
         this.addInformation(this, itemStack, world, tooltip, flag);
     }
 
@@ -105,7 +105,7 @@ public class VaultArmorItem extends DyeableArmorItem implements VaultGear<VaultA
     public boolean canEquip(ItemStack stack, EquipmentSlotType armorType, Entity entity) {
         EnumAttribute<State> stateAttribute = ModAttributes.GEAR_STATE.get(stack).orElse(null);
         return stateAttribute != null && stateAttribute.getValue(stack) == State.IDENTIFIED
-                && super.canEquip(stack, armorType, entity);
+            && super.canEquip(stack, armorType, entity);
     }
 
     @Nullable

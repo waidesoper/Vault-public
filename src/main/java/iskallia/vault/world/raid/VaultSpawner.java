@@ -18,97 +18,97 @@ import java.util.List;
 
 public class VaultSpawner {
 
-	private final VaultRaid raid;
-	private List<LivingEntity> mobs = new ArrayList<>();
-	public int maxMobs;
+    private final VaultRaid raid;
+    private List<LivingEntity> mobs = new ArrayList<>();
+    public int maxMobs;
 
-	public VaultSpawner(VaultRaid raid) {
-		this.raid = raid;
-	}
+    public VaultSpawner(VaultRaid raid) {
+        this.raid = raid;
+    }
 
-	public void init() {
-		VaultMobsConfig.Level config = ModConfigs.VAULT_MOBS.getForLevel(this.raid.level);
-		this.maxMobs = config.MOB_MISC.MAX_MOBS;
-	}
+    public void init() {
+        VaultMobsConfig.Level config = ModConfigs.VAULT_MOBS.getForLevel(this.raid.level);
+        this.maxMobs = config.MOB_MISC.MAX_MOBS;
+    }
 
-	public int getMaxMobs() {
-		return this.maxMobs;
-	}
+    public int getMaxMobs() {
+        return this.maxMobs;
+    }
 
-	public void tick(ServerPlayerEntity player) {
-		if(player.world.getDimensionKey() != Vault.VAULT_KEY)return;
-		if(this.raid.ticksLeft + 15 * 20 > this.raid.sTickLeft)return;
+    public void tick(ServerPlayerEntity player) {
+        if (player.level.dimension() != Vault.VAULT_KEY) return;
+        if (this.raid.ticksLeft + 15 * 20 > this.raid.sTickLeft) return;
 
-		this.mobs.removeIf(entity -> {
-			if(entity.getDistanceSq(player) > 24 * 24) {
-				entity.remove();
-				return true;
-			}
+        this.mobs.removeIf(entity -> {
+            if (entity.distanceToSqr(player) > 24 * 24) {
+                entity.remove();
+                return true;
+            }
 
-			return false;
-		});
+            return false;
+        });
 
-		if(this.mobs.size() >= this.getMaxMobs())return;
+        if (this.mobs.size() >= this.getMaxMobs()) return;
 
-		List<BlockPos> spaces = this.getSpawningSpaces(player);
+        List<BlockPos> spaces = this.getSpawningSpaces(player);
 
-		while(this.mobs.size() < this.getMaxMobs() && spaces.size() > 0) {
-			 BlockPos pos = spaces.remove(player.getServerWorld().getRandom().nextInt(spaces.size()));
-			 this.spawn(player.getServerWorld(), pos);
-		}
-	}
+        while (this.mobs.size() < this.getMaxMobs() && spaces.size() > 0) {
+            BlockPos pos = spaces.remove(player.getLevel().getRandom().nextInt(spaces.size()));
+            this.spawn(player.getLevel(), pos);
+        }
+    }
 
-	private List<BlockPos> getSpawningSpaces(ServerPlayerEntity player) {
-		List<BlockPos> spaces = new ArrayList<>();
+    private List<BlockPos> getSpawningSpaces(ServerPlayerEntity player) {
+        List<BlockPos> spaces = new ArrayList<>();
 
-		for(int x = -18; x <= 18; x++) {
-			for(int z = -18; z <= 18; z++) {
-				for(int y = -5; y <= 5; y++) {
-					ServerWorld world = player.getServerWorld();
-					BlockPos pos = player.getPosition().add(new BlockPos(x, y, z));
+        for (int x = - 18; x <= 18; x++) {
+            for (int z = - 18; z <= 18; z++) {
+                for (int y = - 5; y <= 5; y++) {
+                    ServerWorld world = player.getLevel();
+                    BlockPos pos = player.blockPosition().offset(new BlockPos(x, y, z));
 
-					if(player.getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) < 10 * 10) {
-						continue;
-					}
+                    if (player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) < 10 * 10) {
+                        continue;
+                    }
 
-					if(!world.getBlockState(pos).canEntitySpawn(world, pos, EntityType.ZOMBIE))continue;
-					boolean isAir = true;
+                    if (! world.getBlockState(pos).isValidSpawn(world, pos, EntityType.ZOMBIE)) continue;
+                    boolean isAir = true;
 
-					for(int o = 1; o <= 2; o++) {
-						if(world.getBlockState(pos.up(o)).isSuffocating(world, pos)) {
-							isAir = false;
-							break;
-						}
-					}
+                    for (int o = 1; o <= 2; o++) {
+                        if (world.getBlockState(pos.above(o)).isSuffocating(world, pos)) {
+                            isAir = false;
+                            break;
+                        }
+                    }
 
-					if(isAir) {
-						spaces.add(pos.up());
-					}
-				}
-			}
-		}
+                    if (isAir) {
+                        spaces.add(pos.above());
+                    }
+                }
+            }
+        }
 
-		return spaces;
-	}
+        return spaces;
+    }
 
-	public void spawn(ServerWorld world, BlockPos pos) {
-		VaultMobsConfig.Mob mob = ModConfigs.VAULT_MOBS.getForLevel(this.raid.level).MOB_POOL.getRandom(world.rand);
-		if(mob == null)return;
-		LivingEntity entity = mob.create(world);
+    public void spawn(ServerWorld world, BlockPos pos) {
+        VaultMobsConfig.Mob mob = ModConfigs.VAULT_MOBS.getForLevel(this.raid.level).MOB_POOL.getRandom(world.random);
+        if (mob == null) return;
+        LivingEntity entity = mob.create(world);
 
-		if(entity != null) {
-			entity.setLocationAndAngles(pos.getX() + 0.5F, pos.getY() + 0.2F, pos.getZ() + 0.5F, 0.0F, 0.0F);
-			world.summonEntity(entity);
+        if (entity != null) {
+            entity.moveTo(pos.getX() + 0.5F, pos.getY() + 0.2F, pos.getZ() + 0.5F, 0.0F, 0.0F);
+            world.addWithUUID(entity);
 
-			if(entity instanceof MobEntity) {
-				((MobEntity)entity).spawnExplosionParticle();
-				((MobEntity)entity).onInitialSpawn(world, new DifficultyInstance(Difficulty.PEACEFUL, 13000L, 0L, 0L),
-						SpawnReason.STRUCTURE, null, null);
-			}
+            if (entity instanceof MobEntity) {
+                ((MobEntity) entity).spawnAnim();
+                ((MobEntity) entity).finalizeSpawn(world, new DifficultyInstance(Difficulty.PEACEFUL, 13000L, 0L, 0L),
+                    SpawnReason.STRUCTURE, null, null);
+            }
 
 
-			this.mobs.add(entity);
-		}
-	}
+            this.mobs.add(entity);
+        }
+    }
 
 }

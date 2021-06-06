@@ -27,9 +27,9 @@ public class VaultVendingConfig extends Config {
         this.MAX_CIRCUITS = 16;
 
         this.TRADES.add(
-                new Trade(new Product(Items.APPLE, 8, null), null, new Product(Items.GOLDEN_APPLE, 1, null)));
+            new Trade(new Product(Items.APPLE, 8, null), null, new Product(Items.GOLDEN_APPLE, 1, null)));
         this.TRADES.add(new Trade(new Product(Items.GOLDEN_APPLE, 8, null), null,
-                new Product(Items.ENCHANTED_GOLDEN_APPLE, 1, null)));
+            new Product(Items.ENCHANTED_GOLDEN_APPLE, 1, null)));
         CompoundNBT nbt = new CompoundNBT();
         ListNBT enchantments = new ListNBT();
         CompoundNBT knockback = new CompoundNBT();
@@ -41,7 +41,7 @@ public class VaultVendingConfig extends Config {
         nbt.put("ench", enchantments);
 
         this.TRADES
-                .add(new Trade(new Product(Items.ENCHANTED_GOLDEN_APPLE, 8, null), null, new Product(Items.STICK, 1, nbt)));
+            .add(new Trade(new Product(Items.ENCHANTED_GOLDEN_APPLE, 8, null), null, new Product(Items.STICK, 1, nbt)));
     }
 
 

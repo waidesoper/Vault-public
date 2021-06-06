@@ -17,7 +17,8 @@ import java.util.List;
 
 public class KeyPressRecipesConfig extends Config {
 
-    @Expose private List<Recipe> RECIPES;
+    @Expose
+    private List<Recipe> RECIPES;
 
     @Override
 
@@ -63,15 +64,15 @@ public class KeyPressRecipesConfig extends Config {
         try {
             ItemStack resultStack = new ItemStack(item, recipe.RESULT_ITEM.AMOUNT);
 
-            if (recipe.RESULT_ITEM.NBT != null && !recipe.RESULT_ITEM.NBT.isEmpty()) {
-                resultStack.setTag(JsonToNBT.getTagFromJson(recipe.RESULT_ITEM.NBT));
+            if (recipe.RESULT_ITEM.NBT != null && ! recipe.RESULT_ITEM.NBT.isEmpty()) {
+                resultStack.setTag(JsonToNBT.parseTag(recipe.RESULT_ITEM.NBT));
             }
 
             return resultStack;
 
         } catch (CommandSyntaxException e) {
             Vault.LOGGER.warn("Malformed NBT at Key Press recipe result -> {} NBT: {}",
-                    recipe.RESULT_ITEM.ITEM, recipe.RESULT_ITEM.NBT);
+                recipe.RESULT_ITEM.ITEM, recipe.RESULT_ITEM.NBT);
             return ItemStack.EMPTY;
         }
     }
@@ -90,9 +91,12 @@ public class KeyPressRecipesConfig extends Config {
     }
 
     public static class Recipe {
-        @Expose private SingleItemEntry KEY_ITEM;
-        @Expose private SingleItemEntry CLUSTER_ITEM;
-        @Expose private ItemEntry RESULT_ITEM;
+        @Expose
+        private SingleItemEntry KEY_ITEM;
+        @Expose
+        private SingleItemEntry CLUSTER_ITEM;
+        @Expose
+        private ItemEntry RESULT_ITEM;
     }
 
 }

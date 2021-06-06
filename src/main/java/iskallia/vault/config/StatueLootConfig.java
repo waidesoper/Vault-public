@@ -18,17 +18,27 @@ import java.util.Random;
 
 public class StatueLootConfig extends Config {
 
-    @Expose private int MAX_ACCELERATION_CHIPS;
-    @Expose private HashMap<Integer, Integer> INTERVAL_DECREASE_PER_CHIP = new HashMap<>();
+    @Expose
+    private int MAX_ACCELERATION_CHIPS;
+    @Expose
+    private HashMap<Integer, Integer> INTERVAL_DECREASE_PER_CHIP = new HashMap<>();
 
-    @Expose private List<SingleItemEntry> GIFT_NORMAL_STATUE_LOOT;
-    @Expose private int GIFT_NORMAL_STATUE_INTERVAL;
-    @Expose private List<SingleItemEntry> GIFT_MEGA_STATUE_LOOT;
-    @Expose private int GIFT_MEGA_STATUE_INTERVAL;
-    @Expose private List<SingleItemEntry> VAULT_BOSS_STATUE_LOOT;
-    @Expose private int VAULT_BOSS_STATUE_INTERVAL;
-    @Expose private List<SingleItemEntry> ARENA_CHAMPION_STATUE_LOOT;
-    @Expose private int ARENA_CHAMPION_STATUE_INTERVAL;
+    @Expose
+    private List<SingleItemEntry> GIFT_NORMAL_STATUE_LOOT;
+    @Expose
+    private int GIFT_NORMAL_STATUE_INTERVAL;
+    @Expose
+    private List<SingleItemEntry> GIFT_MEGA_STATUE_LOOT;
+    @Expose
+    private int GIFT_MEGA_STATUE_INTERVAL;
+    @Expose
+    private List<SingleItemEntry> VAULT_BOSS_STATUE_LOOT;
+    @Expose
+    private int VAULT_BOSS_STATUE_INTERVAL;
+    @Expose
+    private List<SingleItemEntry> ARENA_CHAMPION_STATUE_LOOT;
+    @Expose
+    private int ARENA_CHAMPION_STATUE_INTERVAL;
 
     @Override
     public String getName() {
@@ -109,7 +119,7 @@ public class StatueLootConfig extends Config {
             Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(randomEntry.ITEM));
             stack = new ItemStack(item);
             if (randomEntry.NBT != null) {
-                CompoundNBT nbt = JsonToNBT.getTagFromJson(randomEntry.NBT);
+                CompoundNBT nbt = JsonToNBT.parseTag(randomEntry.NBT);
                 stack.setTag(nbt);
             }
 
@@ -122,16 +132,16 @@ public class StatueLootConfig extends Config {
 
     public void dumpAll(PlayerEntity player) {
         for (SingleItemEntry entry : GIFT_NORMAL_STATUE_LOOT) {
-            player.dropItem(getItem(entry), false);
+            player.drop(getItem(entry), false);
         }
         for (SingleItemEntry entry : GIFT_MEGA_STATUE_LOOT) {
-            player.dropItem(getItem(entry), false);
+            player.drop(getItem(entry), false);
         }
         for (SingleItemEntry entry : ARENA_CHAMPION_STATUE_LOOT) {
-            player.dropItem(getItem(entry), false);
+            player.drop(getItem(entry), false);
         }
         for (SingleItemEntry entry : VAULT_BOSS_STATUE_LOOT) {
-            player.dropItem(getItem(entry), false);
+            player.drop(getItem(entry), false);
         }
     }
 
@@ -141,7 +151,7 @@ public class StatueLootConfig extends Config {
             Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(entry.ITEM));
             stack = new ItemStack(item);
             if (entry.NBT != null) {
-                CompoundNBT nbt = JsonToNBT.getTagFromJson(entry.NBT);
+                CompoundNBT nbt = JsonToNBT.parseTag(entry.NBT);
                 stack.setTag(nbt);
             }
 

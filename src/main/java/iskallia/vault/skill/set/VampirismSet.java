@@ -7,7 +7,8 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber
 public class VampirismSet extends PlayerSet {
 
-    @Expose private final float leechRatio;
+    @Expose
+    private final float leechRatio;
 
     public VampirismSet(float leechRatio) {
         super(VaultGear.Set.VAMPIRE);

@@ -24,7 +24,7 @@ public class TalentNode<T extends PlayerTalent> implements INBTSerializable<Comp
     }
 
     public T getTalent() {
-        if (!isLearned()) return null;
+        if (! isLearned()) return null;
         return this.getGroup().getTalent(this.getLevel());
     }
 
@@ -60,7 +60,7 @@ public class TalentNode<T extends PlayerTalent> implements INBTSerializable<Comp
         TalentNode<?> that = (TalentNode<?>) other;
 
         return this.level == that.level &&
-                this.group.getParentName().equals(that.group.getParentName());
+            this.group.getParentName().equals(that.group.getParentName());
     }
 
     /* ----------------------------------------- */

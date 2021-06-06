@@ -15,34 +15,34 @@ import java.util.Random;
 
 public class OverworldOreFeature extends OreFeature {
 
-	public static Feature<OreFeatureConfig> INSTANCE;
+    public static Feature<OreFeatureConfig> INSTANCE;
 
-	public OverworldOreFeature(Codec<OreFeatureConfig> codec) {
-		super(codec);
-	}
+    public OverworldOreFeature(Codec<OreFeatureConfig> codec) {
+        super(codec);
+    }
 
-	@Override
-	public boolean generate(ISeedReader world, ChunkGenerator gen, Random random, BlockPos pos, OreFeatureConfig config) {
-		if(world.getWorld().getDimensionKey() != World.OVERWORLD) {
-			return false;
-		}
+    @Override
+    public boolean place(ISeedReader world, ChunkGenerator gen, Random random, BlockPos pos, OreFeatureConfig config) {
+        if (world.getLevel().dimension() != World.OVERWORLD) {
+            return false;
+        }
 
-		if(config.size == 1) {
-			if(config.target.test(world.getBlockState(pos), random)) {
-				world.setBlockState(pos, config.state, 2);
-				return true;
-			}
+        if (config.size == 1) {
+            if (config.target.test(world.getBlockState(pos), random)) {
+                world.setBlock(pos, config.state, 2);
+                return true;
+            }
 
-			return false;
-		} else {
-			return super.generate(world, gen, random, pos, config);
-		}
-	}
+            return false;
+        } else {
+            return super.place(world, gen, random, pos, config);
+        }
+    }
 
-	public static void register(RegistryEvent.Register<Feature<?>> event) {
-		INSTANCE = new OverworldOreFeature(OreFeatureConfig.CODEC);
-		INSTANCE.setRegistryName(Vault.id("overworld_ore"));
-		event.getRegistry().register(INSTANCE);
-	}
+    public static void register(RegistryEvent.Register<Feature<?>> event) {
+        INSTANCE = new OverworldOreFeature(OreFeatureConfig.CODEC);
+        INSTANCE.setRegistryName(Vault.id("overworld_ore"));
+        event.getRegistry().register(INSTANCE);
+    }
 
 }

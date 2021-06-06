@@ -20,10 +20,10 @@ public class LootableItem extends BasicItem {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
-        if (!world.isRemote) {
-            ItemStack heldStack = player.getHeldItem(hand);
-            ItemRelicBoosterPack.successEffectsAsItem(world, player.getPositionVec(), heldStack);
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        if (! world.isClientSide) {
+            ItemStack heldStack = player.getItemInHand(hand);
+            ItemRelicBoosterPack.successEffectsAsItem(world, player.position(), heldStack);       // #Crimson_Fluff
 
             ItemStack randomLoot = this.supplier.get();
             while (randomLoot.getCount() > 0) {
@@ -31,13 +31,13 @@ public class LootableItem extends BasicItem {
                 ItemStack copy = randomLoot.copy();
                 copy.setCount(amount);
                 randomLoot.shrink(amount);
-                player.dropItem(copy, false, false);
+                player.drop(copy, false, false);
             }
 
             heldStack.shrink(1);
         }
 
-        return super.onItemRightClick(world, player, hand);
+        return super.use(world, player, hand);
     }
 
 

@@ -11,8 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -22,24 +22,24 @@ public class LootStatueBlockItem extends BlockItem {
 
     public LootStatueBlockItem(Block block) {
         super(block, new Properties()
-                .group(ModItems.VAULT_MOD_GROUP)
-                .maxStackSize(1));
+            .tab(ModItems.VAULT_MOD_GROUP)
+            .stacksTo(1));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        if (stack.hasTag()) {
-            CompoundNBT blockEntityTag = stack.getTag().getCompound("BlockEntityTag");
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        CompoundNBT nbt = stack.getTag();
+
+        if (nbt != null) {
+            CompoundNBT blockEntityTag = nbt.getCompound("BlockEntityTag");
             String nickname = blockEntityTag.getString("PlayerNickname");
 
-            if (nickname.length() > 0) {
-                TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.nickname", nickname);
-                text.setStyle(Style.EMPTY.setColor(Color.fromInt(0xFF_ff9966)));
-                tooltip.add(text);
-            }
+            StringTextComponent text = new StringTextComponent(" Nickname: " + nickname);
+            text.setStyle(Style.EMPTY.withColor(Color.fromRgb(0xFF_ff9966)));
+            tooltip.add(text);
         }
 
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
     public static ItemStack forVaultBoss(String nickname, int variant, boolean hasCrown) {
@@ -125,7 +125,7 @@ public class LootStatueBlockItem extends BlockItem {
 //                    Block block = blockstate1.getBlock();
 //                    if (block == blockstate.getBlock()) {
 //                        System.out.println(block);
-//                        //blockstate1 = this.func_219985_a(blockpos, world, itemstack, blockstate1);
+//                        //blockstate1 = this.updateBlockStateFromTag(blockpos, world, itemstack, blockstate1);
 //                        this.onBlockPlaced(blockpos, world, playerentity, itemstack, blockstate1);
 //                        block.onBlockPlacedBy(world, blockpos, blockstate1, playerentity, itemstack);
 //                        if (playerentity instanceof ServerPlayerEntity) {
@@ -139,7 +139,7 @@ public class LootStatueBlockItem extends BlockItem {
 //                        itemstack.shrink(1);
 //                    }
 //
-//                    return ActionResultType.func_233537_a_(world.isRemote);
+//                    return ActionResultType.sidedSuccess(world.isRemote);
 //                }
 //            }
 //        }

@@ -36,13 +36,13 @@ public class Rectangle {
 
     public boolean contains(int x, int y) {
         return x0 <= x && x <= x1
-                && y0 <= y && y <= y1;
+            && y0 <= y && y <= y1;
     }
 
     public Vector2f midpoint() {
         return new Vector2f(
-                (x1 + x0) / 2f,
-                (y1 + y0) / 2f
+            (x1 + x0) / 2f,
+            (y1 + y0) / 2f
         );
     }
 

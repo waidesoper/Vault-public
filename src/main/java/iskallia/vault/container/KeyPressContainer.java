@@ -52,7 +52,7 @@ public class KeyPressContainer extends Container
          */
         public void markDirty()
         {
-            super.markDirty();
+            super.setChanged();     // #Crimson_Fluff, was setDirty
             KeyPressContainer.this.onCraftMatrixChanged(this);
         }
     };
@@ -88,8 +88,8 @@ public class KeyPressContainer extends Container
     {
         super(ModContainers.KEY_PRESS_CONTAINER, windowId);
 
-        this.world = player.world;
-        this.keyPressRecipeList = this.world.getRecipeManager().getRecipesForType(ModRecipes.KEY_PRESS_RECIPE);
+        this.world = player.level;
+        this.keyPressRecipeList = this.world.getRecipeManager().getAllRecipesFor(ModRecipes.KEY_PRESS_RECIPE);
 
         this.addSlot(new Slot(this.keyPressInventory, KEY_SLOT, 27, 47));
         this.addSlot(new Slot(this.keyPressInventory, CLUSTER_SLOT, 76, 47));
@@ -99,11 +99,11 @@ public class KeyPressContainer extends Container
             /**
              * Return whether this slot's stack can be taken from this slot.
              */
-            @Override
-            public boolean canTakeStack(PlayerEntity playerIn)
-            {
-                return KeyPressContainer.this.canTakeStack(playerIn, this.getHasStack());
-            }
+//            @Override
+//            public boolean canTakeStack(PlayerEntity playerIn)
+//            {
+//                return KeyPressContainer.this.canTakeStack(playerIn, this.hasItem());
+//            }
 
 
             @Override
@@ -114,7 +114,7 @@ public class KeyPressContainer extends Container
 
 
             @Override
-            public boolean isItemValid(ItemStack stack)
+            public boolean mayPlace(ItemStack stack)
             {
                 return false; // Do not accept any item in
             }
@@ -163,14 +163,14 @@ public class KeyPressContainer extends Container
      */
     private ItemStack onTake(PlayerEntity player, ItemStack craftedItem)
     {
-        craftedItem.onCrafting(player.world, player, craftedItem.getCount());
-        this.craftResultInventory.onCrafting(player);
+        craftedItem.onCraftedBy(player.level, player, craftedItem.getCount());
+        this.craftResultInventory.startOpen(player);        // TODO: #Crimson_Fluff, was onCrafting
         this.reduceItemInSlot(KEY_SLOT);
         this.reduceItemInSlot(CLUSTER_SLOT);
 
-        if (!player.world.isRemote && !craftedItem.isEmpty())
+        if (!player.level.isClientSide && !craftedItem.isEmpty())
         {
-            player.world.playEvent(1030, player.getPosition(), 0);
+            player.level.globalLevelEvent(1030, player.blockPosition(), 0);
         }
 
         return craftedItem;
@@ -184,9 +184,9 @@ public class KeyPressContainer extends Container
      */
     private void reduceItemInSlot(int slot)
     {
-        ItemStack itemstack = this.keyPressInventory.getStackInSlot(slot);
+        ItemStack itemstack = this.keyPressInventory.getItem(slot);
         itemstack.shrink(1);
-        this.keyPressInventory.setInventorySlotContents(slot, itemstack);
+        this.keyPressInventory.setItem(slot, itemstack);
     }
 
 
@@ -195,21 +195,21 @@ public class KeyPressContainer extends Container
      */
     public void updateKeyPressOutput()
     {
-        List<KeyPressRecipe> recipeList = this.world.getRecipeManager().getRecipes(
+        List<KeyPressRecipe> recipeList = this.world.getRecipeManager().getRecipesFor(
             ModRecipes.KEY_PRESS_RECIPE,
             this.keyPressInventory,
             this.world);
 
         if (recipeList.isEmpty())
         {
-            this.craftResultInventory.setInventorySlotContents(0, ItemStack.EMPTY);
+            this.craftResultInventory.setItem(0, ItemStack.EMPTY);
         }
         else
         {
             this.keyPressRecipe = recipeList.get(0);
-            ItemStack itemstack = this.keyPressRecipe.getCraftingResult(this.keyPressInventory);
+            ItemStack itemstack = this.keyPressRecipe.assemble(this.keyPressInventory);
             this.craftResultInventory.setRecipeUsed(this.keyPressRecipe);
-            this.craftResultInventory.setInventorySlotContents(0, itemstack);
+            this.craftResultInventory.setItem(0, itemstack);
         }
     }
 
@@ -219,7 +219,7 @@ public class KeyPressContainer extends Container
      */
     public void onCraftMatrixChanged(IInventory inventoryIn)
     {
-        super.onCraftMatrixChanged(inventoryIn);
+        //super.onCraftMatrixChanged(inventoryIn);      // TODO: #Crimson_Fluff
 
         if (inventoryIn == this.keyPressInventory)
         {
@@ -234,12 +234,12 @@ public class KeyPressContainer extends Container
      * @param player Player who closed inventory.
      */
     @Override
-    public void onContainerClosed(PlayerEntity player)
+    public void removed(PlayerEntity player)
     {
-        super.onContainerClosed(player);
+        super.removed(player);
 
-        ItemStack keyStack = this.keyPressInventory.getStackInSlot(KEY_SLOT);
-        ItemStack clusterStack = this.keyPressInventory.getStackInSlot(CLUSTER_SLOT);
+        ItemStack keyStack = this.keyPressInventory.getItem(KEY_SLOT);
+        ItemStack clusterStack = this.keyPressInventory.getItem(CLUSTER_SLOT);
 
         if (!keyStack.isEmpty())
         {
@@ -250,37 +250,27 @@ public class KeyPressContainer extends Container
 
 
     /**
-     * Determines whether supplied player can use this container
-     */
-    @Override
-    public boolean canInteractWith(PlayerEntity player)
-    {
-        return true;
-    }
-
-
-    /**
      * Transfers items from with shift+click.
      */
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity player, int index)
+    public ItemStack quickMoveStack(PlayerEntity player, int index)
     {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.inventorySlots.get(index);
+        Slot slot = this.slots.get(index);
 
-        if (slot != null && slot.getHasStack())
+        if (slot != null && slot.hasItem())
         {
-            ItemStack itemStackInSlot = slot.getStack();
+            ItemStack itemStackInSlot = slot.getItem();
             itemstack = itemStackInSlot.copy();
 
             if (index == RESULT_SLOT)
             {
-                if (!this.mergeItemStack(itemStackInSlot, 3, 39, true))
+                if (!this.moveItemStackTo(itemStackInSlot, 3, 39, true))
                 {
                     return ItemStack.EMPTY;
                 }
 
-                slot.onSlotChange(itemStackInSlot, itemstack);
+                slot.onQuickCraft(itemStackInSlot, itemstack);
             }
             else if (index != KEY_SLOT && index != CLUSTER_SLOT)
             {
@@ -289,24 +279,24 @@ public class KeyPressContainer extends Container
                     int mergeIndex = this.getMergeSlotIndex(itemstack);
 
                     if (mergeIndex == -1 ||
-                        !this.mergeItemStack(itemStackInSlot, mergeIndex, 2, false))
+                        !this.moveItemStackTo(itemStackInSlot, mergeIndex, 2, false))
                     {
                         return ItemStack.EMPTY;
                     }
                 }
             }
-            else if (!this.mergeItemStack(itemStackInSlot, 3, 39, false))
+            else if (!this.moveItemStackTo(itemStackInSlot, 3, 39, false))
             {
                 return ItemStack.EMPTY;
             }
 
             if (itemStackInSlot.isEmpty())
             {
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             }
             else
             {
-                slot.onSlotChanged();
+                slot.setChanged();
             }
 
             if (itemStackInSlot.getCount() == itemstack.getCount())
@@ -345,5 +335,15 @@ public class KeyPressContainer extends Container
 
         // Return -1 by default.
         return -1;
+    }
+
+
+    /**
+     * Determines whether supplied player can use this container
+     */
+    @Override
+    public boolean stillValid(PlayerEntity player)
+    {
+        return true;
     }
 }

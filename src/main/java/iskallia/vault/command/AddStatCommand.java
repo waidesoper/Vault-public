@@ -30,15 +30,15 @@ public class AddStatCommand extends Command {
     private int receivedSub(CommandContext<CommandSource> context, int amount, int stat_type) throws CommandSyntaxException {
         switch (stat_type) {
             case 1:
-                context.getSource().asPlayer().addStat(Vault.STAT_GIVEN_TRADERS, amount);    // #Crimson_Fluff, AddStat
+                context.getSource().getPlayerOrException().awardStat(Vault.STAT_GIVEN_TRADERS, amount);    // #Crimson_Fluff, AddStat
                 break;
 
             case 2:
-                context.getSource().asPlayer().addStat(Vault.STAT_GIVEN_BOOSTERS, amount);    // #Crimson_Fluff, AddStat
+                context.getSource().getPlayerOrException().awardStat(Vault.STAT_GIVEN_BOOSTERS, amount);    // #Crimson_Fluff, AddStat
                 break;
 
             case 3:
-                context.getSource().asPlayer().addStat(Vault.STAT_GIVEN_GIFTS, amount);    // #Crimson_Fluff, AddStat
+                context.getSource().getPlayerOrException().awardStat(Vault.STAT_GIVEN_GIFTS, amount);    // #Crimson_Fluff, AddStat
                 break;
         }
 

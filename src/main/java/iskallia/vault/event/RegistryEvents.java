@@ -69,6 +69,7 @@ public class RegistryEvents {
 
     @SubscribeEvent
     public static void onTileEntityRegister(RegistryEvent.Register<TileEntityType<?>> event) {
+//        ModRecipes.registerRecipes(event);
         ModBlocks.registerTileEntities(event);
     }
 

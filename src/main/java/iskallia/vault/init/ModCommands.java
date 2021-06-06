@@ -19,8 +19,6 @@ public class ModCommands {
     public static InternalCommand INTERNAL;
     public static GiveBitsCommand GIVE_BITS;
     public static GearDebugCommand GEAR_DEBUG_COMMAND;
-    public static ResetTraderCommand RESET_TRADER_COMMAND;
-
     public static AddStatCommand ADD_STAT_COMMAND;     // #Crimson_Fluff, so we can call AddStat
 
     public static void registerCommands(CommandDispatcher<CommandSource> dispatcher, Commands.EnvironmentType env) {
@@ -30,7 +28,6 @@ public class ModCommands {
         INTERNAL = registerCommand(InternalCommand::new, dispatcher, env);
         GIVE_BITS = registerCommand(GiveBitsCommand::new, dispatcher, env);
         GEAR_DEBUG_COMMAND = registerCommand(GearDebugCommand::new, dispatcher, env);
-        RESET_TRADER_COMMAND = registerCommand(ResetTraderCommand::new, dispatcher, env);
 
         ADD_STAT_COMMAND = registerCommand(AddStatCommand::new, dispatcher, env);     // #Crimson_Fluff, so we can call AddStat
     }
@@ -38,9 +35,9 @@ public class ModCommands {
     public static <T extends Command> T registerCommand(Supplier<T> supplier, CommandDispatcher<CommandSource> dispatcher, Commands.EnvironmentType env) {
         T command = supplier.get();
 
-        if (!command.isDedicatedServerOnly() || env == Commands.EnvironmentType.DEDICATED || env == Commands.EnvironmentType.ALL) {
+        if (! command.isDedicatedServerOnly() || env == Commands.EnvironmentType.DEDICATED || env == Commands.EnvironmentType.ALL) {
             LiteralArgumentBuilder<CommandSource> builder = literal(command.getName());
-            builder.requires((sender) -> sender.hasPermissionLevel(command.getRequiredPermissionLevel()));
+            builder.requires((sender) -> sender.hasPermission(command.getRequiredPermissionLevel()));
             command.build(builder);
             dispatcher.register(literal(Vault.MOD_ID).then(builder));
         }

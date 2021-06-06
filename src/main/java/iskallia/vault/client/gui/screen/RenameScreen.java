@@ -41,12 +41,12 @@ public class RenameScreen extends ContainerScreen<RenamingContainer> {
     public RenameScreen(RenamingContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
         super(screenContainer, inv, new TranslationTextComponent("tip.the_vault.rename"));
 
-        font = Minecraft.getInstance().fontRenderer;
-        xSize = 118;
-        ySize = 65;  // #Crimson_Fluff, was 61
+        font = Minecraft.getInstance().font;
+        imageWidth = 118;
+        imageHeight = 61;
 
-        titleX = 59;
-        titleY = 7;
+        titleLabelX = 59;
+        titleLabelY = 7;
 
         renameType = screenContainer.getRenameType();
         data = screenContainer.getNbt();
@@ -54,7 +54,7 @@ public class RenameScreen extends ContainerScreen<RenamingContainer> {
         if (renameType == RenameType.PLAYER_STATUE) {
             name = data.getString("PlayerNickname");
         } else if (renameType == RenameType.TRADER_CORE) {
-            traderCircuit = ItemStack.read(data);
+            traderCircuit = ItemStack.of(data);
             CompoundNBT stackNbt = traderCircuit.getOrCreateTag();
             try {
 
@@ -76,21 +76,21 @@ public class RenameScreen extends ContainerScreen<RenamingContainer> {
     }
 
     protected void initFields() {
-        this.minecraft.keyboardListener.enableRepeatEvents(true);
-        int i = (this.width - this.xSize) / 2;
-        int j = (this.height - this.ySize) / 2;
+        this.minecraft.keyboardHandler.setSendRepeatsToGui(true);
+        int i = (this.width - this.imageWidth) / 2;
+        int j = (this.height - this.imageHeight) / 2;
         this.nameField = new TextFieldWidget(this.font, i + 7, j + 26, 103, 12, new StringTextComponent(name));
         this.nameField.setCanLoseFocus(false);
-        this.nameField.setTextColor(-1);
-        this.nameField.setDisabledTextColour(-1);
-        this.nameField.setEnableBackgroundDrawing(false);
-        this.nameField.setMaxStringLength(16);
+        this.nameField.setTextColor(- 1);
+        this.nameField.setTextColorUneditable(- 1);
+        this.nameField.setBordered(false);
+        this.nameField.setMaxLength(16);
         this.nameField.setResponder(this::rename);
         this.children.add(this.nameField);
-        this.setFocusedDefault(this.nameField);
-        this.nameField.setText(name);
+        this.setInitialFocus(this.nameField);
+        this.nameField.setValue(name);
 
-        this.renameButton = new Button(i + 4, j + 41, 110, 16+4, new TranslationTextComponent("tip.the_vault.confirm"), this::confirmPressed);
+        this.renameButton = new Button(i + 4, j + 41, 110, 20, new TranslationTextComponent("tip.the_vault.confirm"), this::confirmPressed);
         this.addButton(renameButton);
     }
 
@@ -120,11 +120,11 @@ public class RenameScreen extends ContainerScreen<RenamingContainer> {
         }
         ModNetwork.CHANNEL.sendToServer(RenameUIMessage.updateName(this.renameType, nbt));
         //TODO: Send Packet.
-        this.closeScreen();
+        this.onClose();
     }
 
     private void rename(String name) {
-        if (!name.isEmpty()) {
+        if (! name.isEmpty()) {
             this.name = name;
         }
     }
@@ -133,18 +133,18 @@ public class RenameScreen extends ContainerScreen<RenamingContainer> {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == 256) {
             if (this.minecraft != null && this.minecraft.player != null)
-                this.minecraft.player.closeScreen();
+                this.minecraft.player.closeContainer();
         } else if (keyCode == 257) {
-            Minecraft.getInstance().getSoundHandler()
-                    .play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1f));
+            Minecraft.getInstance().getSoundManager()
+                .play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
             this.confirmPressed(this.renameButton);
         } else if (keyCode == 69) {
             return true;
         }
 
         return this.nameField.keyPressed(keyCode, scanCode, modifiers)
-                || this.nameField.canWrite()
-                || super.keyPressed(keyCode, scanCode, modifiers);
+            || this.nameField.canConsumeInput()
+            || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
@@ -153,10 +153,10 @@ public class RenameScreen extends ContainerScreen<RenamingContainer> {
 
         float midX = width / 2f;
         float midY = height / 2f;
-        minecraft.getTextureManager().bindTexture(TEXTURE);
-        blit(matrixStack, (int) (midX - xSize / 2), (int) (midY - ySize / 2),
-                0, 0, xSize, ySize,
-                256, 256);
+        minecraft.getTextureManager().bind(TEXTURE);
+        blit(matrixStack, (int) (midX - imageWidth / 2), (int) (midY - imageHeight / 2),
+            0, 0, imageWidth, imageHeight,
+            256, 256);
 
         renderTitle(matrixStack);
         renderNameField(matrixStack, mouseX, mouseY, partialTicks);
@@ -164,15 +164,15 @@ public class RenameScreen extends ContainerScreen<RenamingContainer> {
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
+    protected void renderBg(MatrixStack matrixStack, float partialTicks, int x, int y) {
     }
 
     private void renderTitle(MatrixStack matrixStack) {
-        int i = (this.width - this.xSize) / 2;
-        int j = (this.height - this.ySize) / 2;
-        float startX = (i + this.titleX) - (this.font.getStringWidth(new TranslationTextComponent("tip.the_vault.rename").getString()) / 2);
-        float startY = j + (float) this.titleY;
-        this.font.func_243248_b(matrixStack, this.title, startX, startY, 4210752);
+        int i = (this.width - this.imageWidth) / 2;
+        int j = (this.height - this.imageHeight) / 2;
+        float startX = (i + this.titleLabelX) - (this.font.width("Rename Player") / 2);
+        float startY = j + (float) this.titleLabelY;
+        this.font.draw(matrixStack, this.title, startX, startY, 4210752);
 
     }
 

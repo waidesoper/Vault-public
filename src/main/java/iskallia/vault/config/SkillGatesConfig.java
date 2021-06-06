@@ -6,7 +6,8 @@ import iskallia.vault.skill.SkillGates;
 
 public class SkillGatesConfig extends Config {
 
-    @Expose private SkillGates SKILL_GATES;
+    @Expose
+    private SkillGates SKILL_GATES;
 
     @Override
     public String getName() {

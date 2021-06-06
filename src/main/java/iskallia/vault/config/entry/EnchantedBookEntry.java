@@ -4,10 +4,14 @@ import com.google.gson.annotations.Expose;
 
 public class EnchantedBookEntry {
 
-    @Expose private int extraLevel;
-    @Expose private int levelNeeded;
-    @Expose private String prefix;
-    @Expose private String colorHex;
+    @Expose
+    private int extraLevel;
+    @Expose
+    private int levelNeeded;
+    @Expose
+    private String prefix;
+    @Expose
+    private String colorHex;
 
     public EnchantedBookEntry(int extraLevel, int levelNeeded, String prefix, String colorHex) {
         this.extraLevel = extraLevel;

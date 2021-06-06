@@ -8,7 +8,7 @@ public enum Easing {
 
     LINEAR_OUT(x -> 1f - x),
 
-    EXPO_OUT(x -> x == 1 ? 1 : 1 - (float) Math.pow(2, -10 * x)),
+    EXPO_OUT(x -> x == 1 ? 1 : 1 - (float) Math.pow(2, - 10 * x)),
 
     EASE_OUT_BOUNCE(x -> {
         float n1 = 7.5625f;

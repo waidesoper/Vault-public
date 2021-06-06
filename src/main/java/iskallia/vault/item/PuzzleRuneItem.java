@@ -12,24 +12,24 @@ import net.minecraft.world.World;
 
 public class PuzzleRuneItem extends BasicItem {
 
-	public PuzzleRuneItem(ResourceLocation id, Properties properties) {
-		super(id, properties);
-	}
+    public PuzzleRuneItem(ResourceLocation id, Properties properties) {
+        super(id, properties);
+    }
 
-	@Override
-	public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
-		PlayerEntity player = context.getPlayer();
-		World world = context.getWorld();
+    @Override
+    public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
+        PlayerEntity player = context.getPlayer();
+        World world = context.getLevel();
 
-		if(player != null && player.isCreative() && !world.isRemote
-				&& world.getBlockState(context.getPos()).getBlockState().getBlock() != ModBlocks.PUZZLE_RUNE_BLOCK) {
-			ModAttributes.PUZZLE_COLOR.create(stack,
-					ModAttributes.PUZZLE_COLOR.getOrCreate(stack, PuzzleRuneBlock.Color.YELLOW).getValue(stack).next());
-			ItemRelicBoosterPack.successEffects(world, player.getPositionVec());
-			return ActionResultType.SUCCESS;
-		}
+        if (player != null && player.isCreative() && ! world.isClientSide
+            && world.getBlockState(context.getClickedPos()).getBlockState().getBlock() != ModBlocks.PUZZLE_RUNE_BLOCK) {
+            ModAttributes.PUZZLE_COLOR.create(stack,
+                ModAttributes.PUZZLE_COLOR.getOrCreate(stack, PuzzleRuneBlock.Color.YELLOW).getValue(stack).next());
+            ItemRelicBoosterPack.successEffects(world, player.position());
+            return ActionResultType.SUCCESS;
+        }
 
-		return super.onItemUseFirst(stack, context);
-	}
+        return super.onItemUseFirst(stack, context);
+    }
 
 }

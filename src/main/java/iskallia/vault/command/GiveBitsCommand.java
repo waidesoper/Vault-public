@@ -28,7 +28,7 @@ public class GiveBitsCommand extends Command {
         BIT_ITEMS.add(ModItems.BIT_5000);
         BIT_ITEMS.add(ModItems.BIT_1000);
         BIT_ITEMS.add(ModItems.BIT_100);
-        BIT_ITEMS.sort(Comparator.comparingInt(b -> -b.getValue())); // Sort by decreasing bitItem::value
+        BIT_ITEMS.sort(Comparator.comparingInt(b -> - b.getValue())); // Sort by decreasing bitItem::value
         // ^^^ Here to make this thing fail-safe
     }
 
@@ -45,18 +45,18 @@ public class GiveBitsCommand extends Command {
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
         builder.then(argument("amount", IntegerArgumentType.integer())
-                .executes(context -> receivedSub(context, IntegerArgumentType.getInteger(context, "amount"))));
+            .executes(context -> receivedSub(context, IntegerArgumentType.getInteger(context, "amount"))));
     }
 
     private int receivedSub(CommandContext<CommandSource> context, int amount) throws CommandSyntaxException {
-        dropBits(context.getSource().asPlayer(), amount);
+        dropBits(context.getSource().getPlayerOrException(), amount);
         return 0;
     }
 
     public static void dropBits(ServerPlayerEntity player, int bitsInput) {
         if (BIT_ITEMS == null) initializeBits(); // <-- Lazy init to prevent any registry order errors
 
-//        List<ItemStack> itemsToGive = new LinkedList<>();
+        List<ItemStack> itemsToGive = new LinkedList<>();
 
         for (ItemBit bitItem : BIT_ITEMS) {
             if (bitsInput < bitItem.getValue()) continue;
@@ -65,7 +65,7 @@ public class GiveBitsCommand extends Command {
 
 //            itemsToGive.add(new ItemStack(bitItem, amount));
             EntityHelper.giveItem(player, new ItemStack(bitItem, amount));
-            player.addStat(Vault.STAT_GIVEN_BITS, amount * bitItem.getValue());    // #Crimson_Fluff, AddStat
+            player.awardStat(Vault.STAT_GIVEN_BITS, amount * bitItem.getValue());    // #Crimson_Fluff, AddStat
 
             bitsInput %= bitItem.getValue();
         }

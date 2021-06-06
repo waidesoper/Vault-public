@@ -47,21 +47,21 @@ public class SkillTreeScreen extends ContainerScreen<SkillTreeContainer> {
         super(container, inventory, new StringTextComponent("Ability Tree Screen!"));
 
         this.activeTab = new AbilitiesTab(this);
-        AbilityTree abilityTree = getContainer().getAbilityTree();
-        TalentTree talentTree = getContainer().getTalentTree();
-        ResearchTree researchTree = getContainer().getResearchTree();
+        AbilityTree abilityTree = getMenu().getAbilityTree();
+        TalentTree talentTree = getMenu().getTalentTree();
+        ResearchTree researchTree = getMenu().getResearchTree();
         this.abilityDialog = new AbilityDialog(abilityTree);
         this.talentDialog = new TalentDialog(talentTree);
         this.researchDialog = new ResearchDialog(researchTree, talentTree);
         refreshWidgets();
 
-        xSize = 270;
-        ySize = 200;
+        imageWidth = 270;
+        imageHeight = 200;
     }
 
     @Override
     protected void init() {
-        xSize = width; // <-- Be goneee, JEI!
+        imageWidth = width; // <-- Be goneee, JEI!
         super.init();
     }
 
@@ -124,17 +124,17 @@ public class SkillTreeScreen extends ContainerScreen<SkillTreeContainer> {
             Rectangle researchesTabBounds = getTabBounds(2, activeTab instanceof ResearchesTab);
 
             if (abilitiesTabBounds.contains((int) mouseX, (int) mouseY)) {
-                this.activeTab.onClose();
+                this.activeTab.removed();
                 this.activeTab = new AbilitiesTab(this);
                 this.refreshWidgets();
 
             } else if (talentsTabBounds.contains(((int) mouseX), ((int) mouseY))) {
-                this.activeTab.onClose();
+                this.activeTab.removed();
                 this.activeTab = new TalentsTab(this);
                 this.refreshWidgets();
 
             } else if (researchesTabBounds.contains(((int) mouseX), ((int) mouseY))) {
-                this.activeTab.onClose();
+                this.activeTab.removed();
                 this.activeTab = new ResearchesTab(this);
                 this.refreshWidgets();
 
@@ -193,26 +193,26 @@ public class SkillTreeScreen extends ContainerScreen<SkillTreeContainer> {
     }
 
     @Override
-    public void onClose() {
-        this.activeTab.onClose();
+    public void removed() {
+        this.activeTab.removed();
     }
 
     /* --------------------------------------------------- */
 
     @Override
     protected void
-    drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
+    renderBg(MatrixStack matrixStack, float partialTicks, int x, int y) {
         renderBackground(matrixStack);
     }
 
     @Override
     protected void
-    drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+    renderLabels(MatrixStack matrixStack, int x, int y) {
         // For some reason, without this it won't render :V
-        this.font.func_243248_b(matrixStack,
-                new StringTextComponent(""),
-                (float) this.titleX, (float) this.titleY,
-                4210752);
+        this.font.draw(matrixStack,
+            new StringTextComponent(""),
+            (float) this.titleLabelX, (float) this.titleLabelY,
+            4210752);
     }
 
     @Override
@@ -221,62 +221,63 @@ public class SkillTreeScreen extends ContainerScreen<SkillTreeContainer> {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         UIHelper.renderOverflowHidden(matrixStack,
-                this::renderContainerBackground,
-                ms -> activeTab.render(ms, mouseX, mouseY, partialTicks));
+            this::renderContainerBackground,
+            ms -> activeTab.render(ms, mouseX, mouseY, partialTicks));
 
         Rectangle containerBounds = getContainerBounds();
 
-/*        if (VaultBarOverlay.unspentSkillPoints > 0) {
-            getMinecraft().getTextureManager().bindTexture(HUD_RESOURCE);
+/*
+        if (VaultBarOverlay.unspentSkillPoints > 0) {
+            getMinecraft().getTextureManager().bind(HUD_RESOURCE);
             int toastWidth = 160;
-            int right = getMinecraft().getMainWindow().getScaledWidth();
+            int right = getMinecraft().getWindow().getGuiScaledWidth();
             String unspentText = VaultBarOverlay.unspentSkillPoints == 1
-                    ? " unspent skill point"
-                    : " unspent skill points";
+                ? " unspent skill point"
+                : " unspent skill points";
             String unspentPointsText = VaultBarOverlay.unspentSkillPoints + "";
-            int unspentPointsWidth = minecraft.fontRenderer.getStringWidth(unspentPointsText);
-            int unspentWidth = minecraft.fontRenderer.getStringWidth(unspentText);
+            int unspentPointsWidth = minecraft.font.width(unspentPointsText);
+            int unspentWidth = minecraft.font.width(unspentText);
             int gap = 5;
             int yOffset = 18;
-            minecraft.fontRenderer.drawStringWithShadow(matrixStack, VaultBarOverlay.unspentSkillPoints + "",
-                    right - unspentWidth - unspentPointsWidth - gap, yOffset,
-                    0xFF_ffd800
+            minecraft.font.drawShadow(matrixStack, VaultBarOverlay.unspentSkillPoints + "",
+                right - unspentWidth - unspentPointsWidth - gap, yOffset,
+                0xFF_ffd800
             );
-            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentText,
-                    right - unspentWidth - gap, yOffset,
-                    0xFF_ffffff
+            minecraft.font.drawShadow(matrixStack, unspentText,
+                right - unspentWidth - gap, yOffset,
+                0xFF_ffffff
             );
         }
 
         if (VaultBarOverlay.unspentKnowledgePoints > 0) {
-            getMinecraft().getTextureManager().bindTexture(HUD_RESOURCE);
-            int right = getMinecraft().getMainWindow().getScaledWidth();
+            getMinecraft().getTextureManager().bind(HUD_RESOURCE);
+            int right = getMinecraft().getWindow().getGuiScaledWidth();
             String unspentText = VaultBarOverlay.unspentKnowledgePoints == 1
-                    ? " unspent knowledge point"
-                    : " unspent knowledge points";
+                ? " unspent knowledge point"
+                : " unspent knowledge points";
             String unspentPointsText = VaultBarOverlay.unspentKnowledgePoints + "";
-            int unspentPointsWidth = minecraft.fontRenderer.getStringWidth(unspentPointsText);
-            int unspentWidth = minecraft.fontRenderer.getStringWidth(unspentText);
+            int unspentPointsWidth = minecraft.font.width(unspentPointsText);
+            int unspentWidth = minecraft.font.width(unspentText);
             int gap = 5;
             int yOffset = 18;
-            matrixStack.push();
+            matrixStack.pushPose();
             if (VaultBarOverlay.unspentSkillPoints > 0) {
                 matrixStack.translate(0, 12, 0);
             }
-            minecraft.fontRenderer.drawStringWithShadow(matrixStack, VaultBarOverlay.unspentKnowledgePoints + "",
-                    right - unspentWidth - unspentPointsWidth - gap, yOffset,
-                    0xFF_40d7b1
+            minecraft.font.drawShadow(matrixStack, VaultBarOverlay.unspentKnowledgePoints + "",
+                right - unspentWidth - unspentPointsWidth - gap, yOffset,
+                0xFF_40d7b1
             );
-            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentText,
-                    right - unspentWidth - gap, yOffset,
-                    0xFF_ffffff
+            minecraft.font.drawShadow(matrixStack, unspentText,
+                right - unspentWidth - gap, yOffset,
+                0xFF_ffffff
             );
-            matrixStack.pop();
-        }*/
-
+            matrixStack.popPose();
+        }
+*/
 
         // #Crimson_Fluff, common code, make it match VaultBarOverlay
-        int right = minecraft.getMainWindow().getScaledWidth() - 5;
+        int right = minecraft.getWindow().getGuiScaledWidth() - 5;
         int yOffset = 18;
 
         if (VaultBarOverlay.unspentSkillPoints > 0) {
@@ -284,19 +285,19 @@ public class SkillTreeScreen extends ContainerScreen<SkillTreeContainer> {
                 ? "tip.the_vault.skill_unspent"
                 : "tip.the_vault.skill_unspents").getString();
             String unspentPointsText = VaultBarOverlay.unspentSkillPoints + " ";
-            int unspentPointsWidth = minecraft.fontRenderer.getStringWidth(unspentPointsText);
-            int unspentWidth = minecraft.fontRenderer.getStringWidth(unspentText);
+            int unspentPointsWidth = minecraft.font.width(unspentPointsText);
+            int unspentWidth = minecraft.font.width(unspentText);
 
-            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentPointsText,
+            minecraft.font.drawShadow(matrixStack, unspentPointsText,
                 right - unspentWidth - unspentPointsWidth, yOffset,
                 0xFF_ffd800
             );
-            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentText,
+            minecraft.font.drawShadow(matrixStack, unspentText,
                 right - unspentWidth, yOffset,
                 0xFF_ffffff
             );
 
-            yOffset += minecraft.fontRenderer.FONT_HEIGHT + 3;      // # Crimson_Fluff, can't assume font height
+            yOffset += minecraft.font.lineHeight + 3;      // # Crimson_Fluff, can't assume font height
             // increase yOffset in case we have unspentKnowledgePoints
         }
 
@@ -305,21 +306,18 @@ public class SkillTreeScreen extends ContainerScreen<SkillTreeContainer> {
                 ? "tip.the_vault.res_unspent"
                 : "tip.the_vault.res_unspents").getString();
             String unspentPointsText = VaultBarOverlay.unspentKnowledgePoints + " ";
-            int unspentPointsWidth = minecraft.fontRenderer.getStringWidth(unspentPointsText);
-            int unspentWidth = minecraft.fontRenderer.getStringWidth(unspentText);
+            int unspentPointsWidth = minecraft.font.width(unspentPointsText);
+            int unspentWidth = minecraft.font.width(unspentText);
 
-            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentPointsText,
+            minecraft.font.drawShadow(matrixStack, unspentPointsText,
                 right - unspentWidth - unspentPointsWidth, yOffset,
                 0xFF_40d7b1
             );
-            minecraft.fontRenderer.drawStringWithShadow(matrixStack, unspentText,
+            minecraft.font.drawShadow(matrixStack, unspentText,
                 right - unspentWidth, yOffset,
                 0xFF_ffffff
             );
         }
-
-
-
 
         renderContainerBorders(matrixStack);
         renderContainerTabs(matrixStack);
@@ -351,124 +349,124 @@ public class SkillTreeScreen extends ContainerScreen<SkillTreeContainer> {
         // Abilities
         Rectangle abilitiesTabBounds = getTabBounds(0, activeTab instanceof AbilitiesTab);
         blit(matrixStack,
-                abilitiesTabBounds.x0,
-                abilitiesTabBounds.y0,
-                63, (activeTab instanceof AbilitiesTab) ? 28 : 0,
-                abilitiesTabBounds.getWidth(), abilitiesTabBounds.getHeight());
+            abilitiesTabBounds.x0,
+            abilitiesTabBounds.y0,
+            63, (activeTab instanceof AbilitiesTab) ? 28 : 0,
+            abilitiesTabBounds.getWidth(), abilitiesTabBounds.getHeight());
         blit(matrixStack,
-                abilitiesTabBounds.x0 + 6,
-                containerBounds.y0 - 25 - 11,
-                32, 60, 16, 16);
+            abilitiesTabBounds.x0 + 6,
+            containerBounds.y0 - 25 - 11,
+            32, 60, 16, 16);
 
         // Talents
         Rectangle talentsTabBounds = getTabBounds(1, activeTab instanceof TalentsTab);
         blit(matrixStack,
-                talentsTabBounds.x0,
-                talentsTabBounds.y0,
-                63, (activeTab instanceof TalentsTab) ? 28 : 0,
-                talentsTabBounds.getWidth(), talentsTabBounds.getHeight());
+            talentsTabBounds.x0,
+            talentsTabBounds.y0,
+            63, (activeTab instanceof TalentsTab) ? 28 : 0,
+            talentsTabBounds.getWidth(), talentsTabBounds.getHeight());
         blit(matrixStack,
-                talentsTabBounds.x0 + 6,
-                containerBounds.y0 - 25 - 11,
-                16, 60, 16, 16);
+            talentsTabBounds.x0 + 6,
+            containerBounds.y0 - 25 - 11,
+            16, 60, 16, 16);
 
         // Research
         Rectangle researchesTabBounds = getTabBounds(2, activeTab instanceof ResearchesTab);
         blit(matrixStack,
-                researchesTabBounds.x0,
-                researchesTabBounds.y0,
-                63, (activeTab instanceof ResearchesTab) ? 28 : 0,
-                researchesTabBounds.getWidth(), researchesTabBounds.getHeight());
+            researchesTabBounds.x0,
+            researchesTabBounds.y0,
+            63, (activeTab instanceof ResearchesTab) ? 28 : 0,
+            researchesTabBounds.getWidth(), researchesTabBounds.getHeight());
         blit(matrixStack,
-                researchesTabBounds.x0 + 6,
-                containerBounds.y0 - 25 - 11,
-                0, 60, 16, 16);
+            researchesTabBounds.x0 + 6,
+            containerBounds.y0 - 25 - 11,
+            0, 60, 16, 16);
 
         Minecraft minecraft = getMinecraft();
 
         if (activeTab instanceof AbilitiesTab) {
-            minecraft.fontRenderer.drawString(matrixStack, new TranslationTextComponent("tip.the_vault.abilities").getString(),
-                    containerBounds.x0, containerBounds.y0 - 12, 0xFF_3f3f3f);
+            minecraft.font.draw(matrixStack, new TranslationTextComponent("tip.the_vault.abilities").getString(),
+                containerBounds.x0, containerBounds.y0 - 12, 0xFF_3f3f3f);
 
         } else if (activeTab instanceof TalentsTab) {
-            minecraft.fontRenderer.drawString(matrixStack, new TranslationTextComponent("tip.the_vault.talents").getString(),
-                    containerBounds.x0, containerBounds.y0 - 12, 0xFF_3f3f3f);
+            minecraft.font.draw(matrixStack, new TranslationTextComponent("tip.the_vault.talents").getString(),
+                containerBounds.x0, containerBounds.y0 - 12, 0xFF_3f3f3f);
 
         } else if (activeTab instanceof ResearchesTab) {
-            minecraft.fontRenderer.drawString(matrixStack, new TranslationTextComponent("tip.the_vault.researches").getString(),
-                    containerBounds.x0, containerBounds.y0 - 12, 0xFF_3f3f3f);
+            minecraft.font.draw(matrixStack, new TranslationTextComponent("tip.the_vault.researches").getString(),
+                containerBounds.x0, containerBounds.y0 - 12, 0xFF_3f3f3f);
         }
 
-        minecraft.textureManager.bindTexture(VaultBarOverlay.RESOURCE);
+        minecraft.textureManager.bind(VaultBarOverlay.RESOURCE);
 
         String text = String.valueOf(VaultBarOverlay.vaultLevel);
-        int textWidth = minecraft.fontRenderer.getStringWidth(text);
+        int textWidth = minecraft.font.width(text);
         int barWidth = 85;
         float expPercentage = (float) VaultBarOverlay.vaultExp / VaultBarOverlay.tnl;
 
         int barX = containerBounds.x1 - barWidth - 5;
         int barY = containerBounds.y0 - 10;
 
-        minecraft.getProfiler().startSection("vaultBar");
-        minecraft.ingameGUI.blit(matrixStack,
-                barX, barY,
-                1, 1, barWidth, 5);
-        minecraft.ingameGUI.blit(matrixStack,
-                barX, barY,
-                1, 7, (int) (barWidth * expPercentage), 5);
+        minecraft.getProfiler().push("vaultBar");
+        minecraft.gui.blit(matrixStack,
+            barX, barY,
+            1, 1, barWidth, 5);
+        minecraft.gui.blit(matrixStack,
+            barX, barY,
+            1, 7, (int) (barWidth * expPercentage), 5);
         FontHelper.drawStringWithBorder(matrixStack,
-                text,
-                barX - textWidth - 1, barY - 1,
-                0xFF_ffe637, 0xFF_3e3e3e);
+            text,
+            barX - textWidth - 1, barY - 1,
+            0xFF_ffe637, 0xFF_3e3e3e);
 
-        minecraft.getProfiler().endSection();
+        minecraft.getProfiler().pop();
 
     }
 
     private void
     renderContainerBorders(MatrixStack matrixStack) {
         assert this.minecraft != null;
-        this.minecraft.getTextureManager().bindTexture(UI_RESOURCE);
+        this.minecraft.getTextureManager().bind(UI_RESOURCE);
 
         Rectangle containerBounds = getContainerBounds();
 
         RenderSystem.enableBlend();
 
         blit(matrixStack, containerBounds.x0 - 9, containerBounds.y0 - 18,
-                0, 0, 15, 24);
+            0, 0, 15, 24);
         blit(matrixStack, containerBounds.x1 - 7, containerBounds.y0 - 18,
-                18, 0, 15, 24);
+            18, 0, 15, 24);
         blit(matrixStack, containerBounds.x0 - 9, containerBounds.y1 - 7,
-                0, 27, 15, 16);
+            0, 27, 15, 16);
         blit(matrixStack, containerBounds.x1 - 7, containerBounds.y1 - 7,
-                18, 27, 15, 16);
+            18, 27, 15, 16);
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(containerBounds.x0 + 6, containerBounds.y0 - 18, 0);
         matrixStack.scale(containerBounds.x1 - containerBounds.x0 - 13, 1, 1);
         blit(matrixStack, 0, 0,
-                16, 0, 1, 24);
+            16, 0, 1, 24);
         matrixStack.translate(0, containerBounds.y1 - containerBounds.y0 + 11, 0);
         blit(matrixStack, 0, 0,
-                16, 27, 1, 16);
-        matrixStack.pop();
+            16, 27, 1, 16);
+        matrixStack.popPose();
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(containerBounds.x0 - 9, containerBounds.y0 + 6, 0);
         matrixStack.scale(1, containerBounds.y1 - containerBounds.y0 - 13, 1);
         blit(matrixStack, 0, 0,
-                0, 25, 15, 1);
+            0, 25, 15, 1);
         matrixStack.translate(containerBounds.x1 - containerBounds.x0 + 2, 0, 0);
         blit(matrixStack, 0, 0,
-                18, 25, 15, 1);
-        matrixStack.pop();
+            18, 25, 15, 1);
+        matrixStack.popPose();
     }
 
     private void
     renderContainerBackground(MatrixStack matrixStack) {
         assert this.minecraft != null;
 
-        this.minecraft.getTextureManager().bindTexture(BACKGROUNDS_RESOURCE);
+        this.minecraft.getTextureManager().bind(BACKGROUNDS_RESOURCE);
 
         Rectangle containerBounds = getContainerBounds();
 
@@ -481,9 +479,9 @@ public class SkillTreeScreen extends ContainerScreen<SkillTreeContainer> {
         while (uncoveredWidth > 0) {
             while (uncoveredHeight > 0) {
                 blit(matrixStack, currentX, currentY,
-                        16 * 5, 0, // TODO: <-- depends on tab
-                        Math.min(textureSize, uncoveredWidth),
-                        Math.min(textureSize, uncoveredHeight)
+                    16 * 5, 0, // TODO: <-- depends on tab
+                    Math.min(textureSize, uncoveredWidth),
+                    Math.min(textureSize, uncoveredHeight)
                 );
                 uncoveredHeight -= textureSize;
                 currentY += textureSize;

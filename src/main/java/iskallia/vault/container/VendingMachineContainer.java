@@ -36,30 +36,30 @@ public class VendingMachineContainer extends Container {
         this.vendingInventory = new VendingInventory();
         this.addSlot(new Slot(vendingInventory, VendingInventory.BUY_SLOT, 210, 43) {
             @Override
-            public void onSlotChanged() {
-                super.onSlotChanged();
+            public void setChanged() {
+                super.setChanged();
                 vendingInventory.updateRecipe();
             }
 
             @Override
-            public void onSlotChange(ItemStack oldStackIn, ItemStack newStackIn) {
-                super.onSlotChange(oldStackIn, newStackIn);
+            public void onQuickCraft(ItemStack oldStackIn, ItemStack newStackIn) {
+                super.onQuickCraft(oldStackIn, newStackIn);
                 vendingInventory.updateRecipe();
             }
         });
         this.addSlot(new VendingSellSlot(vendingInventory, VendingInventory.SELL_SLOT, 268, 43));
 
         // Player Inventory
-        for (int i1 = 0; i1 < 3; ++i1) {
-            for (int k1 = 0; k1 < 9; ++k1) {
+        for (int i1 = 0; i1 < 3; ++ i1) {
+            for (int k1 = 0; k1 < 9; ++ k1) {
                 this.addSlot(new Slot(playerInventory, k1 + i1 * 9 + 9,
-                        167 + k1 * 18,
-                        86 + i1 * 18));
+                    167 + k1 * 18,
+                    86 + i1 * 18));
             }
         }
 
         // Player Hotbar
-        for (int j1 = 0; j1 < 9; ++j1) {
+        for (int j1 = 0; j1 < 9; ++ j1) {
             this.addSlot(new Slot(playerInventory, j1, 167 + j1 * 18, 144));
         }
     }
@@ -81,24 +81,24 @@ public class VendingMachineContainer extends Container {
         vendingInventory.updateSelectedCore(tileEntity, traderCore);
         vendingInventory.updateRecipe();
 
-        if (vendingInventory.getStackInSlot(VendingInventory.BUY_SLOT) != ItemStack.EMPTY) {
-            ItemStack buyStack = vendingInventory.removeStackFromSlot(VendingInventory.BUY_SLOT);
-            playerInventory.addItemStackToInventory(buyStack);
+        if (vendingInventory.getItem(VendingInventory.BUY_SLOT) != ItemStack.EMPTY) {
+            ItemStack buyStack = vendingInventory.removeItemNoUpdate(VendingInventory.BUY_SLOT);
+            playerInventory.add(buyStack);
         }
 
         if (traderCore.getTrade().getTradesLeft() <= 0) return;
 
         int slot = slotForItem(traderCore.getTrade().getBuy().getItem());
-        if (slot != -1) {
-            ItemStack buyStack = playerInventory.removeStackFromSlot(slot);
-            vendingInventory.setInventorySlotContents(VendingInventory.BUY_SLOT, buyStack);
+        if (slot != - 1) {
+            ItemStack buyStack = playerInventory.removeItemNoUpdate(slot);
+            vendingInventory.setItem(VendingInventory.BUY_SLOT, buyStack);
         }
     }
 
     public void deselectTrades() {
-        if (vendingInventory.getStackInSlot(VendingInventory.BUY_SLOT) != ItemStack.EMPTY) {
-            ItemStack buyStack = vendingInventory.removeStackFromSlot(VendingInventory.BUY_SLOT);
-            playerInventory.addItemStackToInventory(buyStack);
+        if (vendingInventory.getItem(VendingInventory.BUY_SLOT) != ItemStack.EMPTY) {
+            ItemStack buyStack = vendingInventory.removeItemNoUpdate(VendingInventory.BUY_SLOT);
+            playerInventory.add(buyStack);
         }
 
         vendingInventory.updateSelectedCore(tileEntity, null);
@@ -112,35 +112,35 @@ public class VendingMachineContainer extends Container {
 
         TraderCore ejectedCore = tileEntity.getCores().remove(index);
         ItemStack itemStack = ItemTraderCore.getStackFromCore(ejectedCore, ejectedCore.getType());
-        playerInventory.player.dropItem(itemStack, false, true);
+        playerInventory.player.drop(itemStack, false, true);
     }
 
     private int slotForItem(Item item) {
-        for (int i = 0; i < playerInventory.getSizeInventory(); i++) {
-            if (playerInventory.getStackInSlot(i).getItem() == item) {
+        for (int i = 0; i < playerInventory.getContainerSize(); i++) {
+            if (playerInventory.getItem(i).getItem() == item) {
                 return i;
             }
         }
-        return -1;
+        return - 1;
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) {
+    public boolean stillValid(PlayerEntity player) {
         return true;
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+    public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void onContainerClosed(PlayerEntity player) {
-        super.onContainerClosed(player);
+    public void removed(PlayerEntity player) {
+        super.removed(player);
 
-        ItemStack buy = vendingInventory.getStackInSlot(0);
+        ItemStack buy = vendingInventory.getItem(0);
 
-        if (!buy.isEmpty()) {
+        if (! buy.isEmpty()) {
             EntityHelper.giveItem(player, buy);
         }
     }

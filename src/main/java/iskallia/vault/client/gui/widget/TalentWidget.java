@@ -11,7 +11,7 @@ import iskallia.vault.util.ResourceBoundary;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class TalentWidget extends Widget {
 
@@ -32,9 +32,9 @@ public class TalentWidget extends Widget {
 
     public TalentWidget(TalentGroup<?> talentGroup, TalentTree talentTree, SkillStyle style) {
         super(style.x, style.y,
-                5 * PIP_SIZE + 4 * GAP_SIZE,
-                pipRowCount(talentTree.getNodeOf(talentGroup).getLevel()) * (PIP_SIZE + GAP_SIZE) - GAP_SIZE,
-                new TranslationTextComponent("the_vault.widgets.talent"));      // TOO: This doesn't exist in en-us
+            5 * PIP_SIZE + 4 * GAP_SIZE,
+            pipRowCount(talentTree.getNodeOf(talentGroup).getLevel()) * (PIP_SIZE + GAP_SIZE) - GAP_SIZE,
+            new StringTextComponent("the_vault.widgets.talent"));
         this.style = style;
         this.talentGroup = talentGroup;
         this.talentTree = talentTree;
@@ -54,8 +54,8 @@ public class TalentWidget extends Widget {
         int onlyIconWidth = ICON_SIZE + 2 * GAP_SIZE;
         int pipLineWidth = Math.min(talentGroup.getMaxLevel(), MAX_PIPs_INLINE) * (PIP_SIZE + GAP_SIZE);
         return hasPips()
-                ? Math.max(pipLineWidth, onlyIconWidth)
-                : onlyIconWidth;
+            ? Math.max(pipLineWidth, onlyIconWidth)
+            : onlyIconWidth;
     }
 
     public int getClickableHeight() {
@@ -78,7 +78,7 @@ public class TalentWidget extends Widget {
     }
 
     public boolean hasPips() {
-        return !locked && talentGroup.getMaxLevel() > 1;
+        return ! locked && talentGroup.getMaxLevel() > 1;
     }
 
     /* ----------------------------------------- */
@@ -87,7 +87,7 @@ public class TalentWidget extends Widget {
     public boolean isMouseOver(double mouseX, double mouseY) {
         Rectangle clickableBounds = getClickableBounds();
         return clickableBounds.x0 <= mouseX && mouseX <= clickableBounds.x1
-                && clickableBounds.y0 <= mouseY && mouseY <= clickableBounds.y1;
+            && clickableBounds.y0 <= mouseY && mouseY <= clickableBounds.y1;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class TalentWidget extends Widget {
         if (locked) return false;
         if (selected) return false;
 
-        this.playDownSound(Minecraft.getInstance().getSoundHandler());
+        this.playDownSound(Minecraft.getInstance().getSoundManager());
         return true;
     }
 
@@ -121,48 +121,48 @@ public class TalentWidget extends Widget {
     renderIcon(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         ResourceBoundary resourceBoundary = style.frameType.getResourceBoundary();
 
-        matrixStack.push();
-        matrixStack.translate(-ICON_SIZE / 2f, -ICON_SIZE / 2f, 0);
-        Minecraft.getInstance().textureManager.bindTexture(resourceBoundary.getResource());
+        matrixStack.pushPose();
+        matrixStack.translate(- ICON_SIZE / 2f, - ICON_SIZE / 2f, 0);
+        Minecraft.getInstance().textureManager.bind(resourceBoundary.getResource());
 
         int vOffset = locked ? 62
-                : selected || isMouseOver(mouseX, mouseY) ? -31
-                : talentTree.getNodeOf(talentGroup).getLevel() >= 1 ? 31 : 0;
+            : selected || isMouseOver(mouseX, mouseY) ? - 31
+            : talentTree.getNodeOf(talentGroup).getLevel() >= 1 ? 31 : 0;
         blit(matrixStack, this.x, this.y,
-                resourceBoundary.getU(),
-                resourceBoundary.getV() + vOffset,
-                resourceBoundary.getW(),
-                resourceBoundary.getH());
-        matrixStack.pop();
+            resourceBoundary.getU(),
+            resourceBoundary.getV() + vOffset,
+            resourceBoundary.getW(),
+            resourceBoundary.getH());
+        matrixStack.popPose();
 
-        matrixStack.push();
-        matrixStack.translate(-16 / 2f, -16 / 2f, 0);
-        Minecraft.getInstance().textureManager.bindTexture(locked ? SKILL_WIDGET_RESOURCE : TALENTS_RESOURCE);
+        matrixStack.pushPose();
+        matrixStack.translate(- 16 / 2f, - 16 / 2f, 0);
+        Minecraft.getInstance().textureManager.bind(locked ? SKILL_WIDGET_RESOURCE : TALENTS_RESOURCE);
         if (locked) {
             blit(matrixStack, this.x + 3, this.y + 1,
-                    10, 124, 10, 14);
+                10, 124, 10, 14);
 
         } else {
             blit(matrixStack, this.x, this.y,
-                    style.u, style.v,
-                    16, 16);
+                style.u, style.v,
+                16, 16);
         }
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     public void
     renderPips(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        Minecraft.getInstance().textureManager.bindTexture(SKILL_WIDGET_RESOURCE);
+        Minecraft.getInstance().textureManager.bind(SKILL_WIDGET_RESOURCE);
 
         int rowCount = pipRowCount(talentGroup.getMaxLevel());
         int remainingPips = talentGroup.getMaxLevel();
         int remainingFilledPips = talentTree.getNodeOf(talentGroup).getLevel();
         for (int r = 0; r < rowCount; r++) {
             renderPipLine(matrixStack,
-                    x,
-                    y + (ICON_SIZE / 2) + (2 * GAP_SIZE) + r * (GAP_SIZE + PIP_SIZE),
-                    Math.min(MAX_PIPs_INLINE, remainingPips),
-                    Math.min(MAX_PIPs_INLINE, remainingFilledPips)
+                x,
+                y + (ICON_SIZE / 2) + (2 * GAP_SIZE) + r * (GAP_SIZE + PIP_SIZE),
+                Math.min(MAX_PIPs_INLINE, remainingPips),
+                Math.min(MAX_PIPs_INLINE, remainingFilledPips)
             );
             remainingPips -= MAX_PIPs_INLINE;
             remainingFilledPips -= MAX_PIPs_INLINE;
@@ -174,24 +174,24 @@ public class TalentWidget extends Widget {
         int lineWidth = count * PIP_SIZE + (count - 1) * GAP_SIZE;
         int remainingFilled = filledCount;
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(x, y, 0);
-        matrixStack.translate(-lineWidth / 2f, -PIP_SIZE / 2f, 0);
+        matrixStack.translate(- lineWidth / 2f, - PIP_SIZE / 2f, 0);
 
         for (int i = 0; i < count; i++) {
             if (remainingFilled > 0) {
                 blit(matrixStack, 0, 0,
-                        1, 133, 8, 8);
+                    1, 133, 8, 8);
                 remainingFilled--;
 
             } else {
                 blit(matrixStack, 0, 0,
-                        1, 124, 8, 8);
+                    1, 124, 8, 8);
             }
             matrixStack.translate(PIP_SIZE + GAP_SIZE, 0, 0);
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     public static int

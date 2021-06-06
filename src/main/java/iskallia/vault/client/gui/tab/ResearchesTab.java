@@ -26,12 +26,12 @@ public class ResearchesTab extends SkillTab {
     public void refresh() {
         this.researchWidgets.clear();
 
-        ResearchTree researchTree = parentScreen.getContainer().getResearchTree();
+        ResearchTree researchTree = parentScreen.getMenu().getResearchTree();
         ModConfigs.RESEARCHES_GUI.getStyles().forEach((researchName, style) -> {
             this.researchWidgets.add(new ResearchWidget(
-                    researchName,
-                    researchTree,
-                    style
+                researchName,
+                researchTree,
+                style
             ));
         });
     }
@@ -46,7 +46,7 @@ public class ResearchesTab extends SkillTab {
 
         for (ResearchWidget researchWidget : researchWidgets) {
             if (researchWidget.isMouseOver(containerMouseX, containerMouseY)
-                    && researchWidget.mouseClicked(containerMouseX, containerMouseY, button)) {
+                && researchWidget.mouseClicked(containerMouseX, containerMouseY, button)) {
                 if (this.selectedWidget != null) this.selectedWidget.deselect();
                 this.selectedWidget = researchWidget;
                 this.selectedWidget.select();
@@ -64,7 +64,7 @@ public class ResearchesTab extends SkillTab {
 
         Vector2f midpoint = parentScreen.getContainerBounds().midpoint();
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(midpoint.x, midpoint.y, 0);
         matrixStack.scale(viewportScale, viewportScale, 1);
         matrixStack.translate(viewportTranslation.x, viewportTranslation.y, 0);
@@ -76,7 +76,7 @@ public class ResearchesTab extends SkillTab {
             researchWidget.render(matrixStack, containerMouseX, containerMouseY, partialTicks);
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
 }

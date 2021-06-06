@@ -7,7 +7,8 @@ import java.util.Map;
 
 public class Restrictions {
 
-    @Expose protected Map<Type, Boolean> restricts;
+    @Expose
+    protected Map<Type, Boolean> restricts;
 
     private Restrictions() {
         this.restricts = new HashMap<>();
