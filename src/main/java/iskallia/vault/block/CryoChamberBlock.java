@@ -204,7 +204,7 @@ public class CryoChamberBlock extends Block {
                 }
 
                 if (chamber.addTraderCore(coreToInsert)) {
-                    heldStack.shrink(1);
+                    if (! player.isCreative()) heldStack.shrink(1);   // #Crimson_Fluff
                     chamber.sendUpdates();
                 }
             } else {

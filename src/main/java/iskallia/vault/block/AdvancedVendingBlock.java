@@ -30,6 +30,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
@@ -210,7 +211,7 @@ public class AdvancedVendingBlock extends Block {
     public static void playOpenSound() {
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.getSoundManager().play(SimpleSound.forUI(
-            ModSounds.VENDING_MACHINE_SFX, 1f, 1f
+            SoundEvents.UI_BUTTON_CLICK, 1f, 1f
         ));
     }
 

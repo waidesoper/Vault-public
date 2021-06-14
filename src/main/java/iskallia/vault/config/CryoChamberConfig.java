@@ -11,6 +11,8 @@ public class CryoChamberConfig extends Config {
     @Expose
     private int GROW_ETERNAL_TIME;
     @Expose
+    private int DEFAULT_CORE_COUNT;     // #Crimson_Fluff
+    @Expose
     private HashMap<String, Integer> STREAMER_CORE_REQ = new HashMap<>();
 
 //	@Expose public int GENERATOR_FE_PER_TICK_MIN;
@@ -29,7 +31,7 @@ public class CryoChamberConfig extends Config {
     public int getPlayerCoreCount(String name) {
         if (STREAMER_CORE_REQ.containsKey(name))
             return STREAMER_CORE_REQ.get(name);
-        return 100;
+        return DEFAULT_CORE_COUNT;      // #Crimson_Fluff
     }
 
     public int getGrowEternalTime() { return this.GROW_ETERNAL_TIME * 20; }
@@ -40,6 +42,7 @@ public class CryoChamberConfig extends Config {
     protected void reset() {
         INFUSION_TIME = 4;
         GROW_ETERNAL_TIME = 10;
+        DEFAULT_CORE_COUNT = 100;       // #Crimson_Fluff
 
         STREAMER_CORE_REQ.put("iskall85", 100);
         STREAMER_CORE_REQ.put("Stressmonster101", 100);

@@ -102,6 +102,10 @@ public class VaultSpawner {
 
             if (entity instanceof MobEntity) {
                 ((MobEntity) entity).spawnAnim();
+
+                // TODO: #Crimson_Fluff, More Babies Modifier
+                //((MobEntity) entity).setBaby(true);
+
                 ((MobEntity) entity).finalizeSpawn(world, new DifficultyInstance(Difficulty.PEACEFUL, 13000L, 0L, 0L),
                     SpawnReason.STRUCTURE, null, null);
             }

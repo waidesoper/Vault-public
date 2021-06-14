@@ -136,7 +136,7 @@ public class CryoChamberTileEntity extends TileEntity implements ITickableTileEn
 
     public boolean addTraderCore(TraderCore core) {
         if (this.isFull() || this.isInfusing()) return false;
-        this.level.playSound(null, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundEvents.SOUL_ESCAPE, SoundCategory.PLAYERS, 1f, 1f);
+        this.level.playSound(null, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 1f, 1f);
         this.coreNames.add(core.getName());
         this.infusing = true;
         this.infusionTimeRemaining = ModConfigs.CRYO_CHAMBER.getInfusionTime();
@@ -161,10 +161,10 @@ public class CryoChamberTileEntity extends TileEntity implements ITickableTileEn
     }
 
     public EternalData getEternal() {
-        if (this.getLevel() == null) return null;
-        if (! this.getLevel().isClientSide()) {
+        if (this.level == null) return null;
+        if (! this.level.isClientSide) {
             if (this.eternalId == null) return null;
-            return EternalsData.get((ServerWorld) this.getLevel()).getEternals(this.owner).getFromId(this.eternalId);
+            return EternalsData.get((ServerWorld) this.level).getEternals(this.owner).getFromId(this.eternalId);
         }
 
         return this.eternalData;
@@ -232,20 +232,29 @@ public class CryoChamberTileEntity extends TileEntity implements ITickableTileEn
         }
 
         if (this.isFull() && ! this.growingEternal && this.level.getGameTime() % 40 == 0) {
-            this.level.playSound(null, this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ(), SoundEvents.CONDUIT_AMBIENT, SoundCategory.PLAYERS, 1.0f, 1f);
+            this.level.playSound(null, this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ(), SoundEvents.CONDUIT_AMBIENT, SoundCategory.BLOCKS, 1.0f, 1f);
         }
 
         if (this.infusing) {
             if (this.infusionTimeRemaining-- <= 0) {
                 this.infusionTimeRemaining = 0;
                 this.infusing = false;
-            }
+            } else
+                // #Crimson_Fluff, audibly pleasing
+                if (this.infusionTimeRemaining > 40)
+                    if (this.level.getGameTime() % 30 == 0)
+                        this.level.playSound(null, this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ(), SoundEvents.DROWNED_AMBIENT_WATER, SoundCategory.BLOCKS, 1.0f, 0.6f);
+
             this.sendUpdates();
             //TODO send client time remaining.
         } else if (this.growingEternal) {
             if (this.growEternalTimeRemaining-- <= 0) {
                 this.growEternalTimeRemaining = 0;
                 this.growingEternal = false;
+
+                // #Crimson_Fluff, TADA !
+                this.level.playSound(null, this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ(), SoundEvents.END_PORTAL_FRAME_FILL, SoundCategory.BLOCKS, 1.0f, 0.6f);
+
                 this.createEternal();
             }
 
