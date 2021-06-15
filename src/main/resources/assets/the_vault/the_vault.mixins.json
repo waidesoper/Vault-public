@@ -8,7 +8,6 @@
     "MixinAttributeInstance",
     "MixinCUpdateStructureBlockPacket",
     "MixinEnchantment",
-    "MixinItemRenderer",
     "MixinItemStack",
     "MixinLivingEntity",
     "MixinPlayerInventory",

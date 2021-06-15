@@ -2,6 +2,8 @@ Vault Hunter 1.16.5 - Base code Hexeption
 
 **Changes:**
 
+**Optifine** now works - The Cryo Chamber does not render with see-through liquid, swings and round-abouts
+
 Remove Z-fighting from Vending Machine walls - When in Dev the models are fine, in modpack they have black areas on trim. Don't know why
 
 Remove Z-fighting from Vault Arena Crate

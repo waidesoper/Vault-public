@@ -1,27 +1,22 @@
-package iskallia.vault.mixin;
+package iskallia.vault;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import iskallia.vault.init.ModAttributes;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ItemRenderer.class)
-public abstract class MixinItemRenderer {
+import java.text.DecimalFormat;
 
-    @Shadow
-    protected abstract void fillRect(BufferBuilder renderer, int x, int y, int width, int height, int red, int green, int blue, int alpha);
-
-    @Inject(method = "renderGuiItemDecorations(Lnet/minecraft/client/gui/FontRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/Item;showDurabilityBar(Lnet/minecraft/item/ItemStack;)Z"))
-    private void render(FontRenderer fr, ItemStack stack, int xPosition, int yPosition, String text, CallbackInfo ci) {
+public class ItemRenderer {
+    public static void renderDurability(FontRenderer fr, ItemStack stack, int xPosition, int yPosition) {
         if (! ModAttributes.GEAR_MAX_LEVEL.exists(stack)) {
             return;
         }
@@ -50,5 +45,4 @@ public abstract class MixinItemRenderer {
         RenderSystem.enableTexture();
         RenderSystem.enableDepthTest();
     }
-
 }
