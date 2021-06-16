@@ -1,8 +1,8 @@
-Vault Hunter 1.16.5 - Base code Hexeption
+Vault Hunter 1.16.5 - Base code by Hexeption
 
 **Changes:**
 
-**Optifine** now works - The Cryo Chamber does not render with see-through liquid, swings and round-abouts
+**Optifine** now works - The Cryo Chamber does not render with see-through liquid. "swings and round-abouts"
 
 Remove Z-fighting from Vending Machine walls - When in Dev the models are fine, in modpack they have black areas on trim. Don't know why
 
@@ -68,7 +68,7 @@ Reduced number of "Twerker" particles. Only show particles if successfully bone-
 
 In peaceful mode mobs no longer try to spawn in the vault
 
-Skellington Key, add keys to tags
+Skellington Key. Sacrifice 4 keys for a guaranteed treasure room door unlock !
 
 Vault Ore loot tables based on Diamond drops now
 
@@ -81,3 +81,10 @@ Removed chance of Guardian Fighter dropping nothing
 Re-localised Legendary Treasure. You can't have "Rare Legendary Treasure"
 
 Add a default number of cores needed to Cryo_Chamber config
+
+Vault Boss kill messages use translation files now
+
+Vault Boss Crate now tries to place in player inventory before tp'd out the vault. If no space then it will spawn at Boss' death location
+
+Added Critical Hits damage statistic
+

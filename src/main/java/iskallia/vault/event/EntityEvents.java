@@ -249,9 +249,12 @@ public class EntityEvents {
                     stacks.add(new ItemStack(ModItems.ETERNAL_SOUL, world.random.nextInt(count) + 1));
                 }
 
+                // #Crimson_Fluff
+                // TODO: Spawn crate after TP'd back to Overworld?  not sure...
+                // 'try' to put crate into players inventory, else spawn at VaultBoss's death location !
                 ItemStack crate = VaultCrateBlock.getCrateWithLoot(ModBlocks.VAULT_CRATE, stacks);
+                if (! player.addItem(crate)) event.getEntity().spawnAtLocation(crate);
 
-                event.getEntity().spawnAtLocation(crate);
 
                 FireworkRocketEntity fireworks = new FireworkRocketEntity(world, event.getEntity().getX(),
                     event.getEntity().getY(), event.getEntity().getZ(), new ItemStack(Items.FIREWORK_ROCKET));
@@ -264,7 +267,7 @@ public class EntityEvents {
 
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, 1.0F, 1.0F);
 
-                StringTextComponent title = new StringTextComponent("Vault Cleared!");
+                TranslationTextComponent title = new TranslationTextComponent("tip.the_vault.win_cleared");
                 title.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ddd01e)));
 
                 Entity entity = event.getEntity();
@@ -272,10 +275,10 @@ public class EntityEvents {
                 IFormattableTextComponent entityName = entity instanceof FighterEntity
                     ? entity.getName().copy() : entity.getType().getDescription().copy();
                 entityName.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_dd711e)));
-                IFormattableTextComponent subtitle = new TranslationTextComponent(" is defeated.");
+                IFormattableTextComponent subtitle = new TranslationTextComponent("tip.the_vault.win_defeated");
                 subtitle.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ddd01e)));
 
-                StringTextComponent actionBar = new StringTextComponent("You'll be teleported back soon...");
+                TranslationTextComponent actionBar = new TranslationTextComponent("tip.the_vault.win_teleport");
                 actionBar.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ddd01e)));
 
                 STitlePacket titlePacket = new STitlePacket(STitlePacket.Type.TITLE, title);
@@ -283,12 +286,12 @@ public class EntityEvents {
 
                 player.connection.send(titlePacket);
                 player.connection.send(subtitlePacket);
-                player.displayClientMessage(actionBar, true);
+                player.displayClientMessage(actionBar, false);
 
                 IFormattableTextComponent playerName = player.getDisplayName().copy();
                 playerName.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_983198)));
 
-                StringTextComponent text = new StringTextComponent(" cleared a Vault by defeating ");
+                TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.win_clear");
                 text.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ffffff)));
 
                 StringTextComponent punctuation = new StringTextComponent("!");
@@ -400,6 +403,10 @@ public class EntityEvents {
                 if (source.level.random.nextDouble() < chance) {
                     source.level.playSound(null, source.getX(), source.getY(), source.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, source.getSoundSource(), 1.0F, 1.0F);
                     event.setAmount((float) (event.getAmount() * multiplier));
+
+                    // #Crimson_Fluff, potential to spawn mobs that have critical chance/damage !
+                    if (source instanceof PlayerEntity)
+                        ((PlayerEntity) source).awardStat(Vault.STAT_DAMAGE_CRITS, (int) (event.getAmount() * multiplier));
                 }
             }
         }

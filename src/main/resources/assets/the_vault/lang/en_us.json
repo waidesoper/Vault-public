@@ -315,6 +315,7 @@
   "stat.the_vault.given_gifts": "Twitch: Gift Subs given",
   "stat.the_vault.parryd": "Vaults: Damage Parried",
   "stat.the_vault.vampired": "Vaults: Damage Absorbed (Vampirism)",
+  "stat.the_vault.crits": "Vaults: Damage dealt by Critical Hits",
   "item.the_vault.key_skelly": "Skellington Key",
   "item.the_vault.legendary_treasure": "Legendary Treasure",
   "tip.the_vault.trade_buy": " - Buy: ",

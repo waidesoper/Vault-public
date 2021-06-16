@@ -50,6 +50,7 @@ public class Vault {
     public static final ResourceLocation STAT_GIVEN_GIFTS = registerCustomStat("given_gifts");
     public static final ResourceLocation STAT_DAMAGE_PARRYD = registerCustomStat("parryd");
     public static final ResourceLocation STAT_DAMAGE_VAMPIRED = registerCustomStat("vampired");
+    public static final ResourceLocation STAT_DAMAGE_CRITS = registerCustomStat("crits");
     // #Crimson_Fluff END
 
     public Vault() {
