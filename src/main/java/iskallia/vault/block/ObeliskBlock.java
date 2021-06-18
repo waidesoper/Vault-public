@@ -1,11 +1,13 @@
 package iskallia.vault.block;
 
+import iskallia.vault.Vault;
 import iskallia.vault.client.gui.overlay.VaultRaidOverlay;
 import iskallia.vault.entity.EntityScaler;
 import iskallia.vault.entity.FighterEntity;
 import iskallia.vault.entity.VaultBoss;
 import iskallia.vault.init.ModBlocks;
 import iskallia.vault.init.ModConfigs;
+import iskallia.vault.init.ModEntities;
 import iskallia.vault.item.ObeliskInscriptionItem;
 import iskallia.vault.world.data.VaultRaidData;
 import iskallia.vault.world.raid.VaultRaid;
@@ -36,6 +38,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -136,23 +139,28 @@ public class ObeliskBlock extends Block {
     public void spawnBoss(VaultRaid raid, ServerWorld world, BlockPos pos, EntityScaler.Type type) {
         LivingEntity boss;
 
+        // #Crimson_Fluff, if crystal has a boss name then summon textured fighter
+        // TODO: Triple check if bosses are scaling correctly, I think they not
         if (type == EntityScaler.Type.BOSS) {
-            if (ModConfigs.VAULT_MOBS.getForLevel(raid.level).BOSS_POOL.size() != 0)        // #Crimson_Fluff, just in case
+            if (! raid.playerBossName.isEmpty()) {
+                boss = ModEntities.VAULT_FIGHTER.create(world);
+                boss.setCustomName(new StringTextComponent(raid.playerBossName));
+            }
+            else if (ModConfigs.VAULT_MOBS.getForLevel(raid.level).BOSS_POOL.size() != 0)        // #Crimson_Fluff, just in case
                 boss = ModConfigs.VAULT_MOBS.getForLevel(raid.level).BOSS_POOL.getRandom(world.getRandom()).create(world);
+
             else
                 return;
         } else
             return;
 
-        if (boss instanceof FighterEntity) ((FighterEntity) boss).changeSize(2.0F);
         boss.moveTo(pos.getX() + 0.5D, pos.getY() + 0.2D, pos.getZ() + 0.5D, 0.0F, 0.0F);
-        world.addWithUUID(boss);
-
         boss.getTags().add("VaultBoss");
         raid.addBoss(boss);
 
         if (boss instanceof FighterEntity) {
             ((FighterEntity) boss).bossInfo.setVisible(true);
+            ((FighterEntity) boss).changeSize(2.0F);
         }
 
         if (boss instanceof VaultBoss) {
@@ -161,11 +169,7 @@ public class ObeliskBlock extends Block {
 
         EntityScaler.scaleVault(boss, raid.level, new Random(), EntityScaler.Type.BOSS);
 
-        if (raid.playerBossName != null) {
-            boss.setCustomName(new StringTextComponent(raid.playerBossName));
-        } else {
-            boss.setCustomName(new StringTextComponent("Boss"));
-        }
+        world.addWithUUID(boss);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -174,7 +178,7 @@ public class ObeliskBlock extends Block {
     }
 
     private void spawnParticles(World world, BlockPos pos) {
-        for (int i = 0; i < 20; ++ i) {
+        for (int i = 0; i < 10; ++ i) {
             double d0 = world.random.nextGaussian() * 0.02D;
             double d1 = world.random.nextGaussian() * 0.02D;
             double d2 = world.random.nextGaussian() * 0.02D;
@@ -182,7 +186,7 @@ public class ObeliskBlock extends Block {
             ((ServerWorld) world).sendParticles(ParticleTypes.POOF,
                 pos.getX() + world.random.nextDouble() - d0,
                 pos.getY() + world.random.nextDouble() - d1,
-                pos.getZ() + world.random.nextDouble() - d2, 10, d0, d1, d2, 1.0D);
+                pos.getZ() + world.random.nextDouble() - d2, 10, d0, d1, d2, 0.2D);
         }
 
         world.playSound(null, pos, SoundEvents.END_PORTAL_FRAME_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);

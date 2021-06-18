@@ -322,6 +322,8 @@
   "tip.the_vault.trade_sell": " - Sell: ",
   "tip.the_vault.trade_ex": " - Extra: ",
   "tip.the_vault.trade_head": "MEGA-HEAD",
+  "tip.the_vault.complete": "Complete",
+  "tip.the_vault.capacitor_energy": "Energy Stored: %s",
 
   "tip.the_vault.modifier_noexit": "Must fight a Boss to exit the Vault, or die of course",
   "tip.the_vault.modifier_timer_add": "Adds %s seconds to the Vault timer",

@@ -27,6 +27,9 @@ public class VaultRuneRenderer extends TileEntityRenderer<VaultRuneTileEntity> {
     public void
     render(VaultRuneTileEntity tileEntity, float partialTicks, MatrixStack matrixStack,
            IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+
+        if (tileEntity.getBelongsTo().isEmpty()) return;
+
         ClientPlayerEntity player = mc.player;
         Vector3d eyePosition = player.getEyePosition(1);
         Vector3d look = player.getViewVector(1);

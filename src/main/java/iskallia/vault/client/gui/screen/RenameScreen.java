@@ -43,7 +43,7 @@ public class RenameScreen extends ContainerScreen<RenamingContainer> {
 
         font = Minecraft.getInstance().font;
         imageWidth = 118;
-        imageHeight = 61;
+        imageHeight = 65;       // #Crimson_Fluff, allow button to be fully drawn
 
         titleLabelX = 59;
         titleLabelY = 7;

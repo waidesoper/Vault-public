@@ -66,7 +66,6 @@ public class BlueBlazeEntity extends BlazeEntity implements VaultBoss {
     @Override
     public void spawnInTheWorld(VaultRaid raid, ServerWorld world, BlockPos pos) {
         this.moveTo(pos.getX() + 0.5D, pos.getY() + 0.2D, pos.getZ() + 0.5D, 0.0F, 0.0F);
-        world.addWithUUID(this);
 
         this.getTags().add("VaultBoss");
         this.bossInfo.setVisible(true);
@@ -79,6 +78,8 @@ public class BlueBlazeEntity extends BlazeEntity implements VaultBoss {
                 this.setCustomName(new StringTextComponent(raid.playerBossName));
             }
         }
+
+        world.addWithUUID(this);        // #Crimson_Fluff, set all properties, then... spawn the mob
     }
 
     @Override

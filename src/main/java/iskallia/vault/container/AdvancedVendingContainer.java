@@ -30,7 +30,7 @@ public class AdvancedVendingContainer extends Container {
         super(ModContainers.ADVANCED_VENDING_MACHINE_CONTAINER, windowId);
 
         BlockState blockState = world.getBlockState(pos);
-        this.tileEntity = AdvancedVendingBlock.getAdvancedVendingMachineTile(world, pos, blockState);
+        this.tileEntity = (AdvancedVendingTileEntity) AdvancedVendingBlock.getBlockTileEntity(world, pos, blockState);
         this.playerInventory = playerInventory;
 
         this.vendingInventory = new AdvancedVendingInventory();

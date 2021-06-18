@@ -1,19 +1,12 @@
 package iskallia.vault;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import iskallia.vault.init.ModAttributes;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
-
-import java.text.DecimalFormat;
 
 public class ItemRenderer {
     public static void renderDurability(FontRenderer fr, ItemStack stack, int xPosition, int yPosition) {

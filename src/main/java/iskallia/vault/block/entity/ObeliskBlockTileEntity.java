@@ -15,11 +15,11 @@ public class ObeliskBlockTileEntity extends TileEntity implements ITickableTileE
             if (level.getGameTime() % 5 == 0) {
                 ((ServerWorld) level).sendParticles(ParticleTypes.POOF,
                     this.getBlockPos().getX() + 0.5,
-                    this.getBlockPos().getY() + 4,
+                    this.getBlockPos().getY() + level.random.nextInt(10) + 4,
                     this.getBlockPos().getZ() + 0.5,
                     10,
                     0d,
-                    6d,
+                    2d,
                     0d,
                     0d);
             }

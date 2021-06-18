@@ -145,28 +145,36 @@ public class ItemVaultCrystal extends Item {
 
     @Override
     public ITextComponent getName(ItemStack stack) {
-        if (stack.getItem() instanceof ItemVaultCrystal) {
+//        if (stack.getItem() instanceof ItemVaultCrystal) {
             ItemVaultCrystal item = (ItemVaultCrystal) stack.getItem();
-
-            CompoundNBT tag = stack.getOrCreateTag();
-            if (tag.getAllKeys().contains("playerBossName")) {
-                return new TranslationTextComponent("tip.the_vault.crystal").append(" (" + tag.getString("playerBossName") + ")").withStyle(item.getRarity().color);
-            }
+            IFormattableTextComponent name = null;
 
             switch (item.getRarity()) {
                 case COMMON:
-                    return new TranslationTextComponent("tip.the_vault.crystal_common").withStyle(item.getRarity().color);
-                case RARE:
-                    return new TranslationTextComponent("tip.the_vault.crystal_rare").withStyle(item.getRarity().color);
-                case EPIC:
-                    return new TranslationTextComponent("tip.the_vault.crystal_epic").withStyle(item.getRarity().color);
-                case OMEGA:
-                    return new TranslationTextComponent("tip.the_vault.crystal_omega").withStyle(item.getRarity().color);
-            }
-        }
+                    name = new TranslationTextComponent("tip.the_vault.crystal_common").withStyle(item.getRarity().color);
+                    break;
 
-        return super.getName(stack);
-    }
+                case RARE:
+                    name = new TranslationTextComponent("tip.the_vault.crystal_rare").withStyle(item.getRarity().color);
+                    break;
+
+                case EPIC:
+                    name = new TranslationTextComponent("tip.the_vault.crystal_epic").withStyle(item.getRarity().color);
+                    break;
+
+                case OMEGA:
+                    name = new TranslationTextComponent("tip.the_vault.crystal_omega").withStyle(item.getRarity().color);
+            }
+
+            CompoundNBT tag = stack.getOrCreateTag();
+            if (tag.getAllKeys().contains("playerBossName")) {
+                return name.append(new StringTextComponent(" (" + tag.getString("playerBossName") + ")").withStyle(item.getRarity().color));
+            }
+//        }
+
+//        return super.getName(stack);
+            return name;
+}
 
     public VaultRarity getRarity() {
         return vaultRarity;

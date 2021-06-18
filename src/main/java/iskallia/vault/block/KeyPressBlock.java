@@ -1,19 +1,16 @@
 package iskallia.vault.block;
 
 import iskallia.vault.container.KeyPressContainer;
-import iskallia.vault.init.ModBlocks;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.item.FallingBlockEntity;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathType;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
@@ -27,11 +24,9 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -72,9 +67,7 @@ public class KeyPressBlock extends FallingBlock {
             (ServerPlayerEntity) player,
             new INamedContainerProvider() {
                 @Override
-                public ITextComponent getDisplayName() {
-                    return new StringTextComponent("Key Press");
-                }
+                public ITextComponent getDisplayName() { return new TranslationTextComponent("block.the_vault.key_press"); }
 
                 @Nullable
                 @Override
@@ -89,21 +82,21 @@ public class KeyPressBlock extends FallingBlock {
         return ActionResultType.SUCCESS;
     }
 
-    protected void falling(FallingBlockEntity fallingEntity) {
-        fallingEntity.setHurtsEntities(true);
-    }
+    protected void falling(FallingBlockEntity fallingEntity) { fallingEntity.setHurtsEntities(true); }
 
-    public void onLand(World worldIn, BlockPos pos, BlockState fallingState, BlockState hitState, FallingBlockEntity fallingBlock) {
-        if (! fallingBlock.isSilent()) {
-            worldIn.levelEvent(1031, pos, 0);
-        }
-    }
+// #Crimson_Fluff, same as super, so no need for this ?
+//    public void onLand(World worldIn, BlockPos pos, BlockState fallingState, BlockState hitState, FallingBlockEntity fallingBlock) {
+//        if (! fallingBlock.isSilent()) {
+//            worldIn.levelEvent(1031, pos, 0);
+//        }
+//    }
 
-    public void onBroken(World worldIn, BlockPos pos, FallingBlockEntity fallingBlock) {
-        if (! fallingBlock.isSilent()) {
-            worldIn.levelEvent(1029, pos, 0);
-        }
-    }
+// #Crimson_Fluff, no damage taken so no onBroken ?
+//    public void onBroken(World worldIn, BlockPos pos, FallingBlockEntity fallingBlock) {
+//        if (! fallingBlock.isSilent()) {
+//            worldIn.levelEvent(1029, pos, 0);
+//        }
+//    }
 
     public BlockState rotate(BlockState state, Rotation rot) {
         return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
@@ -117,20 +110,24 @@ public class KeyPressBlock extends FallingBlock {
         return false;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public int getDustColor(BlockState state, IBlockReader reader, BlockPos pos) {
-        return state.getMapColor(reader, pos).col;
-    }
-
-    @Override
-    public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (worldIn.isClientSide) return;
-        if (! newState.isAir()) return;
-
-        ItemEntity entity = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ModBlocks.KEY_PRESS));
-        worldIn.addFreshEntity(entity);
+//    @OnlyIn(Dist.CLIENT)
+//    public int getDustColor(BlockState state, IBlockReader reader, BlockPos pos) {
+//        return state.getMapColor(reader, pos).col;
+//    }
 
 
-        super.onRemove(state, worldIn, pos, newState, isMoving);
-    }
+    // #Crimson_Fluff, Issue #330, Dropping key_press duplicates them
+    // remove the below code and add a key_press block loot_table
+
+//    @Override
+//    public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+//        if (worldIn.isClientSide) return;
+//        if (! newState.isAir()) return;
+//
+//        ItemEntity entity = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ModBlocks.KEY_PRESS));
+//        worldIn.addFreshEntity(entity);
+//
+//
+//        super.onRemove(state, worldIn, pos, newState, isMoving);
+//    }
 }

@@ -33,7 +33,6 @@ import javax.annotation.Nullable;
 
 public class VaultCrateBlock extends Block {
 
-
     public VaultCrateBlock() {
         super(Properties.of(Material.METAL, MaterialColor.METAL).strength(2.0F, 3600000.0F).sound(SoundType.METAL));
     }

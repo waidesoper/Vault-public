@@ -58,6 +58,8 @@ Chests/Barrels can be broken without opening them first
 
 Vein mine produces XP after level 2 and now costs hunger. Update your descriptions !
 
+Fixed Issue #205, Silk Touch doesn't work when vein mining - not sure I fixed this, but it works non the less  :-)
+
 Vault Crate/Arena Crates have opening sounds
 
 Obelisks now have particles, visually pleasing, easy to spot in vaults
@@ -87,4 +89,18 @@ Vault Boss kill messages use translation files now
 Vault Boss Crate now tries to place in player inventory before tp'd out the vault. If no space then it will spawn at Boss' death location
 
 Added Critical Hits damage statistic
+
+Fixed Gift Statue block. Added bottom image, fixed pixelation
+
+If Vault Crystal has a player boss name then summon a textured fighter as the vault boss
+
+Trader Cores return correct trader core item (common, raffle, omega)
+
+Fix gift blocks crashing if pulled from JEI and placed
+
+Fixed Issue #330, duplicating key presses
+
+Fixed Issue #275, some reason some empty hotbar slots don't allow you to change the name of the statue. Confirmed by Me !
+
+Fixed Issue #146, if damaged item in off hand, then item takes durability from vein miner
 

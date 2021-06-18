@@ -158,8 +158,13 @@ public class VeinMinerAbility extends PlayerAbility {
 
     // TODO: #Crimson_Fluff, check if using valid item to break blocks
     // vanilla using shield to break item=no durability, veinminer=shield takes durability
+    // Issue #146, if damaged shield in off hand, then shield takes durability
+
     public static boolean destroyBlockAs(ServerWorld world, BlockPos pos, PlayerEntity player, List<ItemStack> lst) {
-        ItemStack heldItem = player.getItemInHand(player.getUsedItemHand());
+//        ItemStack heldItem = player.getItemInHand(player.getUsedItemHand());
+
+        // #Crimson_Fluff, Issue #146, fixed !
+        ItemStack heldItem = player.getMainHandItem();
 
         if (heldItem.isDamageableItem()) {
             int usesLeft = heldItem.getMaxDamage() - heldItem.getDamageValue();

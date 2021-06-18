@@ -4,7 +4,6 @@ import iskallia.vault.block.entity.CryoChamberTileEntity;
 import iskallia.vault.container.RenamingContainer;
 import iskallia.vault.init.ModBlocks;
 import iskallia.vault.init.ModConfigs;
-import iskallia.vault.init.ModItems;
 import iskallia.vault.item.ItemTraderCore;
 import iskallia.vault.util.RenameType;
 import iskallia.vault.vending.TraderCore;
@@ -34,7 +33,6 @@ import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -68,10 +66,7 @@ public class CryoChamberBlock extends Block {
 
     @Override
     public boolean hasTileEntity(BlockState state) {
-        if (state.getValue(HALF) == DoubleBlockHalf.LOWER)
-            return true;
-
-        return false;
+        return state.getValue(HALF) == DoubleBlockHalf.LOWER;
     }
 
     @Override
@@ -179,9 +174,7 @@ public class CryoChamberBlock extends Block {
                     (ServerPlayerEntity) player,
                     new INamedContainerProvider() {
                         @Override
-                        public ITextComponent getDisplayName() {
-                            return new StringTextComponent("Cryo Chamber");
-                        }
+                        public ITextComponent getDisplayName() { return null; }       // #Crimson_Fluff, name not actually used in gui screen
 
                         @Nullable
                         @Override
@@ -196,7 +189,8 @@ public class CryoChamberBlock extends Block {
                 return ActionResultType.SUCCESS;
                 // add chip
             }
-            if (heldStack.getItem() == ModItems.TRADER_CORE) {
+//            if (heldStack.getItem() == ModItems.TRADER_CORE) {
+            if (heldStack.getItem() instanceof ItemTraderCore) {        // #Crimson_Fluff, use ALL types of trader core in cryo chamber, omega, raffle, common
                 TraderCore coreToInsert = ItemTraderCore.getCoreFromStack(heldStack);
                 if (chamber.getOwner() == null) {
                     chamber.setOwner(player.getUUID());
@@ -217,8 +211,7 @@ public class CryoChamberBlock extends Block {
     }
 
     public static BlockPos getCryoChamberPos(BlockState state, BlockPos pos) {
-        return state.getValue(HALF) == DoubleBlockHalf.UPPER
-            ? pos.below() : pos;
+        return state.getValue(HALF) == DoubleBlockHalf.UPPER ? pos.below() : pos;
     }
 
     public static CryoChamberTileEntity getCryoChamberTileEntity(World world, BlockPos pos, BlockState state) {

@@ -20,6 +20,7 @@ import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
@@ -46,7 +47,7 @@ public class VaultAltarRenderer extends TileEntityRenderer<VaultAltarTileEntity>
         renderItem(new ItemStack(ModItems.VAULT_ROCK),
             new double[] {.5d, 1.60d, .5d},
             Vector3f.YP.rotationDegrees(180.0F - player.yRot),
-            matrixStack, buffer, partialTicks, combinedOverlay, lightLevel);
+            matrixStack, buffer, combinedOverlay, lightLevel);                               // #Crimson_Fluff, removed unused partialTicks
 
         if (altar.getRecipe() == null || altar.getRecipe().getRequiredItems().isEmpty()) return;
 
@@ -56,23 +57,29 @@ public class VaultAltarRenderer extends TileEntityRenderer<VaultAltarTileEntity>
             double[] translation = getTranslation(i);
             RequiredItem requiredItem = items.get(i);
             ItemStack stack = requiredItem.getItem();
-            StringTextComponent text = new StringTextComponent(String.valueOf(requiredItem.getAmountRequired() - requiredItem.getCurrentAmount()));
-            int textColor = 0xffffff;
+
+            // #Crimson_Fluff
+            StringTextComponent text;
+            int textColor;
+
             if (requiredItem.reachedAmountRequired()) {
-                text = new StringTextComponent("Complete");
+                text = new StringTextComponent(new TranslationTextComponent("tip.the_vault.complete").getString());
                 textColor = 0x00ff00;
+            } else {
+                text = new StringTextComponent(String.valueOf(requiredItem.getAmountRequired() - requiredItem.getCurrentAmount()));
+                textColor = 0xffffff;
             }
+            // #Crimson_Fluff END
 
             renderItem(stack, translation,
                 Vector3f.YP.rotationDegrees(getAngle(player, partialTicks) * 5f),
-                matrixStack, buffer, partialTicks, combinedOverlay, lightLevel);
-            renderLabel(requiredItem, matrixStack, buffer, lightLevel, translation, text, textColor);
+                matrixStack, buffer, combinedOverlay, lightLevel);                          // #Crimson_Fluff, removed unused partialTicks
+            renderLabel(matrixStack, buffer, lightLevel, translation, text, textColor);     // #Crimson_Fluff, removed unused RequiredItem, oh the irony !
         }
-
 
     }
 
-    private void renderItem(ItemStack stack, double[] translation, Quaternion rotation, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedOverlay, int lightLevel) {
+    private void renderItem(ItemStack stack, double[] translation, Quaternion rotation, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedOverlay, int lightLevel) {
         matrixStack.pushPose();
         matrixStack.translate(translation[0], translation[1], translation[2]);
         matrixStack.mulPose(rotation);
@@ -81,7 +88,7 @@ public class VaultAltarRenderer extends TileEntityRenderer<VaultAltarTileEntity>
         matrixStack.popPose();
     }
 
-    private void renderLabel(RequiredItem item, MatrixStack matrixStack, IRenderTypeBuffer buffer, int lightLevel, double[] corner, StringTextComponent text, int color) {
+    private void renderLabel(MatrixStack matrixStack, IRenderTypeBuffer buffer, int lightLevel, double[] corner, StringTextComponent text, int color) {
         FontRenderer fontRenderer = mc.font;
 
         //render amount required for the item

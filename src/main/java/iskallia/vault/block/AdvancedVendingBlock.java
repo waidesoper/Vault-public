@@ -1,16 +1,11 @@
 package iskallia.vault.block;
 
 import iskallia.vault.block.entity.AdvancedVendingTileEntity;
-import iskallia.vault.container.AdvancedVendingContainer;
+import iskallia.vault.container.VendingMachineContainer;
 import iskallia.vault.init.ModBlocks;
-import iskallia.vault.init.ModSounds;
-import iskallia.vault.item.ItemTraderCore;
-import iskallia.vault.vending.TraderCore;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,10 +22,7 @@ import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.DoubleBlockHalf;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
@@ -38,8 +30,6 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -62,10 +52,7 @@ public class AdvancedVendingBlock extends Block {
 
     @Override
     public boolean hasTileEntity(BlockState state) {
-        if (state.getValue(HALF) == DoubleBlockHalf.LOWER)
-            return true;
-
-        return false;
+        return state.getValue(HALF) == DoubleBlockHalf.LOWER;
     }
 
     @Override
@@ -131,7 +118,7 @@ public class AdvancedVendingBlock extends Block {
         if (worldIn.isClientSide) return;
         if (! newState.isAir()) return;
 
-        AdvancedVendingTileEntity machine = getAdvancedVendingMachineTile(worldIn, pos, state);
+        AdvancedVendingTileEntity machine = (AdvancedVendingTileEntity) getBlockTileEntity(worldIn, pos, state);
         if (machine == null) return;
 
         if (state.getValue(HALF) == DoubleBlockHalf.LOWER) {
@@ -154,81 +141,61 @@ public class AdvancedVendingBlock extends Block {
 
     @Override
     public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        ItemStack heldStack = player.getItemInHand(hand);
+        if (world.isClientSide) { return ActionResultType.SUCCESS; }
 
-        AdvancedVendingTileEntity machine = getAdvancedVendingMachineTile(world, pos, state);
+        ItemStack heldStack = player.getItemInHand(hand);
+        if (! heldStack.isEmpty()) return ActionResultType.FAIL;
+
+        AdvancedVendingTileEntity machine = (AdvancedVendingTileEntity) getBlockTileEntity(world, pos, state);
         if (machine == null) return ActionResultType.SUCCESS;
 
-        if (! world.isClientSide() && player.isShiftKeyDown()) {
+        if (player.isShiftKeyDown()) {
             ItemStack core = machine.getTraderCoreStack();
-            playOpenSound();    // #Crimson_Fluff a sound indication that trader card is inserted/removed
-            if (! player.addItem(core)) {
-                player.drop(core, false);
+
+            if (! core.isEmpty()) {
+                // #Crimson_Fluff a sound indication that trader card is inserted/removed
+                world.playSound(null, pos, SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 1f, 1f);
+
+                if (! player.addItem(core)) player.drop(core, false);
+                machine.sendUpdates();
             }
-            machine.sendUpdates();
+
             return ActionResultType.SUCCESS;
         }
 
-        if (heldStack.getItem() instanceof ItemTraderCore) {
-            TraderCore coreToInsert = ItemTraderCore.getCoreFromStack(heldStack);
-            playOpenSound();                    // #Crimson_Fluff a sound indication that trader card is inserted/removed
-            machine.addCore(coreToInsert);
-            heldStack.shrink(1);
+        NetworkHooks.openGui(
+            (ServerPlayerEntity) player,
+            new INamedContainerProvider() {
+                @Override
+                public ITextComponent getDisplayName() { return new TranslationTextComponent("block.the_vault.advanced_vending_machine"); }
 
-            return ActionResultType.SUCCESS;
-        } else {
-            if (world.isClientSide) {
-//                playOpenSound();
-                return ActionResultType.SUCCESS;
-            }
-
-            NetworkHooks.openGui(
-                (ServerPlayerEntity) player,
-                new INamedContainerProvider() {
-                    @Override
-                    public ITextComponent getDisplayName() {
-                        return new TranslationTextComponent("block.the_vault.advanced_vending_machine");
-                    }
-
-                    @Nullable
-                    @Override
-                    public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-                        BlockState blockState = world.getBlockState(pos);
-                        BlockPos vendingMachinePos = getVendingMachinePos(blockState, pos);
-                        return new AdvancedVendingContainer(windowId, world, vendingMachinePos, playerInventory, playerEntity);
-                    }
-                },
-                (buffer) -> {
+                @Nullable
+                @Override
+                public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
                     BlockState blockState = world.getBlockState(pos);
-                    buffer.writeBlockPos(getVendingMachinePos(blockState, pos));
+                    BlockPos vendingMachinePos = getTileEntityPos(blockState, pos);
+                    return new VendingMachineContainer(windowId, world, vendingMachinePos, playerInventory, playerEntity);
                 }
-            );
-        }
+            },
+            (buffer) -> {
+                BlockState blockState = world.getBlockState(pos);
+                buffer.writeBlockPos(getTileEntityPos(blockState, pos));
+            }
+        );
+
         return super.use(state, world, pos, player, hand, hit);
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public static void playOpenSound() {
-        Minecraft minecraft = Minecraft.getInstance();
-        minecraft.getSoundManager().play(SimpleSound.forUI(
-            SoundEvents.UI_BUTTON_CLICK, 1f, 1f
-        ));
+    public static BlockPos getTileEntityPos(BlockState state, BlockPos pos) {
+        return state.getValue(HALF) == DoubleBlockHalf.UPPER ? pos.below() : pos;
     }
 
-    public static BlockPos getVendingMachinePos(BlockState state, BlockPos pos) {
-        return state.getValue(HALF) == DoubleBlockHalf.UPPER
-            ? pos.below() : pos;
-    }
-
-    public static AdvancedVendingTileEntity getAdvancedVendingMachineTile(World world, BlockPos pos, BlockState state) {
-        BlockPos vendingMachinePos = getVendingMachinePos(state, pos);
+    public static TileEntity getBlockTileEntity(World world, BlockPos pos, BlockState state) {
+        BlockPos vendingMachinePos = getTileEntityPos(state, pos);
 
         TileEntity tileEntity = world.getBlockEntity(vendingMachinePos);
 
-        if ((! (tileEntity instanceof AdvancedVendingTileEntity)))
-            return null;
-
-        return (AdvancedVendingTileEntity) tileEntity;
+        return tileEntity;
     }
 
 }

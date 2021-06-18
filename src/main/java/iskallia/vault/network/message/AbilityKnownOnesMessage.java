@@ -55,7 +55,7 @@ public class AbilityKnownOnesMessage {
     public static void handle(AbilityKnownOnesMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
-            System.out.println("Received tree! " + message.learnedAbilities.size());
+            //System.out.println("Received tree! " + message.learnedAbilities.size());      // #Crimson_Fluff, removed log message
             AbilitiesOverlay.learnedAbilities = message.learnedAbilities;
         });
         context.setPacketHandled(true);

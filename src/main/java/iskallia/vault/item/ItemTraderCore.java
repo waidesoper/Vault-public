@@ -1,7 +1,10 @@
 package iskallia.vault.item;
 
 import iskallia.vault.Vault;
+import iskallia.vault.block.entity.AdvancedVendingTileEntity;
+import iskallia.vault.block.entity.VendingMachineTileEntity;
 import iskallia.vault.container.RenamingContainer;
+import iskallia.vault.init.ModBlocks;
 import iskallia.vault.init.ModConfigs;
 import iskallia.vault.init.ModItems;
 import iskallia.vault.util.RenameType;
@@ -10,20 +13,18 @@ import iskallia.vault.util.nbt.NBTSerializer;
 import iskallia.vault.vending.Product;
 import iskallia.vault.vending.Trade;
 import iskallia.vault.vending.TraderCore;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
+import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.state.properties.DoubleBlockHalf;
+import net.minecraft.util.*;
 import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -228,7 +229,7 @@ public class ItemTraderCore extends Item {
                 (ServerPlayerEntity) player,
                 new INamedContainerProvider() {
                     @Override
-                    public ITextComponent getDisplayName() { return new TranslationTextComponent("item.the_vault.trader_core"); }
+                    public ITextComponent getDisplayName() { return null; }       // #Crimson_Fluff, name not actually used in gui screen
 
                     @Nullable
                     @Override
@@ -255,17 +256,66 @@ public class ItemTraderCore extends Item {
                     if (core.getName() != null && ! core.getName().isEmpty()) {
                         name = core.getName();
                     }
-                    ItemStack newTraderCore = generate(name, 1, false, CoreType.COMMON);
+                    ItemStack newTraderCore = generate(name, 1, false, core.getType());     // #Crimson_Fluff, core.getType()
                     player.setItemInHand(Hand.MAIN_HAND, newTraderCore);
+                    ItemRelicBoosterPack.successEffectsAsItem(worldIn, player.position(), stack);     // #Crimson_Fluff
                 }
             } else {
-                ItemStack newTraderCore = generate("Trader", 1, false, CoreType.COMMON);
-                player.setItemInHand(Hand.MAIN_HAND, newTraderCore);
-            }
 
-            ItemRelicBoosterPack.successEffectsAsItem(worldIn, player.position(), stack);     // #Crimson_Fluff
+                // #Crimson_Fluff, give correct trader core in return (if no NBT)
+
+                ItemStack newTraderCore;
+                if (stack.getItem() == ModItems.TRADER_CORE_OMEGA)
+                    newTraderCore = generate("Trader", 1, false, CoreType.OMEGA);
+
+                else if (stack.getItem() == ModItems.TRADER_CORE_RAFFLE)
+                    newTraderCore = generate("Trader", 1, false, CoreType.RAFFLE);
+
+                else
+                    newTraderCore = generate("Trader", 1, false, CoreType.COMMON);
+
+                player.setItemInHand(Hand.MAIN_HAND, newTraderCore);
+                ItemRelicBoosterPack.successEffectsAsItem(worldIn, player.position(), stack);     // #Crimson_Fluff
+            }
         }
         return super.use(worldIn, player, handIn);
+    }
+
+    @Override
+    public ActionResultType useOn(ItemUseContext context) {
+        if (context.getLevel().isClientSide) return ActionResultType.PASS;
+        if (context.getPlayer().isCrouching()) return ActionResultType.PASS;
+
+        TraderCore coreToInsert = getCoreFromStack(context.getItemInHand());
+        if (coreToInsert.getTrade() == null) return ActionResultType.FAIL;
+
+        BlockState state = context.getLevel().getBlockState(context.getClickedPos());
+        if (state.getBlock() == ModBlocks.VENDING_MACHINE) {
+            VendingMachineTileEntity machine = (VendingMachineTileEntity) context.getLevel().getBlockEntity(state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER ? context.getClickedPos().below() : context.getClickedPos());
+            TraderCore lastCore = machine.getLastCore();
+
+            if (lastCore == null || lastCore.getName().equalsIgnoreCase(coreToInsert.getName())) {
+                machine.addCore(coreToInsert);
+                context.getLevel().playSound(null, context.getClickedPos(), SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 1f, 1f);
+
+                context.getItemInHand().shrink(1);
+
+            } else {
+                TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.vending_occupied");
+                text.setStyle(Style.EMPTY.withColor(Color.fromRgb(0xFF_ffd800)));
+                context.getPlayer().displayClientMessage(text, true);
+            }
+        }
+        else if (state.getBlock() == ModBlocks.ADVANCED_VENDING_MACHINE) {
+            AdvancedVendingTileEntity machine = (AdvancedVendingTileEntity) context.getLevel().getBlockEntity(state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER ? context.getClickedPos().below() : context.getClickedPos());
+
+            machine.addCore(coreToInsert);
+            context.getLevel().playSound(null, context.getClickedPos(), SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 1f, 1f);
+
+            context.getItemInHand().shrink(1);
+        }
+
+        return ActionResultType.PASS;
     }
 
     public static String getTraderName(ItemStack stack) {

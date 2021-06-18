@@ -32,7 +32,6 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -68,7 +67,6 @@ public class LootStatueBlock extends Block {
 
         LootStatueTileEntity statue = (LootStatueTileEntity) te;
 
-
         // remove a chip
         if (player.isShiftKeyDown()) {
             ItemStack chip = statue.removeChip();
@@ -79,9 +77,13 @@ public class LootStatueBlock extends Block {
             }
             return ActionResultType.SUCCESS;
         }
+
         ItemStack heldItem = player.getMainHandItem();
         // rename the player in the statue
-        if (heldItem == ItemStack.EMPTY) {
+//        if (heldItem == ItemStack.EMPTY) {
+
+        // #Crimson_Fluff, Issue #275, some reason some empty hotbar slots don't allow you to change the name of the statue. Confirmed by Me !
+        if (heldItem.isEmpty()) {
             CompoundNBT nbt = new CompoundNBT();
             nbt.putInt("RenameType", RenameType.PLAYER_STATUE.ordinal());
             nbt.put("Data", statue.serializeNBT());
@@ -90,9 +92,7 @@ public class LootStatueBlock extends Block {
                 (ServerPlayerEntity) player,
                 new INamedContainerProvider() {
                     @Override
-                    public ITextComponent getDisplayName() {
-                        return new StringTextComponent("Player Statue");
-                    }
+                    public ITextComponent getDisplayName() { return null; }       // #Crimson_Fluff, name not actually used in gui screen
 
                     @Nullable
                     @Override
@@ -109,7 +109,7 @@ public class LootStatueBlock extends Block {
         } else if (heldItem.getItem() == ModItems.ACCELERATION_CHIP) {
             if (statue.addChip()) {
                 if (! player.isCreative())
-                    heldItem.setCount(heldItem.getCount() - 1);
+                    heldItem.shrink(1);     // #Crimson_Fluff, shrink()
                 return ActionResultType.SUCCESS;
             }
         }

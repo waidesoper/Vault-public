@@ -8,6 +8,7 @@ import iskallia.vault.util.SkinProfile;
 import iskallia.vault.util.StatueType;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -23,7 +24,7 @@ import javax.annotation.Nullable;
 
 public class LootStatueTileEntity extends TileEntity implements ITickableTileEntity {
 
-    private int interval = 0;
+    private int interval;
     private int currentTick = 0;
     private ItemStack lootItem;
     protected SkinProfile skin;
@@ -35,15 +36,18 @@ public class LootStatueTileEntity extends TileEntity implements ITickableTileEnt
     public LootStatueTileEntity() {
         super(ModBlocks.LOOT_STATUE_TILE_ENTITY);
         skin = new SkinProfile();
+
+        // #Crimson_Fluff, crash if place item pulled from JEI, because no NBT has been set
+        interval = 20 * 30;
+        lootItem = new ItemStack(Items.OAK_LOG);
+        statueType = StatueType.GIFT_NORMAL;
     }
 
     public int getInterval() {
         return this.interval;
     }
 
-    public void setInterval(int interval) {
-        this.interval = interval;
-    }
+    public void setInterval(int interval) { this.interval = interval; }
 
     public int getCurrentTick() {
         return this.currentTick;
@@ -53,25 +57,17 @@ public class LootStatueTileEntity extends TileEntity implements ITickableTileEnt
         this.currentTick = currentTick;
     }
 
-    public ItemStack getLootItem() {
-        return this.lootItem;
-    }
+    public ItemStack getLootItem() { return this.lootItem; }
 
-    public void setLootItem(ItemStack stack) {
-        this.lootItem = stack;
-    }
+    public void setLootItem(ItemStack stack) { this.lootItem = stack; }
 
     public SkinProfile getSkin() {
         return skin;
     }
 
-    public StatueType getStatueType() {
-        return statueType;
-    }
+    public StatueType getStatueType() { return statueType; }
 
-    public void setStatueType(StatueType statueType) {
-        this.statueType = statueType;
-    }
+    public void setStatueType(StatueType statueType) { this.statueType = statueType; }
 
     public boolean hasCrown() {
         return hasCrown;
