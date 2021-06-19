@@ -117,8 +117,8 @@ public class VaultRaidData extends WorldSavedData {
             s.setStyle(Style.EMPTY.withColor(Color.fromRgb(modifier.getColor()))
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                     new StringTextComponent(modifier.getName())
-                        .setStyle(Style.EMPTY.withColor(Color.fromRgb(modifier.getColor()))).
-                        append(new StringTextComponent("\n\n" + modifier.getDescription()).setStyle(Style.EMPTY.withColor(TextFormatting.WHITE))))));
+                        .setStyle(Style.EMPTY.withColor(Color.fromRgb(modifier.getColor())))
+                        .append(new StringTextComponent("\n\n" + modifier.getDescription()).setStyle(Style.EMPTY.withColor(TextFormatting.WHITE))))));
 
             text.append(s);
 
@@ -154,10 +154,11 @@ public class VaultRaidData extends WorldSavedData {
 //            player.sendMessage(playerName.append(prefix).append(text), ChatType.CHAT, Util.NIL_UUID);
 //            player.sendMessage(new TranslationTextComponent("tip.the_vault.generating"), ChatType.CHAT, Util.NIL_UUID);
 
-            world.getServer().getPlayerList().broadcastMessage(playerName.append(prefix).append(text), ChatType.CHAT, Util.NIL_UUID);
+//            world.getServer().getPlayerList().broadcastMessage(playerName.append(prefix).append(text), ChatType.CHAT, Util.NIL_UUID);
+            player.displayClientMessage(playerName.append(prefix).append(text), false);
         });
 
-        world.getServer().getPlayerList().broadcastMessage(new TranslationTextComponent("tip.the_vault.generating"), ChatType.CHAT, Util.NIL_UUID);  // #Crimson_Fluff
+        world.getServer().getPlayerList().broadcastMessage(new TranslationTextComponent("tip.the_vault.generating").setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ddd01e))), ChatType.CHAT, Util.NIL_UUID);  // #Crimson_Fluff
         // #Crimson_Fluff END
 
 

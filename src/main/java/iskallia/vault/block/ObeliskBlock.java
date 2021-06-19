@@ -162,10 +162,8 @@ public class ObeliskBlock extends Block {
             ((FighterEntity) boss).bossInfo.setVisible(true);
             ((FighterEntity) boss).changeSize(2.0F);
         }
-
-        if (boss instanceof VaultBoss) {
+        else if (boss instanceof VaultBoss)
             ((VaultBoss) boss).getServerBossInfo().setVisible(true);
-        }
 
         EntityScaler.scaleVault(boss, raid.level, new Random(), EntityScaler.Type.BOSS);
 

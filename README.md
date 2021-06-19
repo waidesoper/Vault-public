@@ -90,7 +90,7 @@ Vault Boss Crate now tries to place in player inventory before tp'd out the vaul
 
 Added Critical Hits damage statistic
 
-Fixed Gift Statue block. Added bottom image, fixed pixelation
+Fixed Gift Statue block - Added bottom image, fixed underside alignment
 
 If Vault Crystal has a player boss name then summon a textured fighter as the vault boss
 
@@ -100,7 +100,9 @@ Fix gift blocks crashing if pulled from JEI and placed
 
 Fixed Issue #330, duplicating key presses
 
-Fixed Issue #275, some reason some empty hotbar slots don't allow you to change the name of the statue. Confirmed by Me !
+Fixed Issue #275, some empty hotbar slots don't allow you to change the name of the statue. Confirmed by Me !
 
 Fixed Issue #146, if damaged item in off hand, then item takes durability from vein miner
+
+Boss Crates, when dropped by defeated boss, are now Fireproof and Explosion proof
 

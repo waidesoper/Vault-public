@@ -48,8 +48,12 @@ public class FighterSizeMessage {
             World world = player.level;
             Entity entity = world.getEntity(message.entityId);
             if (entity == null || ! entity.isAlive()) return;
-            if (entity instanceof FighterEntity) ((FighterEntity) entity).changeSize(message.size);
-            if (entity instanceof EternalEntity) ((EternalEntity) entity).changeSize(message.size);
+
+            if (entity instanceof FighterEntity)
+                ((FighterEntity) entity).changeSize(message.size);
+
+            else if (entity instanceof EternalEntity)
+                ((EternalEntity) entity).changeSize(message.size);
         });
 
         context.setPacketHandled(true);

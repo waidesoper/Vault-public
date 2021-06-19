@@ -2,27 +2,23 @@
   "type": "minecraft:crafting_shaped",
   "pattern":
   [
-    "iri",
-    "igi",
-    "idi"
+    "gcg",
+    "cvc",
+    "gcg"
   ],
   "key":
   {
-    "i":
+    "c":
     {
-      "item": "minecraft:iron_ingot"
+      "item": "minecraft:black_concrete"
     },
-    "r":
+    "v":
     {
-      "item": "minecraft:redstone"
+      "item": "the_vault:vending_machine"
     },
     "g":
     {
-      "item": "minecraft:glass_pane"
-    },
-    "d":
-    {
-      "item": "minecraft:gold_block"
+      "item": "minecraft:gold_ingot"
     }
   },
   "result":

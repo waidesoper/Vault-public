@@ -24,6 +24,7 @@ import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ArmorStandEntity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -253,7 +254,12 @@ public class EntityEvents {
                 // TODO: Spawn crate after TP'd back to Overworld?  not sure...
                 // 'try' to put crate into players inventory, else spawn at VaultBoss's death location !
                 ItemStack crate = VaultCrateBlock.getCrateWithLoot(ModBlocks.VAULT_CRATE, stacks);
-                if (! player.addItem(crate)) event.getEntity().spawnAtLocation(crate);
+                if (! player.addItem(crate)) {
+                    // #Crimson_Fluff, Saw a streamer defeat boss and lost crate into fire !
+                    ItemEntity itemEntity = event.getEntity().spawnAtLocation(crate);
+                    itemEntity.fireImmune();
+                    itemEntity.ignoreExplosion();
+                }
 
 
                 FireworkRocketEntity fireworks = new FireworkRocketEntity(world, event.getEntity().getX(),
@@ -278,23 +284,19 @@ public class EntityEvents {
                 IFormattableTextComponent subtitle = new TranslationTextComponent("tip.the_vault.win_defeated");
                 subtitle.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ddd01e)));
 
-                TranslationTextComponent actionBar = new TranslationTextComponent("tip.the_vault.win_teleport");
-                actionBar.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ddd01e)));
-
                 STitlePacket titlePacket = new STitlePacket(STitlePacket.Type.TITLE, title);
                 STitlePacket subtitlePacket = new STitlePacket(STitlePacket.Type.SUBTITLE, entityName.copy().append(subtitle));
 
                 player.connection.send(titlePacket);
                 player.connection.send(subtitlePacket);
-                player.displayClientMessage(actionBar, false);
 
                 IFormattableTextComponent playerName = player.getDisplayName().copy();
-                playerName.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_983198)));
+                playerName.setStyle(Style.EMPTY.withColor(TextFormatting.GREEN));
 
                 TranslationTextComponent text = new TranslationTextComponent("tip.the_vault.win_clear");
                 text.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ffffff)));
 
-                StringTextComponent punctuation = new StringTextComponent("!");
+                StringTextComponent punctuation = new StringTextComponent(" !");
                 punctuation.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ffffff)));
 
                 world.getServer().getPlayerList().broadcastMessage(
@@ -302,6 +304,10 @@ public class EntityEvents {
                     ChatType.CHAT,
                     player.getUUID()
                 );
+
+                text = new TranslationTextComponent("tip.the_vault.win_teleport");
+                text.setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ddd01e)));
+                player.displayClientMessage(text, false);
             });
         }
     }

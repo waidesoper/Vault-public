@@ -27,7 +27,7 @@ public class SuperSecretCakes {
         "Would like some tea with that?",
         "The cake equals π (Pi) ?",
         "This cake is made with love",
-        "DONT GET GREEDY",
+        "DON'T GET GREEDY",
         "The cake is a pine?",
         "That'll go right to your thighs",
         "Have you got the coffee?",

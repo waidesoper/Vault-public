@@ -2,28 +2,28 @@
   "type": "minecraft:crafting_shaped",
   "pattern":
   [
-    "cgc",
-    "cgc",
-    "cic"
+    "gcg",
+    "cvc",
+    "gcg"
   ],
   "key":
   {
-    "i":
-    {
-      "item": "minecraft:iron_ingot"
-    },
     "c":
     {
       "item": "minecraft:black_concrete"
     },
+    "v":
+    {
+      "item": "the_vault:advanced_vending_machine"
+    },
     "g":
     {
-      "item": "minecraft:glass_pane"
+      "item": "the_vault:vault_diamond"
     }
   },
   "result":
   {
-    "item": "the_vault:vending_machine",
+    "item": "the_vault:global_trader",
     "count": 1
   }
 }
