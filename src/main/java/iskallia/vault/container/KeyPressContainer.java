@@ -241,7 +241,7 @@ public class KeyPressContainer extends Container
         ItemStack keyStack = this.keyPressInventory.getItem(KEY_SLOT);
         ItemStack clusterStack = this.keyPressInventory.getItem(CLUSTER_SLOT);
 
-        if (!keyStack.isEmpty())
+        if (!keyStack.isEmpty() || !clusterStack.isEmpty())     // #Crimson_Fluff, Issue 361, closing anvil with items in deletes the items
         {
             EntityHelper.giveItem(player, keyStack);
             EntityHelper.giveItem(player, clusterStack);

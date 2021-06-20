@@ -53,6 +53,7 @@ public class VaultBarOverlay {
         ClientPlayerEntity player = minecraft.player;
         boolean iconsShowing = player != null && player.getActiveEffects().stream().anyMatch(EffectInstance::showIcon);
         int yOffset = iconsShowing ? 28 : 18;
+
         //minecraft.getTextureManager().bindTexture(RESOURCE);
 
         if (VaultBarOverlay.unspentSkillPoints > 0) {
@@ -113,7 +114,10 @@ public class VaultBarOverlay {
         previousTick = now;
 
         //minecraft.getProfiler().startSection("vaultBar");
-        if (player.isCreative()) bottom += 20;  // VaultXPBar appear above hotbar
+        if (player.isCreative())
+            bottom += 20;  // VaultXPBar appear above hotbar
+        else
+            if (player.getAirSupply() < player.getMaxAirSupply()) bottom = bottom - 10;        // #Crimson_Fluff, adjust for under water bubbles on hotbar
 
         minecraft.getTextureManager().bind(RESOURCE);
         RenderSystem.enableBlend();

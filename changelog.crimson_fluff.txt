@@ -56,6 +56,8 @@ Fixed Issue #330, duplicating key presses
 Fixed Issue #275, some empty hotbar slots don't allow you to change the name of the statue. Confirmed by Me !
 Fixed Issue #146, if damaged item in off hand, then item takes durability from vein miner
 Boss Crates, when dropped by defeated boss, are now Fire proof and Explosion proof
+Vault XP Bar appears above air bubbles now
+Fixed Issue #361, Item Deletion with Key Anvil
 
 
 TODO: Mod...
