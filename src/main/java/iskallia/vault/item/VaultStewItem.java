@@ -36,12 +36,13 @@ public class VaultStewItem extends SoupItem {
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         if (! world.isClientSide && this.getRarity() == Rarity.MYSTERY) {
             ItemStack heldStack = player.getItemInHand(hand);
+            ItemRelicBoosterPack.successEffectsAsItem(world, player.position(), heldStack);     // #Crimson_Fluff
+            heldStack.shrink(1);
+
             String randomPart = ModConfigs.VAULT_STEW.STEW_POOL.getRandom(world.random);
             ItemStack stackToDrop = new ItemStack(Registry.ITEM.getOptional(new ResourceLocation(randomPart)).orElse(Items.AIR));
-            ItemRelicBoosterPack.successEffects(world, player.position());
 
             player.drop(stackToDrop, false, false);
-            heldStack.shrink(1);
         }
 
         return super.use(world, player, hand);

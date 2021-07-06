@@ -1,6 +1,5 @@
 package iskallia.vault.block;
 
-import iskallia.vault.Vault;
 import iskallia.vault.client.gui.overlay.VaultRaidOverlay;
 import iskallia.vault.entity.EntityScaler;
 import iskallia.vault.entity.FighterEntity;
@@ -38,7 +37,6 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;

@@ -328,5 +328,18 @@
   "tip.the_vault.modifier_noexit": "Must fight a Boss to exit the Vault, or die of course",
   "tip.the_vault.modifier_timer_add": "Adds %s seconds to the Vault timer",
   "tip.the_vault.modifier_timer_remove": "Removes %s seconds from the Vault timer",
-  "tip.the_vault.modifier_nothing": "Does nothing at all. A bit of a waste of a modifier..."
+  "tip.the_vault.modifier_nothing": "Does nothing at all. A bit of a waste of a modifier...",
+
+  "tip.the_vault.food_dim": "You can only eat this inside the Vault !",
+  "tip.the_vault.food_lemon": "A magical lemon with a bitter taste",
+  "tip.the_vault.food_orange": "A magical orange with a sour taste",
+  "tip.the_vault.food_pear": "A magical pear with a sour taste",
+  "tip.the_vault.food_grown": "It is grown on the gorgeous trees of Iskallia.",
+  "tip.the_vault.food_minus": "- Wipes away %s hearts",
+  "tip.the_vault.food_add": "- Adds %s seconds to the Vault Timer",
+  "tip.the_vault.food_addmin": "- Adds %s minutes to the Vault Timer",
+  "tip.the_vault.food_bad": "- Inflicts with either Wither or Poison effect",
+  "tip.the_vault.food_wipe": "- Wipes away 5 to 10 hearts",
+
+  "death.attack.fruit": "%s died by fruit !"
 }

@@ -5,18 +5,20 @@ import iskallia.vault.init.ModItems;
 import iskallia.vault.init.ModSounds;
 import iskallia.vault.util.VaultRarity;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.StringNBT;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.*;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
 import java.util.Optional;
@@ -70,17 +72,19 @@ public class ItemVaultCrystal extends Item {
     public ActionResultType useOn(ItemUseContext context) {
         if (context.getLevel().isClientSide) return super.useOn(context);
 
+        if (context.getPlayer().isCrouching()) return super.useOn(context);     // #Crimson_Fluff, because of Overlap with Use/UseOn
+
         ItemStack stack = context.getPlayer().getMainHandItem();
         Item item = stack.getItem();
 
         if (item instanceof ItemVaultCrystal) {
             ItemVaultCrystal crystal = (ItemVaultCrystal) item;
 
-            String playerBossName = "";
+//            String playerBossName = "";
             CompoundNBT tag = stack.getOrCreateTag();
-            if (tag.getAllKeys().contains("playerBossName")) {
-                playerBossName = tag.getString("playerBossName");
-            }
+//            if (tag.getAllKeys().contains("playerBossName")) {
+                String playerBossName = tag.getString("playerBossName");    // #Crimson_Fluff, already checks .contains()
+//            }
 
             BlockPos pos = context.getClickedPos();
             if (tryCreatePortal(crystal, context.getLevel(), pos, context.getClickedFace(), playerBossName, getData(stack))) {
@@ -124,11 +128,54 @@ public class ItemVaultCrystal extends Item {
                     text, ChatType.CHAT, context.getPlayer().getUUID()
                 );
 
-                return ActionResultType.SUCCESS;
+                return ActionResultType.CONSUME;
+            }
+        }
+
+        return super.useOn(context);
+    }
+
+    // #Crimson_Fluff
+    // Shift click to add/remove yourself from the Coops list
+    // NBT is stored on CrystalItem. When creating the portal (getData(stack)) stores the CrystalItem NBT data inside CrystalData.java
+    // Line #90: Above: if (tryCreatePortal(crystal, context.getLevel(), pos, context.getClickedFace(), playerBossName, getData(stack))) {
+
+    @Override
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        if (worldIn.isClientSide) return super.use(worldIn, playerIn, handIn);
+
+        if (! playerIn.isCrouching()) return super.use(worldIn, playerIn, handIn);     // #Crimson_Fluff, because of Overlap with Use/UseOn
+
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
+
+        if (! itemstack.getOrCreateTag().getAllKeys().contains("Coops")) {
+            playerIn.displayClientMessage(new StringTextComponent("This is not a Co-Op Crystal !"), true);
+            worldIn.playSound(null, playerIn.blockPosition(), SoundEvents.VILLAGER_NO, SoundCategory.PLAYERS, 1f, 1f);
+
+        } else {
+            ListNBT coopsNBT = itemstack.getOrCreateTag().getList("Coops", Constants.NBT.TAG_STRING);
+
+            boolean isFound = false;
+            for (INBT tag : coopsNBT) {
+                if (tag.getAsString().equals(playerIn.getDisplayName().getString())) {
+                    coopsNBT.remove(tag);
+                    playerIn.displayClientMessage(new StringTextComponent("You have been removed from Co-Op Crystal"), true);
+
+                    isFound = true;
+                    break;
+                }
+            }
+            if (! isFound) {
+                playerIn.displayClientMessage(new StringTextComponent("You have been added to Co-Op Crystal"), true);
+                coopsNBT.addTag(coopsNBT.size(), StringNBT.valueOf(playerIn.getDisplayName().getString()));
             }
 
+            worldIn.playSound(null, playerIn.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundCategory.PLAYERS, 1f, isFound ? 0.5f : 1f);
+
+//            coopsNBT.forEach(tag -> { Vault.LOGGER.info("COOP: " + tag.getAsString()); });
         }
-        return super.useOn(context);
+
+        return ActionResult.consume(itemstack);
     }
 
     private boolean tryCreatePortal(ItemVaultCrystal crystal, World world, BlockPos pos, Direction facing, String playerBossName, CrystalData data) {

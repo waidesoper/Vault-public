@@ -195,9 +195,18 @@ public class VaultRaidOverlay {
     }
 
     public static String formatTimeString() {
-        long seconds = (remainingTicks / 20) % 60;
-        long minutes = ((remainingTicks / 20) / 60) % 60;
-        return String.format("%02d:%02d", minutes, seconds);
-    }
+        int currentTotal = remainingTicks / 20;
+        int hours = (currentTotal / 3600) % 60;
+        int minutes = (currentTotal / 60) % 60;
+        int seconds = currentTotal % 60;
 
+//        long seconds = (remainingTicks / 20) % 60;
+//        long minutes = ((remainingTicks / 20) / 60) % 60;
+//        long hours = (((remainingTicks / 20) / 60) / 60) % 60;
+
+        if (hours != 0)
+            return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        else
+            return String.format("%02d:%02d", minutes, seconds);
+    }
 }

@@ -1,4 +1,4 @@
-Vault Hunter 1.16.5 - Base code by Hexeption
+# Vault Hunters 1.16.5 - Base code by Hexeption
 
 **Changes:**
 
@@ -109,3 +109,14 @@ Boss Crates, when dropped by defeated boss, are now Fireproof and Explosion proo
 Vault XP Bar appears above air bubbles now
 
 Fixed Issue #361, Item Deletion with Key Anvil
+
+Added CoOp: WIP: Timer needs re-doing !
+
+Removed deprecated GlobalEntityAttributes
+
+Simplified time calculation and account for hours
+
+Changed Kiwi to add 10 seconds of time, after all it takes about 5 seconds to eat the damn thing
+
+Eating Vault Fruit adjusts time for all coop players in a vault: WIP: Timer needs re-doing !
+

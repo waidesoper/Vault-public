@@ -2,19 +2,17 @@ package iskallia.vault.world.raid;
 
 import iskallia.vault.Vault;
 import iskallia.vault.config.VaultMobsConfig;
-import iskallia.vault.entity.FighterEntity;
 import iskallia.vault.init.ModConfigs;
-import iskallia.vault.init.ModNetwork;
-import iskallia.vault.network.message.FighterSizeMessage;
-import net.minecraft.entity.*;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.network.PacketDistributor;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 

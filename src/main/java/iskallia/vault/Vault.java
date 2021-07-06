@@ -1,6 +1,7 @@
 package iskallia.vault;
 
 import iskallia.vault.init.ModCommands;
+import iskallia.vault.init.ModEntities;
 import iskallia.vault.init.ModFeatures;
 import iskallia.vault.world.data.PlayerAbilitiesData;
 import iskallia.vault.world.data.PlayerResearchesData;
@@ -16,12 +17,17 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -54,9 +60,12 @@ public class Vault {
     // #Crimson_Fluff END
 
     public Vault() {
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModEntities::onEntityAttributeCreationEvent);   // #Crimson_Fluff, remove deprecated GlobalEntityAttributes
         MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, this::onCommandRegister);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, this::onBiomeLoad);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, this::onPlayerLoggedIn);
+
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     // #Crimson_Fluff
@@ -100,4 +109,11 @@ public class Vault {
         return new ResourceLocation(MOD_ID, name);
     }
 
+
+    // CrimsonNBTTags, imported for ease of debugging nbt's
+    @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
+    public void ItemToolTipEvent(ItemTooltipEvent event) {
+        CrimsonNBTTags.showNBTandInfo(event);
+    }
 }

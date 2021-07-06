@@ -12,6 +12,9 @@ import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
@@ -26,6 +29,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.Color;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.GameType;
@@ -38,10 +42,10 @@ import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkDirection;
 
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 public class VaultPortalBlock extends NetherPortalBlock {
 
@@ -148,6 +152,7 @@ public class VaultPortalBlock extends NetherPortalBlock {
                 return;
             }
 
+            // #Crimson_Fluff, worldKey is where we are trying to get TO, NOT the dimension we are currently in
             world.getServer().submit(() -> {
                 if (worldKey == World.OVERWORLD) {
                     ServerPlayerEntity playerEntity = (ServerPlayerEntity) entity;
@@ -186,8 +191,33 @@ public class VaultPortalBlock extends NetherPortalBlock {
                     } else {
                         this.moveToSpawn(destination, player);
                     }
+
+                    // #Crimson_Fluff, CO-OP, Baby !
+                    // TODO: replace name with UUID of players
                 } else if (worldKey == Vault.VAULT_KEY) {
-                    VaultRaidData.get(destination).startNew(player, state.getValue(RARITY), playerBossName, portal.getData(), false);
+                    CompoundNBT compound = portal.getData().getDelegate().getOrCreateTag();
+
+                    if (compound.getAllKeys().contains("Coops")) {
+                        ListNBT coopsNBT = compound.getList("Coops", Constants.NBT.TAG_STRING);
+
+                        List<ServerPlayerEntity> players = new ArrayList<>();
+                        ServerPlayerEntity spe;
+
+                        for (INBT tag : coopsNBT) {
+                            spe = world.getServer().getPlayerList().getPlayerByName(tag.getAsString());
+
+                            if (spe != null) {
+                                players.add(spe);
+                                player.displayClientMessage(new StringTextComponent("LIST: " + tag.getAsString()), false);
+                            }
+                        }
+
+                        //player.displayClientMessage(new StringTextComponent("LIST_SIZE: " + players.size()), false);
+
+                        VaultRaidData.get(destination).startNew(players, Collections.emptyList(), state.getValue(RARITY), playerBossName, portal.getData(), false);
+                    }
+                    else
+                        VaultRaidData.get(destination).startNew(player, state.getValue(RARITY), playerBossName, portal.getData(), false);
                 }
             });
 
