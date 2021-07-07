@@ -91,6 +91,11 @@ public class VaultRaidData extends WorldSavedData {
             }
         });
 
+        // #Crimson_Fluff
+        // TODO: instead of creating a RaidData for every player, create 1 RaidData with coop players
+        // 1 vault will have activeRaids() for every coop player, so 1 vault could have 10 entries in WorldData.activeRaids
+        // 1 vault should be 1 activeRaid, with each coop player in a list inside that activeRaid
+
         raid.getPlayerIds().forEach(uuid -> {
             this.activeRaids.put(uuid, raid);
         });
@@ -216,7 +221,8 @@ public class VaultRaidData extends WorldSavedData {
     @SubscribeEvent
     public static void onTick(TickEvent.WorldTickEvent event) {
         if (event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.START && event.world.dimension() == Vault.VAULT_KEY) {
-            get((ServerWorld) event.world).tick((ServerWorld) event.world);
+            VaultRaidData vrd = get((ServerWorld) event.world);
+            vrd.tick((ServerWorld) event.world);
         }
     }
 

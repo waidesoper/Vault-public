@@ -83,15 +83,19 @@ public class ObeliskBlock extends Block {
     public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         ItemStack heldStack = player.getItemInHand(hand);
 
-        if (heldStack.getItem() instanceof ObeliskInscriptionItem) {
-            if (! player.isCreative()) {
-                heldStack.shrink(1);
-            }
-        } else {
-            return ActionResultType.PASS;
-        }
 
     // #Crimson_Fluff
+        // NOTE: because of lag, if click a half rendered block (top block does not yet exist) it will crash
+        // TODO: default bosses spawn at level 10, so if no boss then just exit
+        if (heldStack.getItem() instanceof ObeliskInscriptionItem) {
+            if (state.getValue(HALF) == DoubleBlockHalf.LOWER)
+                if (world.getBlockState(pos.above()).getBlock() == Blocks.AIR) return ActionResultType.FAIL;
+
+            if (! player.isCreative()) heldStack.shrink(1);
+        } else
+            return ActionResultType.PASS;
+
+
         BlockState newState;
         int iComplete = MathHelper.clamp(state.getValue(COMPLETION) + 1, 0, 4);
         newState = state.setValue(COMPLETION, iComplete);

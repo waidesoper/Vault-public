@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ItemVaultCrystal extends Item {
 
-    private VaultRarity vaultRarity;
+    private final VaultRarity vaultRarity;
 
     public ItemVaultCrystal(ItemGroup group, ResourceLocation id, VaultRarity vaultRarity) {
         super(new Properties()
@@ -79,12 +79,7 @@ public class ItemVaultCrystal extends Item {
 
         if (item instanceof ItemVaultCrystal) {
             ItemVaultCrystal crystal = (ItemVaultCrystal) item;
-
-//            String playerBossName = "";
-            CompoundNBT tag = stack.getOrCreateTag();
-//            if (tag.getAllKeys().contains("playerBossName")) {
-                String playerBossName = tag.getString("playerBossName");    // #Crimson_Fluff, already checks .contains()
-//            }
+            String playerBossName = stack.getOrCreateTag().getString("playerBossName");    // #Crimson_Fluff, already checks .contains()
 
             BlockPos pos = context.getClickedPos();
             if (tryCreatePortal(crystal, context.getLevel(), pos, context.getClickedFace(), playerBossName, getData(stack))) {
@@ -149,7 +144,7 @@ public class ItemVaultCrystal extends Item {
         ItemStack itemstack = playerIn.getItemInHand(handIn);
 
         if (! itemstack.getOrCreateTag().getAllKeys().contains("Coops")) {
-            playerIn.displayClientMessage(new StringTextComponent("This is not a Co-Op Crystal !"), true);
+            playerIn.displayClientMessage(new TranslationTextComponent("tip.the_vault.nocoop"), true);
             worldIn.playSound(null, playerIn.blockPosition(), SoundEvents.VILLAGER_NO, SoundCategory.PLAYERS, 1f, 1f);
 
         } else {
@@ -159,14 +154,14 @@ public class ItemVaultCrystal extends Item {
             for (INBT tag : coopsNBT) {
                 if (tag.getAsString().equals(playerIn.getDisplayName().getString())) {
                     coopsNBT.remove(tag);
-                    playerIn.displayClientMessage(new StringTextComponent("You have been removed from Co-Op Crystal"), true);
+                    playerIn.displayClientMessage(new TranslationTextComponent("tip.the_vault.coopsub"), true);
 
                     isFound = true;
                     break;
                 }
             }
             if (! isFound) {
-                playerIn.displayClientMessage(new StringTextComponent("You have been added to Co-Op Crystal"), true);
+                playerIn.displayClientMessage(new TranslationTextComponent("tip.the_vault.coopadd"), true);
                 coopsNBT.addTag(coopsNBT.size(), StringNBT.valueOf(playerIn.getDisplayName().getString()));
             }
 
@@ -192,36 +187,35 @@ public class ItemVaultCrystal extends Item {
 
     @Override
     public ITextComponent getName(ItemStack stack) {
-//        if (stack.getItem() instanceof ItemVaultCrystal) {
-            ItemVaultCrystal item = (ItemVaultCrystal) stack.getItem();
-            IFormattableTextComponent name = null;
+        ItemVaultCrystal item = (ItemVaultCrystal) stack.getItem();
+        IFormattableTextComponent name = null;
 
-            switch (item.getRarity()) {
-                case COMMON:
-                    name = new TranslationTextComponent("tip.the_vault.crystal_common").withStyle(item.getRarity().color);
-                    break;
+        switch (item.getRarity()) {
+            case COMMON:
+                name = new TranslationTextComponent("tip.the_vault.crystal_common");
+                break;
 
-                case RARE:
-                    name = new TranslationTextComponent("tip.the_vault.crystal_rare").withStyle(item.getRarity().color);
-                    break;
+            case RARE:
+                name = new TranslationTextComponent("tip.the_vault.crystal_rare");
+                break;
 
-                case EPIC:
-                    name = new TranslationTextComponent("tip.the_vault.crystal_epic").withStyle(item.getRarity().color);
-                    break;
+            case EPIC:
+                name = new TranslationTextComponent("tip.the_vault.crystal_epic");
+                break;
 
-                case OMEGA:
-                    name = new TranslationTextComponent("tip.the_vault.crystal_omega").withStyle(item.getRarity().color);
-            }
+            case OMEGA:
+                name = new TranslationTextComponent("tip.the_vault.crystal_omega");
+        }
 
-            CompoundNBT tag = stack.getOrCreateTag();
-            if (tag.getAllKeys().contains("playerBossName")) {
-                return name.append(new StringTextComponent(" (" + tag.getString("playerBossName") + ")").withStyle(item.getRarity().color));
-            }
-//        }
+        CompoundNBT tag = stack.getOrCreateTag();
+        if (tag.getAllKeys().contains("playerBossName"))
+            return name.append(new StringTextComponent(" (" + tag.getString("playerBossName") + ")"));
 
-//        return super.getName(stack);
-            return name;
-}
+        if (tag.getAllKeys().contains("Coops"))
+            return new StringTextComponent("CO-OP ").append(name);
+
+        return name.withStyle(item.getRarity().color);
+    }
 
     public VaultRarity getRarity() {
         return vaultRarity;
@@ -234,7 +228,33 @@ public class ItemVaultCrystal extends Item {
     @Override
     public void appendHoverText(ItemStack stack, World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
         getData(stack).addInformation(world, tooltip, flag);
+
+        if (stack.getOrCreateTag().getAllKeys().contains("Coops")) {
+            tooltip.add(new StringTextComponent("Players:").withStyle(TextFormatting.GREEN));
+
+            int a = 0;
+            StringBuilder s = new StringBuilder();
+            ListNBT coop = stack.getOrCreateTag().getList("Coops", Constants.NBT.TAG_STRING);
+
+            // Split the coop names into rows of 3 (0 to 2 is 3 !)
+            if (coop.size() != 0) {
+                for (INBT tag : coop) {
+                    if (a > 0) s.append(", ");
+                    s.append(tag.getAsString());
+
+                    if (a == 2) {
+                        a = - 1;     // because of a++
+                        tooltip.add(new StringTextComponent(s.toString()));
+                        s = new StringBuilder();
+                    }
+
+                    a++;
+                }
+
+                if (a < 3) tooltip.add(new StringTextComponent(s.toString()));
+            }
+        }
+
         super.appendHoverText(stack, world, tooltip, flag);
     }
-
 }

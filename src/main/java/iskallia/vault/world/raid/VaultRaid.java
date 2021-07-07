@@ -103,6 +103,8 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
 
     public boolean isFinalVault; //This is disgusting but...
 
+    public long myGameTime=0;
+
     protected VaultRaid() {
 
     }
@@ -118,6 +120,9 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
 
         this.sTickLeft = ModConfigs.VAULT_TIMER.getForLevel(this.level);
         this.ticksLeft = this.sTickLeft;
+
+        this.myGameTime = players.get(0).level.getGameTime();
+        Vault.LOGGER.info("VAULTTIME: " + this.myGameTime);
 
         players.stream()
             .map(player -> VaultSetsData.get(player.getLevel()).getExtraTime(player.getUUID()))
@@ -363,7 +368,7 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
         }
 
         this.spectators.clear();
-        ;
+
         ListNBT spectatorsList = nbt.getList("Spectators", Constants.NBT.TAG_COMPOUND);
         spectatorsList.stream()
             .map(inbt -> (CompoundNBT) inbt)
@@ -373,7 +378,7 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
         this.bosses.clear();
         ListNBT bossesList = nbt.getList("Bosses", Constants.NBT.TAG_STRING);
         bossesList.stream()
-            .map(inbt -> ((StringNBT) inbt).getAsString())
+            .map(inbt -> inbt.getAsString())
             .map(UUID::fromString)
             .forEach(this.bosses::add);
     }

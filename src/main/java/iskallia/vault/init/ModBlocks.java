@@ -131,7 +131,7 @@ public class ModBlocks {
 
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         registerBlock(event, VAULT_PORTAL, Vault.id("vault_portal"));
-        registerBlock(event, FINAL_VAULT_PORTAL, Vault.id("final_vault_portal"));
+        registerBlock(event, FINAL_VAULT_PORTAL, Vault.id("vault_portal_final"));       // #Crimson_Fluff, slight name change, added missing block/item/state files
         registerBlock(event, VAULT_ALTAR, Vault.id("vault_altar"));
         registerBlock(event, ALEXANDRITE_ORE, Vault.id("ore_alexandrite"));
         registerBlock(event, BENITOITE_ORE, Vault.id("ore_benitoite"));

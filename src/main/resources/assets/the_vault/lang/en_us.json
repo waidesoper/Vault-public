@@ -248,9 +248,11 @@
 
   "biome.the_vault.spoopy": "The Vault",
   "block.the_vault.vault_portal": "Vault Portal",
+  "block.the_vault.vault_portal_final": "Final Vault Portal",
   "block.the_vault.statue_dragon": "Dragon Statue",
   "block.the_vault.global_trader": "Global Trader Vending Machine",
   "item.the_vault.puzzle_rune": "Puzzle Rune",
+  "block.the_vault.puzzle_rune_block": "Puzzle Rune Block",
   "item.the_vault.vault_relic": "Vault Relic",
   "tip.the_vault.no_exit": "No exit this time, %s !",
   "tip.the_vault.luck": "Good luck, %s !",
@@ -341,5 +343,8 @@
   "tip.the_vault.food_bad": "- Inflicts with either Wither or Poison effect",
   "tip.the_vault.food_wipe": "- Wipes away 5 to 10 hearts",
 
-  "death.attack.fruit": "%s died by fruit !"
+  "death.attack.fruit": "%s died by fruit !",
+  "tip.the_vault.coopadd": "You have been added to Co-Op Crystal",
+  "tip.the_vault.coopsub": "You have been removed from Co-Op Crystal",
+  "tip.the_vault.nocoop": "This is not a Co-Op Crystal !"
 }
