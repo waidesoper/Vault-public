@@ -1,5 +1,7 @@
 # Vault Hunters 1.16.5 - Base code by Hexeption
 
+Discord: https://discord.gg/QD9kvnFuA4
+
 **Changes:**
 
 **Optifine** now works - The Cryo Chamber does not render with see-through liquid. "swings and round-abouts"
