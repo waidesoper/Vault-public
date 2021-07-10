@@ -35,7 +35,7 @@ public class LootStatueRenderer extends TileEntityRenderer<LootStatueTileEntity>
 
     protected static final StatuePlayerModel<PlayerEntity> PLAYER_MODEL = new StatuePlayerModel<>(0.1f, true);
 
-    private Minecraft mc = Minecraft.getInstance();
+    private final Minecraft mc = Minecraft.getInstance();
 
     public LootStatueRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
@@ -53,21 +53,18 @@ public class LootStatueRenderer extends TileEntityRenderer<LootStatueTileEntity>
 
         // render acceleration chips
         if (tileEntity.getChipCount() > 0) {
-//            ClientPlayerEntity player = mc.player;
-            int lightLevel = getLightAtPos(tileEntity.getLevel(), tileEntity.getBlockPos().above());
+//            int lightLevel = getLightAtPos(tileEntity.getLevel(), tileEntity.getBlockPos().above());
 
             for (int i = 0; i < tileEntity.getChipCount(); i++) {
                 renderItem(new ItemStack(ModItems.ACCELERATION_CHIP),
                     getTranslation(i, block.getType()),
                     Vector3f.YP.rotationDegrees(180.0F + direction.toYRot()),
-                    matrixStack, buffer, partialTicks, combinedOverlay, lightLevel);
+                    matrixStack, buffer, combinedOverlay, combinedLight);
             }
         }
 
         String latestNickname = tileEntity.getSkin().getLatestNickname();
-
-        if (latestNickname == null || latestNickname.equals(""))
-            return;
+        if (latestNickname == null || latestNickname.equals("")) return;
 
         ResourceLocation skinLocation = tileEntity.getSkin().getLocationSkin();
         RenderType renderType = PLAYER_MODEL.renderType(skinLocation);
@@ -108,35 +105,33 @@ public class LootStatueRenderer extends TileEntityRenderer<LootStatueTileEntity>
         PLAYER_MODEL.head.render(matrixStack, vertexBuilder, combinedLight, combinedOverlay, 1, 1, 1, 1);
         matrixStack.popPose();
 
-        Minecraft minecraft = Minecraft.getInstance();
+        //Minecraft minecraft = Minecraft.getInstance();
 
-        if (block.getType() == StatueType.GIFT_MEGA && minecraft.player != null) {
+        if (block.getType() == StatueType.GIFT_MEGA && mc.player != null) {
             matrixStack.pushPose();
             matrixStack.translate(0.5, 1.1, 0.5);
             matrixStack.scale(hatScale, hatScale, hatScale);
             matrixStack.mulPose(Vector3f.YN.rotationDegrees(direction.toYRot() + 180));
-//            matrixStack.rotate(Vector3f.ZP.rotationDegrees(20f));
 //            ItemStack itemStack = new ItemStack(Registry.ITEM.get(Vault.id("bow_hat")));
             ItemStack itemStack = new ItemStack(ModBlocks.BOW_HAT.asItem());
-            IBakedModel ibakedmodel = minecraft
+            IBakedModel ibakedmodel = mc
                 .getItemRenderer().getModel(itemStack, null, null);
-            minecraft.getItemRenderer()
+            mc.getItemRenderer()
                 .render(itemStack, ItemCameraTransforms.TransformType.GROUND, true,
                     matrixStack, buffer, combinedLight, combinedOverlay, ibakedmodel);
             matrixStack.popPose();
         }
 
-        if (tileEntity.hasCrown() && minecraft.player != null) {
+        if (tileEntity.hasCrown() && mc.player != null) {
             matrixStack.pushPose();
             matrixStack.translate(0.5, 1.2, 0.5);
             matrixStack.scale(crownScale, crownScale, crownScale);
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(minecraft.player.tickCount));
-            //        matrixStack.rotate(Vector3f.ZP.rotationDegrees(20f));
+            matrixStack.mulPose(Vector3f.YP.rotationDegrees(mc.player.tickCount));
 //            ItemStack itemStack = new ItemStack(Registry.ITEM.get(Vault.id("mvp_crown")));
             ItemStack itemStack = new ItemStack(ModBlocks.MVP_CROWN.asItem());
-            IBakedModel ibakedmodel = minecraft
+            IBakedModel ibakedmodel = mc
                 .getItemRenderer().getModel(itemStack, null, null);
-            minecraft.getItemRenderer()
+            mc.getItemRenderer()
                 .render(itemStack, ItemCameraTransforms.TransformType.GROUND, true,
                     matrixStack, buffer, combinedLight, combinedOverlay, ibakedmodel);
             matrixStack.popPose();
@@ -145,9 +140,8 @@ public class LootStatueRenderer extends TileEntityRenderer<LootStatueTileEntity>
         if (mc.hitResult != null && mc.hitResult.getType() == RayTraceResult.Type.BLOCK) {
             BlockRayTraceResult result = (BlockRayTraceResult) mc.hitResult;
 
-            if (tileEntity.getBlockPos().equals(result.getBlockPos())) {
+            if (tileEntity.getBlockPos().equals(result.getBlockPos()))
                 renderLabel(matrixStack, buffer, combinedLight, latestNickname, 0xFF_FFFFFF);
-            }
         }
     }
 
@@ -162,15 +156,15 @@ public class LootStatueRenderer extends TileEntityRenderer<LootStatueTileEntity>
 
         matrixStack.translate(0.5f, 1.7f, 0.5f);
         matrixStack.scale(scale, scale, scale);
-        matrixStack.mulPose(mc.getEntityRenderDispatcher().cameraOrientation()); // face the camera
-        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F)); // flip vertical
+        matrixStack.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());   // face the camera
+        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));       // flip vertical
 
         fontRenderer.drawInBatch(text, offset, 0, color, false, matrix4f, buffer, true, opacity, lightLevel);
         fontRenderer.drawInBatch(text, offset, 0, - 1, false, matrix4f, buffer, false, 0, lightLevel);
         matrixStack.popPose();
     }
 
-    private void renderItem(ItemStack stack, double[] translation, Quaternion rotation, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedOverlay, int lightLevel) {
+    private void renderItem(ItemStack stack, double[] translation, Quaternion rotation, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedOverlay, int lightLevel) {
         matrixStack.pushPose();
         matrixStack.translate(translation[0], translation[1], translation[2]);
         matrixStack.mulPose(rotation);
@@ -187,8 +181,8 @@ public class LootStatueRenderer extends TileEntityRenderer<LootStatueTileEntity>
     }
 
     private double[] getTranslation(int index, StatueType item) {
-        double a = 0.3;
-        if (item == StatueType.GIFT_MEGA) a = 0.85;  // the present
+        double a;
+        if (item == StatueType.GIFT_MEGA) a = 0.85; else a = 0.3;  // the present
 
         switch (index) {
             case 0:

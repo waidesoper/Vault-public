@@ -6,7 +6,6 @@ import iskallia.vault.vending.Product;
 import net.minecraft.item.Items;
 
 public class MysteryBoxConfig extends Config {
-
     @Expose
     public WeightedList<Product> POOL = new WeightedList<>();
 
@@ -20,5 +19,4 @@ public class MysteryBoxConfig extends Config {
         this.POOL.add(new Product(Items.APPLE, 8, null), 3);
         this.POOL.add(new Product(Items.GOLDEN_APPLE, 1, null), 1);
     }
-
 }

@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VaultVendingConfig extends Config {
-
     @Expose
     public int MAX_CIRCUITS;
     @Expose
@@ -43,6 +42,4 @@ public class VaultVendingConfig extends Config {
         this.TRADES
             .add(new Trade(new Product(Items.ENCHANTED_GOLDEN_APPLE, 8, null), null, new Product(Items.STICK, 1, nbt)));
     }
-
-
 }

@@ -21,7 +21,7 @@ public class VaultOreConfig extends Config {
     @Expose
     private int ORES_PER_VAULT;
     @Expose
-    private List<Ore> ORES = new ArrayList<>();
+    private final List<Ore> ORES = new ArrayList<>();
     private int totalWeight;
 
     @Override
@@ -71,16 +71,16 @@ public class VaultOreConfig extends Config {
     protected void reset() {
         this.ORES_PER_VAULT = 2;
 
-        ORES.add(new Ore(ModBlocks.ALEXANDRITE_ORE.getRegistryName().toString(), 64, 3, 1));
-        ORES.add(new Ore(ModBlocks.BENITOITE_ORE.getRegistryName().toString(), 64, 3, 1));
-        ORES.add(new Ore(ModBlocks.LARIMAR_ORE.getRegistryName().toString(), 64, 3, 1));
-        ORES.add(new Ore(ModBlocks.BLACK_OPAL_ORE.getRegistryName().toString(), 64, 3, 1));
-        ORES.add(new Ore(ModBlocks.PAINITE_ORE.getRegistryName().toString(), 64, 3, 1));
-        ORES.add(new Ore(ModBlocks.ISKALLIUM_ORE.getRegistryName().toString(), 64, 3, 1));
-        ORES.add(new Ore(ModBlocks.RENIUM_ORE.getRegistryName().toString(), 64, 3, 1));
-        ORES.add(new Ore(ModBlocks.GORGINITE_ORE.getRegistryName().toString(), 64, 3, 1));
-        ORES.add(new Ore(ModBlocks.SPARKLETINE_ORE.getRegistryName().toString(), 64, 3, 1));
-        ORES.add(new Ore(ModBlocks.WUTODIE_ORE.getRegistryName().toString(), 64, 3, 1));
+        ORES.add(new Ore(ModBlocks.ALEXANDRITE_ORE.getRegistryName().toString(), 64, 5, 1));
+        ORES.add(new Ore(ModBlocks.BENITOITE_ORE.getRegistryName().toString(), 64, 5, 1));
+        ORES.add(new Ore(ModBlocks.LARIMAR_ORE.getRegistryName().toString(), 64, 5, 1));
+        ORES.add(new Ore(ModBlocks.BLACK_OPAL_ORE.getRegistryName().toString(), 64, 5, 1));
+        ORES.add(new Ore(ModBlocks.PAINITE_ORE.getRegistryName().toString(), 64, 5, 1));
+        ORES.add(new Ore(ModBlocks.ISKALLIUM_ORE.getRegistryName().toString(), 64, 5, 1));
+        ORES.add(new Ore(ModBlocks.RENIUM_ORE.getRegistryName().toString(), 64, 5, 1));
+        ORES.add(new Ore(ModBlocks.GORGINITE_ORE.getRegistryName().toString(), 64, 5, 1));
+        ORES.add(new Ore(ModBlocks.SPARKLETINE_ORE.getRegistryName().toString(), 64, 5, 1));
+        ORES.add(new Ore(ModBlocks.WUTODIE_ORE.getRegistryName().toString(), 64, 5, 1));
     }
 
     public static class Ore {

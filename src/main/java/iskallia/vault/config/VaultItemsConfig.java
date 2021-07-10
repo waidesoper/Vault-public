@@ -3,7 +3,6 @@ package iskallia.vault.config;
 import com.google.gson.annotations.Expose;
 
 public class VaultItemsConfig extends Config {
-
     @Expose
     public VaultBurger VAULT_BURGER;
 

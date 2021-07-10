@@ -5,6 +5,7 @@ import iskallia.vault.init.ModItems;
 import iskallia.vault.item.RelicPartItem;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Random;
 
 public class VaultRelicsConfig extends Config {
-
     @Expose
     private int extraTickPerSet;
     @Expose
@@ -35,11 +35,13 @@ public class VaultRelicsConfig extends Config {
 
         for (Relic relicDrop : relicDrops) {
             if (random < relicDrop.WEIGHT)
-                return (RelicPartItem) Registry.ITEM.get(new ResourceLocation(relicDrop.NAME));
+//                return (RelicPartItem) Registry.ITEM.get(new ResourceLocation(relicDrop.NAME));
+                return (RelicPartItem) ForgeRegistries.ITEMS.getValue(new ResourceLocation(relicDrop.NAME));
             random -= relicDrop.WEIGHT;
         }
 
-        return (RelicPartItem) Registry.ITEM.get(new ResourceLocation(relicDrops.get(relicDrops.size() - 1).NAME));
+//        return (RelicPartItem) Registry.ITEM.get(new ResourceLocation(relicDrops.get(relicDrops.size() - 1).NAME));
+        return (RelicPartItem) ForgeRegistries.ITEMS.getValue(new ResourceLocation(relicDrops.get(relicDrops.size() - 1).NAME));
     }
 
     @Override
@@ -105,5 +107,4 @@ public class VaultRelicsConfig extends Config {
             this.WEIGHT = weight;
         }
     }
-
 }

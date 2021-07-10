@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class VaultLevelsConfig extends Config {
-
     @Expose
     public List<VaultLevelMeta> levelMetas;
 
@@ -46,5 +45,4 @@ public class VaultLevelsConfig extends Config {
         @Expose
         public int tnl;
     }
-
 }

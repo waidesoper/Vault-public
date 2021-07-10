@@ -20,7 +20,6 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class VaultAltarConfig extends Config {
-
     @Expose
     public List<AltarConfigItem> ITEMS = new ArrayList<>();
     @Expose
@@ -32,8 +31,7 @@ public class VaultAltarConfig extends Config {
     @Expose
     public int INFUSION_TIME;
 
-
-    private Random rand = new Random();
+    private final Random rand = new Random();
 
     @Override
     public String getName() {
@@ -42,8 +40,7 @@ public class VaultAltarConfig extends Config {
 
     @Override
     protected void reset() {
-
-        ITEMS.add(new AltarConfigItem("minecraft:cobblestone", 1000, 6000));
+        ITEMS.add(new AltarConfigItem("minecraft:cobblestone", 1000, 2000));
         ITEMS.add(new AltarConfigItem("minecraft:gold_ingot", 300, 900));
         ITEMS.add(new AltarConfigItem("minecraft:iron_ingot", 400, 1300));
         ITEMS.add(new AltarConfigItem("minecraft:sugar_cane", 800, 1600));
@@ -52,6 +49,7 @@ public class VaultAltarConfig extends Config {
         ITEMS.add(new AltarConfigItem("minecraft:acacia_log", 400, 800));
         ITEMS.add(new AltarConfigItem("minecraft:jungle_log", 400, 800));
         ITEMS.add(new AltarConfigItem("minecraft:dark_oak_log", 400, 800));
+        ITEMS.add(new AltarConfigItem("minecraft:birch_log", 400, 800));            // #Crimson_Fluff, this was missing
         ITEMS.add(new AltarConfigItem("minecraft:apple", 400, 800));
         ITEMS.add(new AltarConfigItem("minecraft:redstone", 400, 1000));
         ITEMS.add(new AltarConfigItem("minecraft:ink_sac", 300, 600));
@@ -61,42 +59,61 @@ public class VaultAltarConfig extends Config {
         ITEMS.add(new AltarConfigItem("minecraft:brick", 500, 1500));
         ITEMS.add(new AltarConfigItem("minecraft:bone", 500, 1500));
         ITEMS.add(new AltarConfigItem("minecraft:spider_eye", 150, 400));
-        ITEMS.add(new AltarConfigItem("minecraft:melon_slice", 1000, 5000));
-        ITEMS.add(new AltarConfigItem("minecraft:pumpkin", 1000, 5000));
-        ITEMS.add(new AltarConfigItem("minecraft:sand", 1000, 5000));
-        ITEMS.add(new AltarConfigItem("minecraft:gravel", 1000, 5000));
+        ITEMS.add(new AltarConfigItem("minecraft:melon_slice", 1000, 2500));
+        ITEMS.add(new AltarConfigItem("minecraft:pumpkin", 1000, 1000));
+        ITEMS.add(new AltarConfigItem("minecraft:sand", 1000, 2500));
+        ITEMS.add(new AltarConfigItem("minecraft:gravel", 1000, 2500));
         ITEMS.add(new AltarConfigItem("minecraft:wheat", 1000, 2000));
         ITEMS.add(new AltarConfigItem("minecraft:wheat_seeds", 1000, 2000));
         ITEMS.add(new AltarConfigItem("minecraft:carrot", 1000, 2000));
         ITEMS.add(new AltarConfigItem("minecraft:potato", 1000, 2000));
+        ITEMS.add(new AltarConfigItem("minecraft:beetroot", 1000, 2000));           // #Crimson_Fluff, this was missing
+        ITEMS.add(new AltarConfigItem("minecraft:beetroot_seeds", 1000, 2000));     // #Crimson_Fluff, this was missing
         ITEMS.add(new AltarConfigItem("minecraft:obsidian", 100, 300));
         ITEMS.add(new AltarConfigItem("minecraft:leather", 300, 800));
         ITEMS.add(new AltarConfigItem("minecraft:string", 500, 1200));
+        ITEMS.add(new AltarConfigItem("minecraft:egg", 200, 500));                  // #Crimson_Fluff, this was missing
+        ITEMS.add(new AltarConfigItem("minecraft:feather", 100, 250));              // #Crimson_Fluff, this was missing
 
         PULL_SPEED = 1f;
-        PLAYER_RANGE_CHECK = 32d;
+        PLAYER_RANGE_CHECK = 16d;               // #Crimson_Fluff, reduced from 32
         ITEM_RANGE_CHECK = 8d;
         INFUSION_TIME = 5;
-
     }
 
     public List<RequiredItem> generateItems(ServerWorld world, PlayerEntity player) {
-
         return getRequiredItemsFromJson();
 
         //return getRequiredItemsFromTables(world, player);
     }
 
     private List<RequiredItem> getRequiredItemsFromJson() {
+//        List<RequiredItem> requiredItems = new ArrayList<>();
+//        List<AltarConfigItem> configItems = new ArrayList<>(ITEMS);
+//
+//        for (int i = 0; i < 4; i++) {
+//            AltarConfigItem configItem = configItems.remove(rand.nextInt(configItems.size()));
+//            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(configItem.ITEM_ID));
+//
+//            requiredItems.add(new RequiredItem(new ItemStack(item), 0, getRandomInt(configItem.MIN, configItem.MAX)));
+//        }
+
+
+        // #Crimson_Fluff
+        // instead of duplicating the ITEMS list (there maybe quite a few)
+        // choose 4 random numbers, use these as ITEMS(Number1...Number4)
         List<RequiredItem> requiredItems = new ArrayList<>();
+        ArrayList<Integer> numbers = new ArrayList<>();
+        Random randomGenerator = new Random();
 
-        List<AltarConfigItem> configItems = new ArrayList<>(ITEMS);
+        while (numbers.size() < 4) {
+            int random = randomGenerator.nextInt(ITEMS.size());
+            if (! numbers.contains(random)) {
+                numbers.add(random);
 
-        for (int i = 0; i < 4; i++) {
-            AltarConfigItem configItem = configItems.remove(rand.nextInt(configItems.size()));
-            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(configItem.ITEM_ID));
-
-            requiredItems.add(new RequiredItem(new ItemStack(item), 0, getRandomInt(configItem.MIN, configItem.MAX)));
+                Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(ITEMS.get(random).ITEM_ID));
+                requiredItems.add(new RequiredItem(new ItemStack(item), 0, getRandomInt(ITEMS.get(random).MIN, ITEMS.get(random).MAX)));
+            }
         }
 
         return requiredItems;
@@ -142,7 +159,6 @@ public class VaultAltarConfig extends Config {
     }
 
     public class AltarConfigItem {
-
         @Expose
         public String ITEM_ID;
         @Expose
@@ -155,7 +171,5 @@ public class VaultAltarConfig extends Config {
             MIN = min;
             MAX = max;
         }
-
     }
-
 }

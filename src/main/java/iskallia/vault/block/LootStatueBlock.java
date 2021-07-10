@@ -39,7 +39,6 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 
 public class LootStatueBlock extends Block {
-
     public static final VoxelShape SHAPE_GIFT_NORMAL = Block.box(1, 0, 1, 15, 5, 15);
     public static final VoxelShape SHAPE_GIFT_MEGA = Block.box(1, 0, 1, 15, 13, 15);
     public static final VoxelShape SHAPE_PLAYER_STATUE = Block.box(1, 0, 1, 15, 5, 15);
@@ -55,7 +54,6 @@ public class LootStatueBlock extends Block {
         this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.SOUTH));
 
         this.type = type;
-
     }
 
     @Override
@@ -68,13 +66,11 @@ public class LootStatueBlock extends Block {
         LootStatueTileEntity statue = (LootStatueTileEntity) te;
 
         // remove a chip
-        if (player.isShiftKeyDown()) {
+        if (player.isCrouching()) {
             ItemStack chip = statue.removeChip();
-            if (chip != ItemStack.EMPTY) {
-                if (! player.addItem(chip)) {
-                    player.drop(chip, false);
-                }
-            }
+            if (chip != ItemStack.EMPTY)
+                if (! player.addItem(chip)) player.drop(chip, false);
+
             return ActionResultType.SUCCESS;
         }
 
@@ -100,16 +96,14 @@ public class LootStatueBlock extends Block {
                         return new RenamingContainer(windowId, nbt);
                     }
                 },
-                (buffer) -> {
-                    buffer.writeNbt(nbt);
-                }
+                (buffer) -> { buffer.writeNbt(nbt); }
             );
             return ActionResultType.SUCCESS;
-            // add chip
+
         } else if (heldItem.getItem() == ModItems.ACCELERATION_CHIP) {
             if (statue.addChip()) {
-                if (! player.isCreative())
-                    heldItem.shrink(1);     // #Crimson_Fluff, shrink()
+                if (! player.isCreative()) heldItem.shrink(1);     // #Crimson_Fluff, shrink()
+
                 return ActionResultType.SUCCESS;
             }
         }
@@ -182,11 +176,11 @@ public class LootStatueBlock extends Block {
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         BlockPos pos = context.getClickedPos();
         World world = context.getLevel();
-        if (pos.getY() < 255 && world.getBlockState(pos.above()).canBeReplaced(context)) {
+
+        if (pos.getY() < 255 && world.getBlockState(pos.above()).canBeReplaced(context))
             return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection());
-        } else {
+        else
             return null;
-        }
     }
 
     @Override

@@ -68,7 +68,7 @@ public class VaultAltarBlock extends Block {
         VaultAltarTileEntity altar = getAltarTileEntity(worldIn, pos);
         if (altar == null || altar.isInfusing()) return ActionResultType.SUCCESS;
 
-        if (player.isShiftKeyDown() && altar.containsVaultRock()) {
+        if (player.isCrouching() && altar.containsVaultRock()) {
             return onRemoveVaultRock(player, altar);
         }
 
@@ -87,12 +87,12 @@ public class VaultAltarBlock extends Block {
 
                         worldIn.playSound(null, pos, SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 1f, 1f);
                     } else {
-                        player.sendMessage(new StringTextComponent(""), player.getUUID());
-                        player.sendMessage(new StringTextComponent("Vault Altar requires:"), player.getUUID());
+                        player.displayClientMessage(new StringTextComponent(""), false);
+                        player.displayClientMessage(new StringTextComponent("Vault Altar requires:"), false);
                         recipe.getRequiredItems().forEach(lst -> {
-                            player.sendMessage(new StringTextComponent("  " + (lst.getAmountRequired() - lst.getCurrentAmount()) + " x " + lst.getItem().getDisplayName().getString()), player.getUUID());
+                            player.displayClientMessage(new StringTextComponent("  " + (lst.getAmountRequired() - lst.getCurrentAmount()) + " x " + lst.getItem().getDisplayName().getString()), false);
                         });
-                        player.sendMessage(new StringTextComponent(""), player.getUUID());
+                        player.displayClientMessage(new StringTextComponent(""), false);
                     }
                 }
             }
@@ -109,7 +109,7 @@ public class VaultAltarBlock extends Block {
         altar.setRecipe(recipe);
         altar.setContainsVaultRock(true);
 
-        if (! player.isCreative()) heldItem.setCount(heldItem.getCount() - 1);
+        if (! player.isCreative()) heldItem.shrink(1);
         altar.sendUpdates();
         return ActionResultType.SUCCESS;
     }

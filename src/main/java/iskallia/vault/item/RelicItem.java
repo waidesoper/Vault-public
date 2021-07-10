@@ -8,7 +8,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
 public class RelicItem extends Item {
-
     public RelicItem(ItemGroup group, ResourceLocation id) {
         super(new Item.Properties()
             .tab(group)
@@ -26,5 +25,4 @@ public class RelicItem extends Item {
 
         return itemStack;
     }
-
 }

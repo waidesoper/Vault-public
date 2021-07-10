@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VaultTimerConfig extends Config {
-
     @Expose
-    private List<Time> TIME_OVERRIDES = new ArrayList<>();
+    private final List<Time> TIME_OVERRIDES = new ArrayList<>();
 
     @Override
     public String getName() {
@@ -45,5 +44,4 @@ public class VaultTimerConfig extends Config {
             this.TIME = time;
         }
     }
-
 }

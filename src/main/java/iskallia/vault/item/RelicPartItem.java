@@ -16,7 +16,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class RelicPartItem extends Item {
-
     protected RelicSet relicSet;
 
     public RelicPartItem(ItemGroup group, ResourceLocation id) {
@@ -44,5 +43,4 @@ public class RelicPartItem extends Item {
 
         super.appendHoverText(stack, world, tooltip, flag);
     }
-
 }

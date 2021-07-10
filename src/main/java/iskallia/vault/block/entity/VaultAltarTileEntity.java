@@ -38,16 +38,15 @@ import java.util.List;
 import java.util.UUID;
 
 public class VaultAltarTileEntity extends TileEntity implements ITickableTileEntity {
-
     private UUID owner;
     private AltarInfusionRecipe recipe;
 
     private boolean containsVaultRock = false;
-    private int infusionTimer = - 1;
+    private int infusionTimer = -1;
     private boolean infusing;
 
-    private ItemStackHandler itemHandler = createHandler();
-    private LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
+    private final ItemStackHandler itemHandler = createHandler();
+    private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
 
     public VaultAltarTileEntity() {
         super(ModBlocks.VAULT_ALTAR_TILE_ENTITY);
@@ -77,9 +76,7 @@ public class VaultAltarTileEntity extends TileEntity implements ITickableTileEnt
         this.recipe = recipe;
     }
 
-    public AltarInfusionRecipe getRecipe() {
-        return recipe;
-    }
+    public AltarInfusionRecipe getRecipe() { return recipe; }
 
     public boolean isInfusing() {
         return infusing;
@@ -132,13 +129,12 @@ public class VaultAltarTileEntity extends TileEntity implements ITickableTileEnt
         }
 
         if (world.getGameTime() % 20 == 0) sendUpdates();
-
     }
 
     private void completeInfusion(World world) {
         this.containsVaultRock = false;
         this.recipe = null;
-        this.infusionTimer = - 1;
+        this.infusionTimer = -1;
         this.infusing = false;
         ItemStack crystal = ItemVaultCrystal.getRandomCrystal();
 
@@ -163,7 +159,6 @@ public class VaultAltarTileEntity extends TileEntity implements ITickableTileEnt
             if (itemsToPull == null) return;
 
             for (RequiredItem required : itemsToPull) {
-
                 if (required.reachedAmountRequired()) continue;
 
                 if (required.isItemEqual(itemEntity.getItem())) {
