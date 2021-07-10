@@ -150,7 +150,6 @@ public class LootStatueBlock extends Block {
                 CompoundNBT statueNBT = statueTileEntity.serializeNBT();
                 CompoundNBT stackNBT = new CompoundNBT();
                 stackNBT.put("BlockEntityTag", statueNBT);
-
                 itemStack.setTag(stackNBT);
             }
 

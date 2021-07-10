@@ -47,6 +47,9 @@ public class FighterEntity extends ZombieEntity {
     public String lastName = "Fighter";
     public float sizeMultiplier = 1.0F;
 
+//    private String ownerSkin = "";
+//    private boolean skincheck=false;
+
     public ServerBossInfo bossInfo;
 
     public FighterEntity(EntityType<? extends ZombieEntity> type, World world) {
@@ -86,30 +89,32 @@ public class FighterEntity extends ZombieEntity {
         if (this.dead) return;
 
         if (this.level.isClientSide) {
-            String name = this.getCustomName().getString();
+//           if (! skincheck) {
+                String name = this.getCustomName().getString();
+                if (name.startsWith("[")) {
+                    String[] data = name.split(Pattern.quote("]"));
+                    name = data[1].trim();
+                }
 
-            if (name.startsWith("[")) {
-                String[] data = name.split(Pattern.quote("]"));
-                name = data[1].trim();
-            }
+                //LOGGER.info(this.getCustomSkin().getString());
 
-            if (! this.lastName.equals(name)) {
-                this.skin.updateSkin(name);
-                this.lastName = name;
-            }
+                if (! this.lastName.equals(name)) {
+                    this.skin.updateSkin(name);
+                    this.lastName = name;
+                }
+//                skincheck = true;
+//            }
+
         } else {
             double amplitude = this.getDeltaMovement().distanceToSqr(0.0D, this.getDeltaMovement().y(), 0.0D);
 
-            if (amplitude > 0.004D) {
-                this.setSprinting(true);
-                //this.getJumpController().setJumping();
-            } else {
-                this.setSprinting(false);
-            }
+            //this.getJumpController().setJumping();
+            this.setSprinting(amplitude > 0.004D);
 
             this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
         }
     }
+
 
     @Override
     protected SoundEvent getAmbientSound() {
@@ -132,10 +137,20 @@ public class FighterEntity extends ZombieEntity {
         this.bossInfo.setName(this.getDisplayName());
     }
 
+//    @Nullable
+//    @Override
+//    public ITextComponent getCustomName() {
+//        if (this.skincheck) {
+//            return new StringTextComponent(this.ownerSkin);
+//        }
+//        return super.getCustomName();
+//    }
+
     @Override
     public void addAdditionalSaveData(CompoundNBT compound) {
         super.addAdditionalSaveData(compound);
         compound.putFloat("SizeMultiplier", this.sizeMultiplier);
+//        if (! this.ownerSkin.isEmpty()) compound.putString("skinOwner", this.ownerSkin);
     }
 
     @Override
@@ -145,6 +160,9 @@ public class FighterEntity extends ZombieEntity {
         if (compound.contains("SizeMultiplier", Constants.NBT.TAG_FLOAT)) {
             this.changeSize(compound.getFloat("SizeMultiplier"));
         }
+
+//        this.ownerSkin=compound.getString("skinOwner");
+//        LOGGER.info("skinOwner: " + this.ownerSkin);        // this is good, shows when world is loaded
 
         this.bossInfo.setName(this.getDisplayName());
     }

@@ -1,6 +1,7 @@
 package iskallia.vault.world.raid.modifier;
 
 import com.google.gson.annotations.Expose;
+import iskallia.vault.Vault;
 import iskallia.vault.world.raid.VaultRaid;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -13,6 +14,8 @@ public class TimerModifier extends VaultModifier {
     public TimerModifier(String name, ResourceLocation icon, int timerAddend) {
         super(name, icon);
         this.timerAddend = timerAddend;
+
+        Vault.LOGGER.info("TRANS: " + new TranslationTextComponent("tip.the_vault.modifier_nothing").getString());
 
         if (timerAddend == 0)
             this.format(this.getColor(), new TranslationTextComponent("tip.the_vault.modifier_nothing").getString());

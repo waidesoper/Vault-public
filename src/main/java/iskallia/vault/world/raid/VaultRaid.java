@@ -103,7 +103,7 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
 
     public boolean isFinalVault; //This is disgusting but...
 
-    public long myGameTime=0;
+    public long myGameTime=-1;
 
     protected VaultRaid() {
 
@@ -121,8 +121,8 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
         this.sTickLeft = ModConfigs.VAULT_TIMER.getForLevel(this.level);
         this.ticksLeft = this.sTickLeft;
 
-        this.myGameTime = players.get(0).level.getGameTime();
-        Vault.LOGGER.info("VAULTTIME: " + this.myGameTime);
+//        this.myGameTime = players.get(0).level.getGameTime();
+//        Vault.LOGGER.info("VAULTTIME: " + this.myGameTime);
 
         players.stream()
             .map(player -> VaultSetsData.get(player.getLevel()).getExtraTime(player.getUUID()))
@@ -153,18 +153,24 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
             this.ticksLeft = 20 * 20;
         }
 
-        if (this.playerIds.size() == 1) {
-            this.runForPlayers(world.getServer(), player -> {
+//        if (this.playerIds.size() == 1) {
+//            this.runForPlayers(world.getServer(), player -> {
+//                this.modifiers.tick(world, player);
+//
+//                this.ticksLeft--;
+//                this.syncTicksLeft(world.getServer());
+//            });
+//        } else {
+//            this.ticksLeft--;
+//            this.syncTicksLeft(world.getServer());
+//        }
 
-                this.modifiers.tick(world, player);
-                this.ticksLeft--;
-                this.syncTicksLeft(world.getServer());
+        // #Crimson_Fluff, apply all modifier.tick() to all players
+        this.runForPlayers(world.getServer(), player -> { this.modifiers.tick(world, player); });
 
-            });
-        } else {
-            this.ticksLeft--;
-            this.syncTicksLeft(world.getServer());
-        }
+        this.ticksLeft--;
+        this.syncTicksLeft(world.getServer());
+
 
         if (this.ticksLeft <= 0) {
             if (this.won) {

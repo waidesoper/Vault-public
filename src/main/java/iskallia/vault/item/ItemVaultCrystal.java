@@ -230,14 +230,15 @@ public class ItemVaultCrystal extends Item {
         getData(stack).addInformation(world, tooltip, flag);
 
         if (stack.getOrCreateTag().getAllKeys().contains("Coops")) {
-            tooltip.add(new StringTextComponent("Players:").withStyle(TextFormatting.GREEN));
-
-            int a = 0;
-            StringBuilder s = new StringBuilder();
             ListNBT coop = stack.getOrCreateTag().getList("Coops", Constants.NBT.TAG_STRING);
 
             // Split the coop names into rows of 3 (0 to 2 is 3 !)
             if (coop.size() != 0) {
+                int a = 0;
+                StringBuilder s = new StringBuilder();
+
+                tooltip.add(new StringTextComponent("Players:").withStyle(TextFormatting.GREEN));
+
                 for (INBT tag : coop) {
                     if (a > 0) s.append(", ");
                     s.append(tag.getAsString());

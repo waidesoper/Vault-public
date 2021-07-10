@@ -122,3 +122,12 @@ Changed Kiwi to add 10 seconds of time, after all it takes about 5 seconds to ea
 
 Eating Vault Fruit adjusts time for all coop players in a vault: WIP: Timer needs re-doing !
 
+Accelerators now visible on Gift Mega Statue
+
+Added Mystery Box texture
+
+Fixed Puzzle Rune missing textures
+
+Removed duplicate Vault Platinum recipe
+
+Fixed Oozing Pizza giving 0xp. Can be changed in VaultItems config, same as Vault Burger

@@ -22,7 +22,7 @@ public class VaultModifiers implements INBTSerializable<CompoundNBT> {
     public static VaultModifiers CLIENT;
 
     private VaultRaid raid;
-    private List<VaultModifier> modifiers = new ArrayList<>();
+    private final List<VaultModifier> modifiers = new ArrayList<>();
 
     private VaultModifiers() {
 

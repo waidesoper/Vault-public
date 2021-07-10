@@ -254,6 +254,7 @@
   "item.the_vault.puzzle_rune": "Puzzle Rune",
   "block.the_vault.puzzle_rune_block": "Puzzle Rune Block",
   "item.the_vault.vault_relic": "Vault Relic",
+  "item.the_vault.mystery_box": "Mystery Box",
   "tip.the_vault.no_exit": "No exit this time, %s !",
   "tip.the_vault.luck": "Good luck, %s !",
   "tip.the_vault.no_time": "%s ran out of time !",
@@ -327,9 +328,6 @@
   "tip.the_vault.complete": "Complete",
   "tip.the_vault.capacitor_energy": "Energy Stored: %s",
 
-  "tip.the_vault.modifier_noexit": "Must fight a Boss to exit the Vault, or die of course",
-  "tip.the_vault.modifier_timer_add": "Adds %s seconds to the Vault timer",
-  "tip.the_vault.modifier_timer_remove": "Removes %s seconds from the Vault timer",
   "tip.the_vault.modifier_nothing": "Does nothing at all. A bit of a waste of a modifier...",
 
   "tip.the_vault.food_dim": "You can only eat this inside the Vault !",

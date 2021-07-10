@@ -1,7 +1,7 @@
+Discord: https://discord.gg/QD9kvnFuA4
+
 Updated to 1.16.5 OFFICIAL Mappings - using Hexeption's fork
 Works with Forge 1.16.5 - 36.1.17
-Optifine does NOT work
-
 
 TODO: Make a playable pack...
 Optifine now works - The Cryo Chamber does not render with see-through liquid, swings and round-abouts
@@ -38,7 +38,7 @@ Obelisks now have particles, visually pleasing, easy to spot in vaults
 Obelisk is now 2 blocks tall, so you can activate by clicking the top part.
 Reduced number of "Twerker" particles. Only show particles if successfully bone-mealed something
 In peaceful mode mobs no longer try to spawn in the vault
-Skellington Key, add keys to tags
+Added Skellington Key. Sacrifice 4 keys for a guaranteed treasure room door open
 Vault Ore loot tables based on Diamond drops now
 Vault Altar requires blackstone not purpur now
 The Vault XP bar was 1 pixel too long. Yep, I saw it !
@@ -48,18 +48,24 @@ Add a default number of cores needed to Cryo_Chamber config
 Vault Boss kill messages use translation files now
 Vault Boss Crate now tries to place in player inventory before tp'd out the vault. If no space then it will spawn at Boss' death location
 Added Critical Hits damage statistic
-Fixed Gift Statue block - Added bottom image, fixed underside alignment
+Fixed Gift Mega Statue block - Added bottom image, fixed underside alignment
 If Vault Crystal has a player boss name then summon a textured fighter as the vault boss
 Trader Cores return correct trader core item (common, raffle, omega)
 Fix gift blocks crashing if pulled from JEI and placed
 Fixed Issue #330, duplicating key presses
-Fixed Issue #275, some empty hotbar slots don't allow you to change the name of the statue. Confirmed by Me !
+Fixed Issue #275, some empty hotbar slots don't allow you to change the name of the statue
 Fixed Issue #146, if damaged item in off hand, then item takes durability from vein miner
 Boss Crates, when dropped by defeated boss, are now Fire proof and Explosion proof
 Vault XP Bar appears above air bubbles now
 Fixed Issue #361, Item Deletion with Key Anvil
-Added CoOp
+Added CoOp: WIP
 Removed deprecated GlobalEntityAttributes
+Simplified time calculation and account for hours
+Accelerators now visible on Gift Mega Statue
+Added Mystery Box texture
+Fixed Puzzle Rune missing textures
+Removed duplicate Vault Platinum recipe
+Fixed Oozing Pizza giving 0xp. Can be changed in VaultItems config, same as Vault Burger
 
 
 TODO: Mod...

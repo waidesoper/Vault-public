@@ -96,14 +96,15 @@ public class VaultRaidData extends WorldSavedData {
         // 1 vault will have activeRaids() for every coop player, so 1 vault could have 10 entries in WorldData.activeRaids
         // 1 vault should be 1 activeRaid, with each coop player in a list inside that activeRaid
 
-        raid.getPlayerIds().forEach(uuid -> {
-            this.activeRaids.put(uuid, raid);
-        });
+//        raid.getPlayerIds().forEach(uuid -> {
+//            this.activeRaids.put(uuid, raid);
+//        });
 
+        this.activeRaids.put(players.get(0).getUUID(), raid);
         this.setDirty();
 
         ServerWorld world = players.get(0).getServer().getLevel(Vault.VAULT_KEY);
-
+        //raid.myGameTime = world.getGameTime();
 
         // #Crimson_Fluff, moved from VaultRaid.start
         // Lag is caused when generating the vault, so put messages here... before the lag
