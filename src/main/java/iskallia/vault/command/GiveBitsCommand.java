@@ -19,7 +19,6 @@ import java.util.List;
 import static net.minecraft.command.Commands.argument;
 
 public class GiveBitsCommand extends Command {
-
     public static List<ItemBit> BIT_ITEMS;
 
     private static void initializeBits() {
@@ -45,39 +44,30 @@ public class GiveBitsCommand extends Command {
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
         builder.then(argument("amount", IntegerArgumentType.integer())
-            .executes(context -> receivedSub(context, IntegerArgumentType.getInteger(context, "amount"))));
+            .executes(context -> dropBits(context, IntegerArgumentType.getInteger(context, "amount"))));
     }
 
-    private int receivedSub(CommandContext<CommandSource> context, int amount) throws CommandSyntaxException {
-        dropBits(context.getSource().getPlayerOrException(), amount);
-        return 0;
-    }
+    public int dropBits(CommandContext<CommandSource> context, int bitsInput) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrException();
 
-    public static void dropBits(ServerPlayerEntity player, int bitsInput) {
         if (BIT_ITEMS == null) initializeBits(); // <-- Lazy init to prevent any registry order errors
-
-        List<ItemStack> itemsToGive = new LinkedList<>();
 
         for (ItemBit bitItem : BIT_ITEMS) {
             if (bitsInput < bitItem.getValue()) continue;
 
             int amount = bitsInput / bitItem.getValue();
 
-//            itemsToGive.add(new ItemStack(bitItem, amount));
             EntityHelper.giveItem(player, new ItemStack(bitItem, amount));
-            player.awardStat(Vault.STAT_GIVEN_BITS, amount * bitItem.getValue());    // #Crimson_Fluff, AddStat
+            player.awardStat(Vault.STAT_GIVEN_BITS, amount * bitItem.getValue());    // #Crimson_Fluff, AddStat, only count bits we have bit_items for (so no single bits)
 
             bitsInput %= bitItem.getValue();
         }
 
-//        for (ItemStack itemStack : itemsToGive) {
-//            EntityHelper.giveItem(player, itemStack);
-//        }
+        return 0;
     }
 
     @Override
     public boolean isDedicatedServerOnly() {
         return false;
     }
-
 }

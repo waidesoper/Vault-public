@@ -6,7 +6,6 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.util.text.StringTextComponent;
 
 public abstract class Command {
-
     public abstract String getName();
 
     public abstract int getRequiredPermissionLevel();
@@ -18,5 +17,4 @@ public abstract class Command {
     protected final void sendFeedback(CommandContext<CommandSource> context, String message, boolean showOps) {
         context.getSource().sendSuccess(new StringTextComponent(message), showOps);
     }
-
 }

@@ -17,11 +17,10 @@ import java.util.List;
 import java.util.Random;
 
 public class StatueLootConfig extends Config {
-
     @Expose
     private int MAX_ACCELERATION_CHIPS;
     @Expose
-    private HashMap<Integer, Integer> INTERVAL_DECREASE_PER_CHIP = new HashMap<>();
+    private final HashMap<Integer, Integer> INTERVAL_DECREASE_PER_CHIP = new HashMap<>();
 
     @Expose
     private List<SingleItemEntry> GIFT_NORMAL_STATUE_LOOT;
@@ -62,10 +61,12 @@ public class StatueLootConfig extends Config {
         this.GIFT_MEGA_STATUE_LOOT.add(new SingleItemEntry("minecraft:golden_apple", "{display:{Name:'{\"text\":\"Fancier Apple\"}'}}"));
         this.GIFT_MEGA_STATUE_LOOT.add(new SingleItemEntry("minecraft:diamond_sword", "{Enchantments:[{id:\"minecraft:sharpness\",lvl:10s}]}"));
         this.GIFT_MEGA_STATUE_INTERVAL = 1000;
+
         this.VAULT_BOSS_STATUE_LOOT = new LinkedList<>();
         this.VAULT_BOSS_STATUE_LOOT.add(new SingleItemEntry("minecraft:enchanted_golden_apple", "{display:{Name:'{\"text\":\"Fanciest Apple\"}'}}"));
         this.VAULT_BOSS_STATUE_LOOT.add(new SingleItemEntry("minecraft:netherite_sword", "{Enchantments:[{id:\"minecraft:sharpness\",lvl:10s}]}"));
         this.VAULT_BOSS_STATUE_INTERVAL = 500;
+
         this.ARENA_CHAMPION_STATUE_LOOT = new LinkedList<>();
         this.ARENA_CHAMPION_STATUE_LOOT.add(new SingleItemEntry("minecraft:enchanted_golden_apple", "{display:{Name:'{\"text\":\"Fanciestest Apple\"}'}}"));
         this.ARENA_CHAMPION_STATUE_LOOT.add(new SingleItemEntry("minecraft:netherite_sword", "{display:{Name:'{\"text\":\"Over 9000!\"}'},Enchantments:[{id:\"minecraft:sharpness\",lvl:9001s}]}"));

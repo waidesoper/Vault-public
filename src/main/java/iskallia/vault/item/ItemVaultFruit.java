@@ -50,6 +50,9 @@ public class ItemVaultFruit extends Item {
         ItemStack itemStack = playerIn.getItemInHand(handIn);
         if (playerIn.level.dimension() != Vault.VAULT_KEY) return ActionResult.fail(itemStack);
 
+        // TODO: cant use fruit if boss has been defeated and in Vault
+        // Issue #111, #161
+
         return super.use(worldIn, playerIn, handIn);
     }
 

@@ -8,6 +8,7 @@ import iskallia.vault.Vault;
 import net.minecraft.command.CommandSource;
 
 import static net.minecraft.command.Commands.argument;
+import static net.minecraft.command.Commands.literal;
 
 public class AddStatCommand extends Command {
     @Override
@@ -22,23 +23,29 @@ public class AddStatCommand extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.then(argument("amount", IntegerArgumentType.integer(1))
-               .then(argument("stat_type", IntegerArgumentType.integer(1, 2))
-               .executes(context -> receivedSub(context, IntegerArgumentType.getInteger(context, "amount"),  IntegerArgumentType.getInteger(context, "stat_type")))));
+        for (Type type : AddStatCommand.Type.values()) {
+            builder.then(literal(type.name().toUpperCase())
+                .then(argument("amount", IntegerArgumentType.integer(1))
+                    .executes(context -> this.receivedSub(context, IntegerArgumentType.getInteger(context, "amount"), type))));
+        }
     }
 
-    private int receivedSub(CommandContext<CommandSource> context, int amount, int stat_type) throws CommandSyntaxException {
+    private int receivedSub(CommandContext<CommandSource> context, int amount, Type stat_type) throws CommandSyntaxException {
         switch (stat_type) {
-            case 1:
+            case TRADERS:
                 context.getSource().getPlayerOrException().awardStat(Vault.STAT_GIVEN_TRADERS, amount);    // #Crimson_Fluff, AddStat
                 break;
 
-            case 2:
-                context.getSource().getPlayerOrException().awardStat(Vault.STAT_GIVEN_BOOSTERS, amount);    // #Crimson_Fluff, AddStat
+            case BOOSTERS:
+                context.getSource().getPlayerOrException().awardStat(Vault.STAT_GIVEN_BOOSTERS, amount);   // #Crimson_Fluff, AddStat
                 break;
 
-            case 3:
-                context.getSource().getPlayerOrException().awardStat(Vault.STAT_GIVEN_GIFTS, amount);    // #Crimson_Fluff, AddStat
+            case GIFTS:
+                context.getSource().getPlayerOrException().awardStat(Vault.STAT_GIVEN_GIFTS, amount);      // #Crimson_Fluff, AddStat
+                break;
+
+            case BITS:
+                context.getSource().getPlayerOrException().awardStat(Vault.STAT_GIVEN_BITS, amount);       // #Crimson_Fluff, AddStat
                 break;
         }
 
@@ -47,4 +54,6 @@ public class AddStatCommand extends Command {
 
     @Override
     public boolean isDedicatedServerOnly() { return false; }
+
+    public enum Type { TRADERS, BOOSTERS, GIFTS, BITS }
 }

@@ -104,8 +104,6 @@ public class ItemGiftBomb extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        Color color = colorForVariant(variant);
-
         if (stack.hasTag()) {
             tooltip.add(new StringTextComponent(""));
 
@@ -113,6 +111,7 @@ public class ItemGiftBomb extends Item {
             String gifter = nbt.getString("Gifter");
             int giftedSubs = nbt.getInt("GiftedSubs");
 
+            Color color = colorForVariant(variant);
             tooltip.add(getPropertyInfo("Gifter", gifter, color));
             tooltip.add(getPropertyInfo("Gifted", giftedSubs + " subscribers", color));
         }
@@ -131,21 +130,21 @@ public class ItemGiftBomb extends Item {
     }
 
     private static Color colorForVariant(Variant variant) {
-        if (variant == Variant.NORMAL) {
-            return Color.fromRgb(0x00_bc0b0b);
+        switch (variant) {
+            default:
+            case NORMAL:
+                return Color.fromRgb(0x00_bc0b0b);
 
-        } else if (variant == Variant.SUPER) {
-            return Color.fromRgb(0x00_9f0bbc);
+            case SUPER:
+                return Color.fromRgb(0x00_9f0bbc);
 
-        } else if (variant == Variant.MEGA) {
-            return Color.fromRgb(0x00_0b8fbc);
+            case MEGA:
+                return Color.fromRgb(0x00_0b8fbc);
 
-        } else if (variant == Variant.OMEGA) {
-            int color = (int) System.currentTimeMillis();
-            return Color.fromRgb(color);
+            case OMEGA:
+                int color = (int) System.currentTimeMillis();
+                return Color.fromRgb(color);
         }
-
-        throw new InternalError("Unknown variant -> " + variant);
     }
 
     public static ItemStack forGift(Variant variant, String gifter, int giftedSubs) {
@@ -162,17 +161,19 @@ public class ItemGiftBomb extends Item {
 
     public static Item ofVariant(Variant variant) {
         switch (variant) {
+            default:
             case NORMAL:
                 return ModItems.NORMAL_GIFT_BOMB;
+
             case SUPER:
                 return ModItems.SUPER_GIFT_BOMB;
+
             case MEGA:
                 return ModItems.MEGA_GIFT_BOMB;
+
             case OMEGA:
                 return ModItems.OMEGA_GIFT_BOMB;
         }
-
-        throw new InternalError("Unknown Gift Bomb variant: " + variant);
     }
 
     public enum Variant {
@@ -187,5 +188,4 @@ public class ItemGiftBomb extends Item {
             this.ordinal = ordinal;
         }
     }
-
 }
