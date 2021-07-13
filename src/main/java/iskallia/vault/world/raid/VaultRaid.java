@@ -103,11 +103,9 @@ public class VaultRaid implements INBTSerializable<CompoundNBT> {
 
     public boolean isFinalVault; //This is disgusting but...
 
-    public long myGameTime=-1;
+    public boolean babies = false;      // #Crimson_fluff, babies modifier
 
-    protected VaultRaid() {
-
-    }
+    protected VaultRaid() { }
 
     public VaultRaid(List<ServerPlayerEntity> players, List<ServerPlayerEntity> spectators,
                      MutableBoundingBox box, int level, int rarity, String playerBossName) {

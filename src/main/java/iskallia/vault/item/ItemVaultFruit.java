@@ -18,6 +18,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import org.apache.logging.log4j.core.jmx.Server;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -48,12 +49,21 @@ public class ItemVaultFruit extends Item {
     @Override
     public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack itemStack = playerIn.getItemInHand(handIn);
-        if (playerIn.level.dimension() != Vault.VAULT_KEY) return ActionResult.fail(itemStack);
 
-        // TODO: cant use fruit if boss has been defeated and in Vault
+        // #Crimson_Fluff, don't allow eating fruit if boss has been defeated and still in Vault
         // Issue #111, #161
+        if (! playerIn.level.isClientSide) {
+            if (playerIn.level.dimension() == Vault.VAULT_KEY) {
 
-        return super.use(worldIn, playerIn, handIn);
+                VaultRaidData raidData = VaultRaidData.get((ServerWorld) worldIn);
+                VaultRaid raid = raidData.getActiveFor((ServerPlayerEntity) playerIn);
+
+                if (raid != null && !raid.won) return super.use(worldIn, playerIn, handIn);
+            }
+        }
+
+        return ActionResult.fail(itemStack);
+        //return super.use(worldIn, playerIn, handIn);
     }
 
     @Override
@@ -81,15 +91,14 @@ public class ItemVaultFruit extends Item {
         public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
             if (! worldIn.isClientSide && entityLiving instanceof ServerPlayerEntity) {
                 ServerPlayerEntity player = (ServerPlayerEntity) entityLiving;
-//                VaultRaid raid = VaultRaidData.get((ServerWorld) worldIn).getActiveFor(player);
 
                 // #Crimson_Fluff, apply new timer to ALL players in Vault dimension
                 // TODO: what happens if they are spectators? does this ever happen? do they have RaidData?
-                player.getServer().getPlayerList().getPlayers().forEach(coop -> {
-                    VaultRaid raid = VaultRaidData.get((ServerWorld) worldIn).getActiveFor(coop);
-                    raid.ticksLeft += getExtraVaultTicks();
-                    raid.sTickLeft += this.getExtraVaultTicks();
+                VaultRaid raid = VaultRaidData.get((ServerWorld) worldIn).getActiveFor(player);
+                raid.ticksLeft += getExtraVaultTicks();
+                raid.sTickLeft += this.getExtraVaultTicks();
 
+                player.getServer().getPlayerList().getPlayers().forEach(coop -> {
                     worldIn.playSound(null,
                         coop.getX(),
                         coop.getY(),
@@ -97,7 +106,6 @@ public class ItemVaultFruit extends Item {
                         SoundEvents.CONDUIT_ACTIVATE,
                         SoundCategory.MASTER,
                         1.0F, 1.0F);
-
                 });
 
                 player.hurt(this.damageSource, 6);
@@ -139,15 +147,14 @@ public class ItemVaultFruit extends Item {
         public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
             if (! worldIn.isClientSide && entityLiving instanceof ServerPlayerEntity) {
                 ServerPlayerEntity player = (ServerPlayerEntity) entityLiving;
-//                VaultRaid raid = VaultRaidData.get((ServerWorld) worldIn).getActiveFor(player);
 
                 // #Crimson_Fluff, apply new timer to ALL players in Vault dimension
                 // TODO: what happens if they are spectators? does this ever happen? do they have RaidData?
-                player.getServer().getPlayerList().getPlayers().forEach(coop -> {
-                    VaultRaid raid = VaultRaidData.get((ServerWorld) worldIn).getActiveFor(coop);
-                    raid.ticksLeft += getExtraVaultTicks();
-                    raid.sTickLeft += this.getExtraVaultTicks();
+                VaultRaid raid = VaultRaidData.get((ServerWorld) worldIn).getActiveFor(player);
+                raid.ticksLeft += getExtraVaultTicks();
+                raid.sTickLeft += this.getExtraVaultTicks();
 
+                player.getServer().getPlayerList().getPlayers().forEach(coop -> {
                     worldIn.playSound(null,
                         coop.getX(),
                         coop.getY(),
@@ -196,15 +203,14 @@ public class ItemVaultFruit extends Item {
         public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
             if (! worldIn.isClientSide && entityLiving instanceof ServerPlayerEntity) {
                 ServerPlayerEntity player = (ServerPlayerEntity) entityLiving;
-//                VaultRaid raid = VaultRaidData.get((ServerWorld) worldIn).getActiveFor(player);
 
                 // #Crimson_Fluff, apply new timer to ALL players in Vault dimension
                 // TODO: what happens if they are spectators? does this ever happen? do they have RaidData?
-                player.getServer().getPlayerList().getPlayers().forEach(coop -> {
-                    VaultRaid raid = VaultRaidData.get((ServerWorld) worldIn).getActiveFor(coop);
-                    raid.ticksLeft += getExtraVaultTicks();
-                    raid.sTickLeft += this.getExtraVaultTicks();
+                VaultRaid raid = VaultRaidData.get((ServerWorld) worldIn).getActiveFor(player);
+                raid.ticksLeft += getExtraVaultTicks();
+                raid.sTickLeft += this.getExtraVaultTicks();
 
+                player.getServer().getPlayerList().getPlayers().forEach(coop -> {
                     worldIn.playSound(null,
                         coop.getX(),
                         coop.getY(),
@@ -261,15 +267,14 @@ public class ItemVaultFruit extends Item {
         public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
             if (! worldIn.isClientSide && entityLiving instanceof ServerPlayerEntity) {
                 ServerPlayerEntity player = (ServerPlayerEntity) entityLiving;
-//                VaultRaid raid = VaultRaidData.get((ServerWorld) worldIn).getActiveFor(player);
 
                 // #Crimson_Fluff, apply new timer to ALL players in Vault dimension
                 // TODO: what happens if they are spectators? does this ever happen? do they have RaidData?
-                player.getServer().getPlayerList().getPlayers().forEach(coop -> {
-                    VaultRaid raid = VaultRaidData.get((ServerWorld) worldIn).getActiveFor(coop);
-                    raid.ticksLeft += getExtraVaultTicks();
-                    raid.sTickLeft += this.getExtraVaultTicks();
+                VaultRaid raid = VaultRaidData.get((ServerWorld) worldIn).getActiveFor(player);
+                raid.ticksLeft += getExtraVaultTicks();
+                raid.sTickLeft += this.getExtraVaultTicks();
 
+                player.getServer().getPlayerList().getPlayers().forEach(coop -> {
                     worldIn.playSound(null,
                         coop.getX(),
                         coop.getY(),

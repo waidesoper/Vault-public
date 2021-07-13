@@ -6,12 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.server.ServerWorld;
 
-import java.util.Random;
-
 public abstract class VaultModifier {
-
-    public static final Random RANDOM = new Random();
-
     @Expose
     private final String name;
     @Expose
@@ -50,8 +45,5 @@ public abstract class VaultModifier {
 
     public abstract void apply(VaultRaid raid);
 
-    public void tick(ServerWorld world, PlayerEntity player) {
-
-    }
-
+    public void tick(ServerWorld world, PlayerEntity player) { }
 }

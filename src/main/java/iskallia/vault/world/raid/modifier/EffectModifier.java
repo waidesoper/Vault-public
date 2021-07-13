@@ -13,6 +13,7 @@ import net.minecraft.util.Tuple;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class EffectModifier extends VaultModifier {
     private final String type;
 
     public EffectModifier(String name, ResourceLocation icon, Effect effect, int value, String operator, EffectAbility.Type type) {
-        this(name, icon, Registry.MOB_EFFECT.getKey(effect).toString(), value, operator, type.toString());
+        this(name, icon, ForgeRegistries.POTIONS.getKey(effect).toString(), value, operator, type.toString());
     }
 
     public EffectModifier(String name, ResourceLocation icon, String effect, int value, String operator, String type) {
@@ -40,31 +41,41 @@ public class EffectModifier extends VaultModifier {
         this.operator = operator;
         this.type = type;
 
-        if (this.operator.equals("MULTIPLY")) {
-            this.format(this.getColor(), "Multiples the current " + new ResourceLocation(this.effect).getPath() + " amplifier by " + this.value + ".");
-        } else if (this.operator.equals("ADD")) {
-            this.format(this.getColor(), "Adds " + this.value + " to the current " + new ResourceLocation(this.effect).getPath() + " amplifier.");
-        } else if (this.operator.equals("SET")) {
-            this.format(this.getColor(), "Gives " + new ResourceLocation(this.effect).getPath() + " " + RomanNumber.toRoman(this.value) + ".");
-        } else {
-            this.format(this.getColor(), new TranslationTextComponent("tip.the_vault.modifier_nothing").getString());
+        switch (this.operator) {
+            case "MULTIPLY":
+                this.format(this.getColor(), "Multiplies the current " + new ResourceLocation(this.effect).getPath() + " amplifier by " + this.value + ".");
+                break;
+
+            case "ADD":
+                this.format(this.getColor(), "Adds " + this.value + " to the current " + new ResourceLocation(this.effect).getPath() + " amplifier.");
+                break;
+
+            case "SET":
+                this.format(this.getColor(), "Gives " + new ResourceLocation(this.effect).getPath() + " " + RomanNumber.toRoman(this.value) + ".");
+                break;
+
+            default:
+                this.format(this.getColor(), new TranslationTextComponent("tip.the_vault.modifier_nothing").getString());
+                break;
         }
     }
 
-    public Effect getEffect() {
-        return Registry.MOB_EFFECT.get(new ResourceLocation(this.effect));
-    }
+    public Effect getEffect() { return ForgeRegistries.POTIONS.getValue(new ResourceLocation(this.effect)); }
 
     public int getAmplifier(int oldValue) {
-        if (this.operator.equals("MULTIPLY")) {
-            return this.value * oldValue;
-        } else if (this.operator.equals("ADD")) {
-            return this.value + oldValue;
-        } else if (this.operator.equals("SET")) {
-            return this.value;
-        }
+        switch (this.operator) {
+            case "MULTIPLY":
+                return this.value * oldValue;
 
-        return oldValue;
+            case "ADD":
+                return this.value + oldValue;
+
+            case "SET":
+                return this.value;
+
+            default:
+                return oldValue;
+        }
     }
 
     public EffectTalent.Type getType() {
@@ -72,9 +83,7 @@ public class EffectModifier extends VaultModifier {
     }
 
     @Override
-    public void apply(VaultRaid raid) {
-
-    }
+    public void apply(VaultRaid raid) { }
 
     @Override
     public void tick(ServerWorld world, PlayerEntity player) {
@@ -100,7 +109,7 @@ public class EffectModifier extends VaultModifier {
         ICON_ONLY("icon_only", false, true),
         ALL("all", true, true);
 
-        private static Map<String, Type> STRING_TO_TYPE = Arrays.stream(values())
+        private static final Map<String, Type> STRING_TO_TYPE = Arrays.stream(values())
             .collect(Collectors.toMap(Type::toString, o -> o));
 
         private final String name;
@@ -122,5 +131,4 @@ public class EffectModifier extends VaultModifier {
             return this.name;
         }
     }
-
 }

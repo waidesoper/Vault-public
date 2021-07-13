@@ -7,7 +7,6 @@ import iskallia.vault.config.TraderCoreConfig.TraderCoreOmegaConfig;
 import iskallia.vault.config.TraderCoreConfig.TraderCoreRaffleConfig;
 
 public class ModConfigs {
-
     public static AbilitiesConfig ABILITIES;
     public static AbilitiesGUIConfig ABILITIES_GUI;
     public static TalentsConfig TALENTS;
@@ -110,7 +109,7 @@ public class ModConfigs {
         GLOBAL_TRADER = (GlobalTraderConfig) new GlobalTraderConfig().readConfig();
         PLAYER_EXP = (PlayerExpConfig) new PlayerExpConfig().readConfig();
         FINAL_VAULT_GENERAL = (FinalVaultGeneralConfig) new FinalVaultGeneralConfig().readConfig();
+
         Vault.LOGGER.info("Vault Configs are loaded successfully!");
     }
-
 }

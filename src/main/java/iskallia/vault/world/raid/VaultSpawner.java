@@ -19,7 +19,7 @@ import java.util.List;
 public class VaultSpawner {
 
     private final VaultRaid raid;
-    private List<LivingEntity> mobs = new ArrayList<>();
+    private final List<LivingEntity> mobs = new ArrayList<>();
     public int maxMobs;
 
     public VaultSpawner(VaultRaid raid) {
@@ -104,7 +104,7 @@ public class VaultSpawner {
                 ((MobEntity) entity).spawnAnim();
 
                 // TODO: #Crimson_Fluff, More Babies Modifier
-                //((MobEntity) entity).setBaby(true);
+                ((MobEntity) entity).setBaby(this.raid.babies);
 
                 ((MobEntity) entity).finalizeSpawn(world, new DifficultyInstance(Difficulty.PEACEFUL, 13000L, 0L, 0L),
                     SpawnReason.STRUCTURE, null, null);

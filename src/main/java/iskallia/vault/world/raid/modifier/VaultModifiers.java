@@ -18,15 +18,12 @@ import java.util.Random;
 import java.util.function.BiConsumer;
 
 public class VaultModifiers implements INBTSerializable<CompoundNBT> {
-
     public static VaultModifiers CLIENT;
 
     private VaultRaid raid;
     private final List<VaultModifier> modifiers = new ArrayList<>();
 
-    private VaultModifiers() {
-
-    }
+    private VaultModifiers() { }
 
     public VaultModifiers(VaultRaid raid) {
         this.raid = raid;
@@ -58,9 +55,8 @@ public class VaultModifiers implements INBTSerializable<CompoundNBT> {
         this.modifiers.clear();
         ListNBT modifiersList = nbt.getList("Modifiers", Constants.NBT.TAG_STRING);
 
-        for (int i = 0; i < modifiersList.size(); i++) {
+        for (int i = 0; i < modifiersList.size(); i++)
             this.modifiers.add(ModConfigs.VAULT_MODIFIERS.getByName(modifiersList.getString(i)));
-        }
     }
 
     public void encode(PacketBuffer buffer) {
@@ -71,17 +67,14 @@ public class VaultModifiers implements INBTSerializable<CompoundNBT> {
     public static VaultModifiers decode(PacketBuffer buffer) {
         VaultModifiers res = new VaultModifiers();
 
-        for (int i = 0, count = buffer.readInt(); i < count; i++) {
+        for (int i = 0, count = buffer.readInt(); i < count; i++)
             res.modifiers.add(ModConfigs.VAULT_MODIFIERS.getByName(buffer.readUtf()));
-        }
 
         return res;
     }
 
     public void forEach(BiConsumer<Integer, VaultModifier> consumer) {
-        for (int i = 0; i < this.modifiers.size(); i++) {
-            consumer.accept(i, this.modifiers.get(i));
-        }
+        for (int i = 0; i < this.modifiers.size(); i++) consumer.accept(i, this.modifiers.get(i));
     }
 
     public int size() {
@@ -91,13 +84,10 @@ public class VaultModifiers implements INBTSerializable<CompoundNBT> {
     public void add(String name) {
         VaultModifier modifier = ModConfigs.VAULT_MODIFIERS.getByName(name);
 
-        if (! this.modifiers.contains(modifier)) {
-            this.modifiers.add(modifier);
-        }
+        if (! this.modifiers.contains(modifier)) this.modifiers.add(modifier);
     }
 
     public void remove(String name) {
         this.modifiers.removeIf(modifier -> modifier.getName().equals(name));
     }
-
 }

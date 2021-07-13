@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class VaultModifiersConfig extends Config {
-
     @Expose
     public List<MaxMobsModifier> MAX_MOBS_MODIFIERS;
     @Expose
@@ -25,6 +24,8 @@ public class VaultModifiersConfig extends Config {
     public List<EffectModifier> EFFECT_MODIFIERS;
     @Expose
     public List<NoExitModifier> NO_EXIT_MODIFIERS;
+    @Expose
+    public List<BabiesModifier> BABIES_MODIFIERS;
 
     @Expose
     public List<Level> LEVELS;
@@ -35,7 +36,13 @@ public class VaultModifiersConfig extends Config {
     }
 
     public List<VaultModifier> getAll() {
-        return Stream.of(MAX_MOBS_MODIFIERS, TIMER_MODIFIERS, LEVEL_MODIFIERS, EFFECT_MODIFIERS, NO_EXIT_MODIFIERS).flatMap(Collection::stream).collect(Collectors.toList());
+        return Stream.of(MAX_MOBS_MODIFIERS,
+            TIMER_MODIFIERS,
+            LEVEL_MODIFIERS,
+            EFFECT_MODIFIERS,
+            NO_EXIT_MODIFIERS,
+            BABIES_MODIFIERS)
+            .flatMap(Collection::stream).collect(Collectors.toList());
     }
 
     public VaultModifier getByName(String name) {
@@ -68,6 +75,9 @@ public class VaultModifiersConfig extends Config {
             new NoExitModifier("Raffle", Vault.id("textures/gui/modifiers/no_exit.png")),
             new NoExitModifier("Locked", Vault.id("textures/gui/modifiers/no_exit.png")));
 
+        this.BABIES_MODIFIERS = Arrays.asList(
+            new BabiesModifier("Babies", Vault.id("textures/gui/modifiers/no_exit.png")));
+
         Level level = new Level(5);
 
         level.DEFAULT_POOLS.put(VaultRarity.COMMON.name(), Arrays.asList(
@@ -81,6 +91,7 @@ public class VaultModifiersConfig extends Config {
                 .add("Easy", 1)
                 .add("Hard", 1)
                 .add("Treasure", 1)
+                .add("Babies", 1)
                 .add("Unlucky", 1),
             new Pool(1, 1)
                 .add("Locked", 1)
