@@ -327,6 +327,9 @@
   "tip.the_vault.trade_head": "MEGA-HEAD",
   "tip.the_vault.complete": "Complete",
   "tip.the_vault.capacitor_energy": "Energy Stored: %s",
+  "item.the_vault.magnet": "Basic Magnet",
+  "item.the_vault.obelisk_vh2": "VH2 Obelisk",
+  "block.the_vault.obelisk_vh2": "VH2 Obelisk",
 
   "tip.the_vault.modifier_nothing": "Does nothing at all. A bit of a waste of a modifier...",
 
@@ -344,5 +347,10 @@
   "death.attack.fruit": "%s died by fruit !",
   "tip.the_vault.coopadd": "You have been added to Co-Op Crystal",
   "tip.the_vault.coopsub": "You have been removed from Co-Op Crystal",
-  "tip.the_vault.nocoop": "This is not a Co-Op Crystal !"
+  "tip.the_vault.nocoop": "This is not a Co-Op Crystal !",
+
+  "tip.the_vault.time": "Time left until the end...",
+  "tip.the_vault.arena_title": "Arena Time !",
+  "tip.the_vault.arena_subtitle": "You have %s Subscriber Fighters !",
+  "tip.the_vault.arena_subtitle2": "You have %s Viewer Fighters !"
 }

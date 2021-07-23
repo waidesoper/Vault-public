@@ -13,10 +13,10 @@ import net.minecraft.item.ItemStack;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 
-public class GiveGiftSubCommand extends Command {
+public class GiveGiftBombCommand extends Command {
     @Override
     public String getName() {
-        return "give_giftsub";
+        return "give_giftbomb";
     }
 
     @Override

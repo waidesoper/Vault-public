@@ -26,6 +26,8 @@ public class VaultModifiersConfig extends Config {
     public List<NoExitModifier> NO_EXIT_MODIFIERS;
     @Expose
     public List<BabiesModifier> BABIES_MODIFIERS;
+    @Expose
+    public List<ObeliskVH2Modifier> OBELISK_MODIFIERS;
 
     @Expose
     public List<Level> LEVELS;
@@ -41,7 +43,8 @@ public class VaultModifiersConfig extends Config {
             LEVEL_MODIFIERS,
             EFFECT_MODIFIERS,
             NO_EXIT_MODIFIERS,
-            BABIES_MODIFIERS)
+            BABIES_MODIFIERS,
+            OBELISK_MODIFIERS)
             .flatMap(Collection::stream).collect(Collectors.toList());
     }
 
@@ -75,8 +78,12 @@ public class VaultModifiersConfig extends Config {
             new NoExitModifier("Raffle", Vault.id("textures/gui/modifiers/no_exit.png")),
             new NoExitModifier("Locked", Vault.id("textures/gui/modifiers/no_exit.png")));
 
+        // TODO: textures
         this.BABIES_MODIFIERS = Arrays.asList(
             new BabiesModifier("Babies", Vault.id("textures/gui/modifiers/no_exit.png")));
+
+        this.OBELISK_MODIFIERS = Arrays.asList(
+            new ObeliskVH2Modifier("VH2 Obelisks", Vault.id("textures/gui/modifiers/no_exit.png")));
 
         Level level = new Level(5);
 
@@ -92,6 +99,7 @@ public class VaultModifiersConfig extends Config {
                 .add("Hard", 1)
                 .add("Treasure", 1)
                 .add("Babies", 1)
+                .add("VH2 Obelisks", 1)
                 .add("Unlucky", 1),
             new Pool(1, 1)
                 .add("Locked", 1)
@@ -109,6 +117,8 @@ public class VaultModifiersConfig extends Config {
                 .add("Easy", 1)
                 .add("Hard", 1)
                 .add("Treasure", 1)
+                .add("Babies", 1)
+                .add("VH2 Obelisks", 1)
                 .add("Unlucky", 1),
             new Pool(1, 1)
                 .add("Locked", 1)
@@ -124,6 +134,8 @@ public class VaultModifiersConfig extends Config {
                 .add("Easy", 1)
                 .add("Hard", 1)
                 .add("Treasure", 1)
+                .add("Babies", 1)
+                .add("VH2 Obelisks", 1)
                 .add("Unlucky", 1),
             new Pool(1, 1)
                 .add("Locked", 1)
@@ -139,6 +151,8 @@ public class VaultModifiersConfig extends Config {
                 .add("Easy", 1)
                 .add("Hard", 1)
                 .add("Treasure", 1)
+                .add("Babies", 1)
+                .add("VH2 Obelisks", 1)
                 .add("Unlucky", 1),
             new Pool(1, 1)
                 .add("Locked", 1)
@@ -156,6 +170,8 @@ public class VaultModifiersConfig extends Config {
                 .add("Easy", 1)
                 .add("Hard", 1)
                 .add("Treasure", 1)
+                .add("Babies", 1)
+                .add("VH2 Obelisks", 1)
                 .add("Unlucky", 1),
             new Pool(1, 1)
                 .add("Raffle", 1)
@@ -172,6 +188,8 @@ public class VaultModifiersConfig extends Config {
                 .add("Easy", 1)
                 .add("Hard", 1)
                 .add("Treasure", 1)
+                .add("Babies", 1)
+                .add("VH2 Obelisks", 1)
                 .add("Unlucky", 1),
             new Pool(1, 1)
                 .add("Raffle", 1)
@@ -186,6 +204,8 @@ public class VaultModifiersConfig extends Config {
                 .add("Easy", 1)
                 .add("Hard", 1)
                 .add("Treasure", 1)
+                .add("Babies", 1)
+                .add("VH2 Obelisks", 1)
                 .add("Unlucky", 1),
             new Pool(1, 1)
                 .add("Raffle", 1)
@@ -200,6 +220,8 @@ public class VaultModifiersConfig extends Config {
                 .add("Easy", 1)
                 .add("Hard", 1)
                 .add("Treasure", 1)
+                .add("Babies", 1)
+                .add("VH2 Obelisks", 1)
                 .add("Unlucky", 1),
             new Pool(1, 1)
                 .add("Raffle", 1)
@@ -271,12 +293,9 @@ public class VaultModifiersConfig extends Config {
 
             Set<String> res = new HashSet<>();
 
-            while (res.size() < rolls && res.size() < POOL.size()) {
-                res.add(POOL.getRandom(random));
-            }
+            while (res.size() < rolls && res.size() < POOL.size()) res.add(POOL.getRandom(random));
 
             return res.stream().map(s -> ModConfigs.VAULT_MODIFIERS.getByName(s)).filter(Objects::nonNull).collect(Collectors.toSet());
         }
     }
-
 }

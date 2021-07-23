@@ -30,7 +30,7 @@ public class VendingMachineContainer extends Container {
         super(ModContainers.VENDING_MACHINE_CONTAINER, windowId);
 
         BlockState blockState = world.getBlockState(pos);
-        this.tileEntity = (VendingMachineTileEntity) VendingMachineBlock.getBlockTileEntity(world, pos, blockState);
+        this.tileEntity = (VendingMachineTileEntity) VendingMachineBlock.getVendingTileEntity(world, pos, blockState);
         this.playerInventory = playerInventory;
 
         this.vendingInventory = new VendingInventory();

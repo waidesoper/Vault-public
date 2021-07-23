@@ -1,0 +1,63 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"2": "the_vault:block/obelisk_center_0",
+		"3": "the_vault:block/obelisk_center_top",
+		"particle": "the_vault:block/obelisk_base"
+	},
+	"elements": [
+		{
+			"name": "pillar-top",
+			"from": [4, 0, 4],
+			"to": [12, 11, 12],
+			"rotation": {"angle": 0, "axis": "y", "origin": [11, 27, 11]},
+			"faces": {
+				"north": {"uv": [0, 0, 8, 11], "texture": "#2"},
+				"east": {"uv": [0, 0, 8, 11], "texture": "#2"},
+				"south": {"uv": [0, 0, 8, 11], "texture": "#2"},
+				"west": {"uv": [0, 0, 8, 11], "texture": "#2"},
+				"up": {"uv": [8, 8, 16, 16], "texture": "#3"}
+			}
+		},
+		{
+			"name": "top1",
+			"from": [4.5, 11, 4.5],
+			"to": [11.5, 12, 11.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [9.5, 34, 12.5]},
+			"faces": {
+				"north": {"uv": [0, 0, 7, 1], "texture": "#3"},
+				"east": {"uv": [0, 0, 7, 1], "texture": "#3"},
+				"south": {"uv": [0, 0, 7, 1], "texture": "#3"},
+				"west": {"uv": [0, 0, 7, 1], "texture": "#3"},
+				"up": {"uv": [8, 8, 16, 16], "texture": "#3"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 135, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, 135, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"ground": {
+			"translation": [0, 3, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"gui": {
+			"rotation": [30, 135, 0],
+			"translation": [0, -3, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"head": {
+			"rotation": [0, 180, 0]
+		},
+		"fixed": {
+			"rotation": [0, 180, 0]
+		}
+	}
+}

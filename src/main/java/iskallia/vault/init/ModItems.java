@@ -27,7 +27,7 @@ public class ModItems {
         }
     };
 
-    public static VaultXPFoodItem VAULT_BURGER = new VaultXPFoodItem(Vault.id("vault_burger"), () -> ModConfigs.VAULT_ITEMS.VAULT_BURGER.minExpPercent, () -> ModConfigs.VAULT_ITEMS.VAULT_BURGER.maxExpPercent, new Item.Properties().tab(VAULT_MOD_GROUP));
+    public static VaultXPFoodItem VAULT_BURGER = new VaultXPFoodItem(Vault.id("vault_burger"), () -> ModConfigs.VAULT_ITEMS.VAULT_BURGER.XP_MIN_PERCENT, () -> ModConfigs.VAULT_ITEMS.VAULT_BURGER.XP_MAX_PERCENT, new Item.Properties().tab(VAULT_MOD_GROUP));
     public static ItemSkillOrb SKILL_ORB = new ItemSkillOrb(VAULT_MOD_GROUP);
     public static ItemVaultGem VAULT_ROCK = new ItemVaultGem(VAULT_MOD_GROUP, Vault.id("vault_rock"));
     public static ItemVaultGem ALEXANDRITE_GEM = new ItemVaultGem(VAULT_MOD_GROUP, Vault.id("gem_alexandrite"));
@@ -155,7 +155,7 @@ public class ModItems {
     public static BasicItem VAULT_GOLD = new BasicItem(Vault.id("vault_gold"), new Item.Properties().tab(VAULT_MOD_GROUP));
     public static BasicItem VAULT_DIAMOND = new BasicItem(Vault.id("vault_diamond"), new Item.Properties().tab(VAULT_MOD_GROUP));
     public static BasicItem SKILL_ESSENCE = new BasicItem(Vault.id("skill_essence"), new Item.Properties().tab(VAULT_MOD_GROUP));
-    public static VaultXPFoodItem OOZING_PIZZA = new VaultXPFoodItem(Vault.id("oozing_pizza"), () -> ModConfigs.VAULT_ITEMS.OOZING_PIZZA.minExpPercent, () -> ModConfigs.VAULT_ITEMS.OOZING_PIZZA.minExpPercent, new Item.Properties().tab(VAULT_MOD_GROUP));
+    public static VaultXPFoodItem OOZING_PIZZA = new VaultXPFoodItem(Vault.id("oozing_pizza"), () -> ModConfigs.VAULT_ITEMS.OOZING_PIZZA.XP_MIN_PERCENT, () -> ModConfigs.VAULT_ITEMS.OOZING_PIZZA.XP_MIN_PERCENT, new Item.Properties().tab(VAULT_MOD_GROUP));
     public static LootableItem UNIDENTIFIED_RELIC = new LootableItem(Vault.id("unidentified_relic"), new Item.Properties().tab(VAULT_MOD_GROUP), () -> new ItemStack(ModConfigs.VAULT_RELICS.getRandomPart()));
     public static ItemVaultFruit.SweetKiwi SWEET_KIWI = new ItemVaultFruit.SweetKiwi(VAULT_MOD_GROUP, Vault.id("sweet_kiwi"), 20 * 5);
     public static BasicItem HUNTER_EYE = new BasicItem(Vault.id("hunter_eye"), new Item.Properties().tab(VAULT_MOD_GROUP));
@@ -207,6 +207,10 @@ public class ModItems {
     public static PuzzleRuneItem PUZZLE_RUNE = new PuzzleRuneItem(Vault.id("puzzle_rune"), new Item.Properties().tab(VAULT_MOD_GROUP).stacksTo(1));
 
     public static BasicItem INFUSED_ETERNAL_SOUL = new BasicItem(Vault.id("infused_eternal_soul"), new Item.Properties().tab(VAULT_MOD_GROUP).stacksTo(64));
+
+    // #Crimson_Fluff
+    public static ItemMagnet ITEM_MAGNET = new ItemMagnet(Vault.id("magnet"), new Item.Properties().tab(VAULT_MOD_GROUP).stacksTo(1).durability(128));
+
 
     public static void registerItems(RegistryEvent.Register<Item> event) {
         IForgeRegistry<Item> registry = event.getRegistry();
@@ -386,6 +390,7 @@ public class ModItems {
 
         registry.register(PUZZLE_RUNE);
         registry.register(INFUSED_ETERNAL_SOUL);
-    }
 
+        registry.register(ITEM_MAGNET);     // #Crimson_Fluff
+    }
 }

@@ -1,6 +1,7 @@
 package iskallia.vault.block;
 
 import iskallia.vault.block.entity.CapacitorTileEntity;
+import iskallia.vault.block.entity.VaultPortalTileEntity;
 import iskallia.vault.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -47,13 +48,7 @@ public class CapacitorBlock extends Block {
     }
 
     public static CapacitorTileEntity getCapacitorTileEntity(World world, BlockPos pos) {
-
-        TileEntity tileEntity = world.getBlockEntity(pos);
-
-        if ((! (tileEntity instanceof CapacitorTileEntity)))
-            return null;
-
-        return (CapacitorTileEntity) tileEntity;
+        TileEntity te = world.getBlockEntity(pos);
+        return te instanceof CapacitorTileEntity ? (CapacitorTileEntity) te : null;
     }
-
 }

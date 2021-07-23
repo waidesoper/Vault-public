@@ -7,7 +7,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.server.ServerWorld;
 
 public class ObeliskBlockTileEntity extends TileEntity implements ITickableTileEntity {
-    public ObeliskBlockTileEntity() { super(ModBlocks.OBELISK_TILE_ENTITY); }
+    public ObeliskBlockTileEntity() { super(ModBlocks.OBELISK_BLOCK_TILE_ENTITY); }
 
     @Override
     public void tick() {

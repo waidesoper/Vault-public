@@ -36,7 +36,7 @@ public class GlobalTraderContainer extends Container {
         super(ModContainers.TRADER_CONTAINER, windowId);
 
         BlockState blockState = world.getBlockState(pos);
-        this.tileEntity = (GlobalTraderTileEntity) GlobalTraderBlock.getBlockTileEntity(world, pos, blockState);
+        this.tileEntity = (GlobalTraderTileEntity) GlobalTraderBlock.getVendingTileEntity(world, pos, blockState);
         this.playerInventory = playerInventory;
 
         this.traderInventory = new TraderInventory();

@@ -119,10 +119,14 @@ public class ModNetwork {
             AttackOffHandMessage::encode,
             AttackOffHandMessage::decode,
             AttackOffHandMessage::handle);
+
+        // #Crimson_Fluff
+        CHANNEL.registerMessage(nextId(), JarOverlayUpdateWithLevel.class, JarOverlayUpdateWithLevel::write, JarOverlayUpdateWithLevel::read, JarOverlayUpdateWithLevel::onMessage);
+        CHANNEL.registerMessage(nextId(), StartBossLoopMessage.class, StartBossLoopMessage::write, StartBossLoopMessage::read, StartBossLoopMessage::onMessage);
+        CHANNEL.registerMessage(nextId(), ObeliskVH2OverlayUpdate.class, ObeliskVH2OverlayUpdate::write, ObeliskVH2OverlayUpdate::read, ObeliskVH2OverlayUpdate::onMessage);
     }
 
     public static int nextId() {
         return ID++;
     }
-
 }

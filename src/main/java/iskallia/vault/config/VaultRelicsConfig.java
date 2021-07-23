@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import iskallia.vault.init.ModItems;
 import iskallia.vault.item.RelicPartItem;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Comparator;

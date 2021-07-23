@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "nnn",
+    "nsn",
+    "nnn"
+  ],
+  "key": {
+    "s": {
+      "item": "the_vault:spark"
+    },
+    "n": {
+      "item": "the_vault:vault_crystal_normal"
+    }
+  },
+  "result": {
+    "item": "the_vault:vault_crystal_rare"
+  }
+}

@@ -56,23 +56,21 @@ public class VaultPortalBlock extends NetherPortalBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X).setValue(RARITY, VaultRarity.COMMON.ordinal()));
     }
 
+    // #Crimson_Fluff, removed the 'common' parts
     protected static BlockPos getSpawnPoint(ServerWorld p_241092_0_, int p_241092_1_, int p_241092_2_, boolean p_241092_3_) {
         BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable(p_241092_1_, 0, p_241092_2_);
         Biome biome = p_241092_0_.getBiome(blockpos$mutable);
         boolean flag = p_241092_0_.dimensionType().hasCeiling();
         BlockState blockstate = biome.getGenerationSettings().getSurfaceBuilderConfig().getTopMaterial();
-        if (p_241092_3_ && ! blockstate.getBlock().is(BlockTags.VALID_SPAWN)) {
-            return null;
-        } else {
+
+        if (! p_241092_3_ || blockstate.getBlock().is(BlockTags.VALID_SPAWN)) {
             Chunk chunk = p_241092_0_.getChunk(p_241092_1_ >> 4, p_241092_2_ >> 4);
             int i = flag ? p_241092_0_.getChunkSource().getGenerator().getSpawnHeight() : chunk.getHeight(Heightmap.Type.MOTION_BLOCKING, p_241092_1_ & 15, p_241092_2_ & 15);
-            if (i < 0) {
-                return null;
-            } else {
+
+            if (i >= 0) {
                 int j = chunk.getHeight(Heightmap.Type.WORLD_SURFACE, p_241092_1_ & 15, p_241092_2_ & 15);
-                if (j <= i && j > chunk.getHeight(Heightmap.Type.OCEAN_FLOOR, p_241092_1_ & 15, p_241092_2_ & 15)) {
-                    return null;
-                } else {
+
+                if (j > i || j <= chunk.getHeight(Heightmap.Type.OCEAN_FLOOR, p_241092_1_ & 15, p_241092_2_ & 15)) {
                     for (int k = i + 1; k >= 0; -- k) {
                         blockpos$mutable.set(p_241092_1_, k, p_241092_2_);
                         BlockState blockstate1 = p_241092_0_.getBlockState(blockpos$mutable);
@@ -84,11 +82,11 @@ public class VaultPortalBlock extends NetherPortalBlock {
                             return blockpos$mutable.above().immutable();
                         }
                     }
-
-                    return null;
                 }
+
             }
         }
+        return null;
     }
 
     @Override
@@ -112,7 +110,6 @@ public class VaultPortalBlock extends NetherPortalBlock {
         if (worldIn instanceof World)
             world = (World) worldIn;
 
-
         //if in overworld, allow the portal to break when frame is broken. like a nether portal.
         if (world != null) {
             if (world.dimension() == World.OVERWORLD) {
@@ -126,7 +123,6 @@ public class VaultPortalBlock extends NetherPortalBlock {
 
         // otherwise, as commented before: yeet auto-connections
         return stateIn;
-
     }
 
     @Override
@@ -221,9 +217,7 @@ public class VaultPortalBlock extends NetherPortalBlock {
                 }
             });
 
-            if (worldKey == Vault.VAULT_KEY) {
-                world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-            }
+            if (worldKey == Vault.VAULT_KEY) world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
 
             player.setPortalCooldown();
         }
@@ -235,15 +229,11 @@ public class VaultPortalBlock extends NetherPortalBlock {
         if (world.dimensionType().hasSkyLight() && world.getServer().getWorldData().getGameType() != GameType.ADVENTURE) {
             int i = Math.max(0, world.getServer().getSpawnRadius(world));
             int j = MathHelper.floor(world.getWorldBorder().getDistanceToBorder(blockpos.getX(), blockpos.getZ()));
-            if (j < i) {
-                i = j;
-            }
 
-            if (j <= 1) {
-                i = 1;
-            }
+            if (j < i) i = j;
+            if (j <= 1) i = 1;
 
-            long k = i * 2 + 1;
+            long k = i * 2L + 1;
             long l = k * k;
             int i1 = l > 2147483647L ? Integer.MAX_VALUE : (int) l;
             int j1 = i1 <= 16 ? i1 - 1 : 17;
@@ -293,7 +283,6 @@ public class VaultPortalBlock extends NetherPortalBlock {
 
             world.addParticle(ParticleTypes.ASH, d0, d1, d2, d3, d4, d5);
         }
-
     }
 
     protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
@@ -301,10 +290,8 @@ public class VaultPortalBlock extends NetherPortalBlock {
         builder.add(RARITY);
     }
 
-
     private VaultPortalTileEntity getPortalTileEntity(World worldIn, BlockPos pos) {
         TileEntity te = worldIn.getBlockEntity(pos);
         return te instanceof VaultPortalTileEntity ? (VaultPortalTileEntity) te : null;
     }
-
 }

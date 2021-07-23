@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "completion=0,half=lower": {
+      "model": "the_vault:block/obelisk_vh2_bottom"
+    },
+    "completion=0,half=upper": {
+      "model": "the_vault:block/obelisk_vh2_top"
+    },
+    "completion=1,half=lower": {
+      "model": "the_vault:block/obelisk_vh2_bottom_on"
+    },
+	"completion=1,half=upper": {
+      "model": "the_vault:block/obelisk_vh2_top_on"
+    }
+  }
+}

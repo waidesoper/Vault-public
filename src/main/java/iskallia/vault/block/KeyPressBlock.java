@@ -32,7 +32,6 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 
 public class KeyPressBlock extends FallingBlock {
-
     public static final DirectionProperty FACING = HorizontalBlock.FACING;
     private static final VoxelShape PART_BASE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 4.0D, 14.0D);
     private static final VoxelShape PART_LOWER_X = Block.box(3.0D, 4.0D, 4.0D, 13.0D, 5.0D, 12.0D);
@@ -75,8 +74,7 @@ public class KeyPressBlock extends FallingBlock {
                     return new KeyPressContainer(windowId, player);
                 }
             },
-            (buffer) -> {
-            }
+            (buffer) -> { }
         );
 
         return ActionResultType.SUCCESS;
@@ -109,25 +107,4 @@ public class KeyPressBlock extends FallingBlock {
     public boolean isPathfindable(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
         return false;
     }
-
-//    @OnlyIn(Dist.CLIENT)
-//    public int getDustColor(BlockState state, IBlockReader reader, BlockPos pos) {
-//        return state.getMapColor(reader, pos).col;
-//    }
-
-
-    // #Crimson_Fluff, Issue #330, Dropping key_press duplicates them
-    // remove the below code and add a key_press block loot_table
-
-//    @Override
-//    public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-//        if (worldIn.isClientSide) return;
-//        if (! newState.isAir()) return;
-//
-//        ItemEntity entity = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ModBlocks.KEY_PRESS));
-//        worldIn.addFreshEntity(entity);
-//
-//
-//        super.onRemove(state, worldIn, pos, newState, isMoving);
-//    }
 }

@@ -21,21 +21,22 @@ public class ModCommands {
 
     public static AddStatCommand ADD_STAT_COMMAND;                          // #Crimson_Fluff, so we can call AddStat
     public static GiveStatueCommand ADD_STATUE_COMMAND;                     // #Crimson_Fluff, so we can give Player Statue (Gift sub, Mega sub)
-    public static GiveGiftSubCommand ADD_GIFTSUB_COMMAND;                   // #Crimson_Fluff, so we can give Player Gift Bomb)
+    public static GiveGiftBombCommand ADD_GIFTSUB_COMMAND;                  // #Crimson_Fluff, so we can give Player Gift Bomb)
     public static GiveTraderCoreCommand ADD_TRADERCORE_COMMAND;             // #Crimson_Fluff, so we can give Player Trader Core)
+    public static UpdateArenaJarCommand UPDATE_ARENA_COMMAND;               // #Crimson_Fluff, so we can update the Arena Jar
 
     public static void registerCommands(CommandDispatcher<CommandSource> dispatcher, Commands.EnvironmentType env) {
         RELOAD_CONFIGS = registerCommand(ReloadConfigsCommand::new, dispatcher, env);
         RAID = registerCommand(RaidCommand::new, dispatcher, env);
         VAULT_LEVEL = registerCommand(VaultLevelCommand::new, dispatcher, env);
-//        INTERNAL = registerCommand(InternalCommand::new, dispatcher, env);
         GIVE_BITS = registerCommand(GiveBitsCommand::new, dispatcher, env);
         GEAR_DEBUG_COMMAND = registerCommand(GearDebugCommand::new, dispatcher, env);
 
         ADD_STAT_COMMAND = registerCommand(AddStatCommand::new, dispatcher, env);                   // #Crimson_Fluff, so we can call AddStat
         ADD_STATUE_COMMAND = registerCommand(GiveStatueCommand::new, dispatcher, env);              // #Crimson_Fluff, so we can give Player Statue (Gift sub, Mega sub)
-        ADD_GIFTSUB_COMMAND = registerCommand(GiveGiftSubCommand::new, dispatcher, env);            // #Crimson_Fluff, so we can give Player Gift Bomb
+        ADD_GIFTSUB_COMMAND = registerCommand(GiveGiftBombCommand::new, dispatcher, env);           // #Crimson_Fluff, so we can give Player Gift Bomb
         ADD_TRADERCORE_COMMAND = registerCommand(GiveTraderCoreCommand::new, dispatcher, env);      // #Crimson_Fluff, so we can give Player Trader Core
+        UPDATE_ARENA_COMMAND = registerCommand(UpdateArenaJarCommand::new, dispatcher, env);        // #Crimson_Fluff, so we can update the Arena Jar
     }
 
     public static <T extends Command> T registerCommand(Supplier<T> supplier, CommandDispatcher<CommandSource> dispatcher, Commands.EnvironmentType env) {

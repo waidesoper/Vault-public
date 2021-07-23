@@ -47,9 +47,8 @@ import java.util.Random;
 import java.util.stream.Stream;
 
 public class ObeliskBlock extends Block {
-
-    public static final IntegerProperty COMPLETION = IntegerProperty.create("completion", 0, 4);
-    public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
+    private static final IntegerProperty COMPLETION = IntegerProperty.create("completion", 0, 4);
+    private static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
 
     public ObeliskBlock() {
         super(Properties.of(Material.STONE).sound(SoundType.METAL).strength(- 1.0F, 3600000.0F).noDrops());
@@ -123,7 +122,7 @@ public class ObeliskBlock extends Block {
             return ActionResultType.SUCCESS;
         }
 
-        this.spawnParticles(world, pos);
+        spawnParticles(world, pos);
 
         if (newState.getValue(COMPLETION) == 4) {
             VaultRaid raid = VaultRaidData.get((ServerWorld) world).getAt(pos);
@@ -138,7 +137,7 @@ public class ObeliskBlock extends Block {
         return ActionResultType.SUCCESS;
     }
 
-    public void spawnBoss(VaultRaid raid, ServerWorld world, BlockPos pos, EntityScaler.Type type) {
+    public static void spawnBoss(VaultRaid raid, ServerWorld world, BlockPos pos, EntityScaler.Type type) {
         LivingEntity boss;
 
         // #Crimson_Fluff, if crystal has a boss name then summon textured fighter
@@ -177,7 +176,7 @@ public class ObeliskBlock extends Block {
         VaultRaidOverlay.bossSummoned = true;
     }
 
-    private void spawnParticles(World world, BlockPos pos) {
+    public static void spawnParticles(World world, BlockPos pos) {
         for (int i = 0; i < 10; ++ i) {
             double d0 = world.random.nextGaussian() * 0.02D;
             double d1 = world.random.nextGaussian() * 0.02D;
@@ -204,15 +203,13 @@ public class ObeliskBlock extends Block {
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         if (state.getValue(HALF) == DoubleBlockHalf.LOWER)
-            return ModBlocks.OBELISK_TILE_ENTITY.create();
+            return ModBlocks.OBELISK_BLOCK_TILE_ENTITY.create();
 
         return null;
     }
 
     @Override
     public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-        if (! worldIn.isClientSide) {
-            worldIn.setBlockAndUpdate(pos.above(), state.setValue(HALF, DoubleBlockHalf.UPPER));
-        }
+        if (! worldIn.isClientSide) worldIn.setBlockAndUpdate(pos.above(), state.setValue(HALF, DoubleBlockHalf.UPPER));
     }
 }

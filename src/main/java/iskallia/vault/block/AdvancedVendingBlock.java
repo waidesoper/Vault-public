@@ -193,9 +193,6 @@ public class AdvancedVendingBlock extends Block {
     public static TileEntity getBlockTileEntity(World world, BlockPos pos, BlockState state) {
         BlockPos vendingMachinePos = getTileEntityPos(state, pos);
 
-        TileEntity tileEntity = world.getBlockEntity(vendingMachinePos);
-
-        return tileEntity;
+        return world.getBlockEntity(vendingMachinePos);
     }
-
 }

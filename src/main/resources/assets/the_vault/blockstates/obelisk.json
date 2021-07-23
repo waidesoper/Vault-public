@@ -1,19 +1,19 @@
 {
   "variants": {
     "completion=0,half=lower": {
-      "model": "the_vault:block/obelisk"
+      "model": "the_vault:block/obelisk_bottom"
     },
 	"completion=1,half=lower": {
-      "model": "the_vault:block/obelisk_1"
+      "model": "the_vault:block/obelisk_bottom_1"
     },
 	"completion=2,half=lower": {
-      "model": "the_vault:block/obelisk_2"
+      "model": "the_vault:block/obelisk_bottom_2"
     },
 	"completion=3,half=lower": {
-      "model": "the_vault:block/obelisk_2"
+      "model": "the_vault:block/obelisk_bottom_2"
     },
 	"completion=4,half=lower": {
-      "model": "the_vault:block/obelisk_2"
+      "model": "the_vault:block/obelisk_bottom_2"
     },
 	"completion=0,half=upper": {
       "model": "the_vault:block/obelisk_top"

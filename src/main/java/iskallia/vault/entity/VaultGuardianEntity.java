@@ -1,13 +1,10 @@
 package iskallia.vault.entity;
 
-import iskallia.vault.init.ModConfigs;
-import iskallia.vault.init.ModItems;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.monster.piglin.PiglinBruteEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
@@ -23,8 +20,9 @@ public class VaultGuardianEntity extends PiglinBruteEntity {
 
     @Override
     protected void dropFromLootTable(DamageSource source, boolean attackedRecently) {
-        if (getRandom().nextInt(ModConfigs.VAULT_GENERAL.getObeliskDropChance()) == 0)
-            this.spawnAtLocation(new ItemStack(ModItems.OBELISK_INSCRIPTION));
+        // TODO:
+//        if (getRandom().nextInt(ModConfigs.VAULT_GENERAL.getObeliskDropChance()) == 0)
+//            this.spawnAtLocation(new ItemStack(ModItems.OBELISK_INSCRIPTION));
     }
 
     @Override

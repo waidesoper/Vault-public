@@ -7,7 +7,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 public class ModScreens {
-
     public static void register(final FMLClientSetupEvent event) {
         ScreenManager.register(ModContainers.SKILL_TREE_CONTAINER, SkillTreeScreen::new);
         ScreenManager.register(ModContainers.VAULT_CRATE_CONTAINER, VaultCrateScreen::new);
@@ -24,6 +23,7 @@ public class ModScreens {
         MinecraftForge.EVENT_BUS.register(AbilityVignetteOverlay.class);
         MinecraftForge.EVENT_BUS.register(VaultRaidOverlay.class);
         MinecraftForge.EVENT_BUS.register(GiftBombOverlay.class);
-    }
 
+        MinecraftForge.EVENT_BUS.register(JarPersonalOverlay.class);       // #Crimson_Fluff
+    }
 }

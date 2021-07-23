@@ -3,24 +3,35 @@ package iskallia.vault.client.gui.screen;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import iskallia.vault.Vault;
 import iskallia.vault.client.gui.helper.FontHelper;
-import iskallia.vault.client.gui.helper.UIHelper;
+import iskallia.vault.init.ModConfigs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 
 public class GlobalTimerScreen extends Screen {
+    private static final ResourceLocation HUD_RESOURCE = new ResourceLocation(Vault.MOD_ID, "textures/gui/global_timer_screen.png");
 
-    public static final ResourceLocation UI_RESOURCE = new ResourceLocation(Vault.MOD_ID, "textures/gui/global_timer.png");
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private static long secondsLeft = 0;
 
-    protected long endUnix;
+    public GlobalTimerScreen() {
+        super(new StringTextComponent("Global Timer"));
 
-    public GlobalTimerScreen(long endUnix) {
-        super(new TranslationTextComponent("tip.the_vault.timer_big"));
-        this.endUnix = endUnix;
+        // Parse the date once, when the screen is opened not every render tick()
+        try {
+            secondsLeft = (sdf.parse(ModConfigs.VAULT_GENERAL.VAULT_FINAL_EVENT_DATE).getTime() / 1000);
+
+        } catch (ParseException e) {
+            Vault.LOGGER.info("VaultGeneral config: VaultFinalEventDate is invalid. UTC yyyy-MM-dd HH:mm");
+            secondsLeft = 0;
+        }
     }
 
     @Override
@@ -28,10 +39,6 @@ public class GlobalTimerScreen extends Screen {
         renderBackground(matrixStack, 0x00_000000);
 
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.getTextureManager().bind(UI_RESOURCE);
-
-        long now = Instant.now().getEpochSecond();
-        long secondsLeft = endUnix - now;
 
         float midX = minecraft.getWindow().getGuiScaledWidth() / 2f;
         float midY = minecraft.getWindow().getGuiScaledHeight() / 2f;
@@ -39,17 +46,16 @@ public class GlobalTimerScreen extends Screen {
         int containerWidth = 140;
         int containerHeight = 70;
 
-        UIHelper.renderContainerBorder(this, matrixStack,
-            (int) (midX - containerWidth / 2),
-            (int) (midY - containerHeight / 2),
-            containerWidth,
-            containerHeight,
-            1, 1, 5, 5, 5, 5, 0xFF_c6c6c6);
+        long secondsToGo = secondsLeft - Instant.now().getEpochSecond();
+        if (secondsLeft < 0) secondsLeft = 0;
 
-        String formattedTime = formatTimeLeft(secondsLeft);
+        minecraft.getTextureManager().bind(HUD_RESOURCE);
+        blit(matrixStack, (int) (midX - containerWidth / 2), (int) (midY - containerHeight / 2), 0, 0, containerWidth, containerHeight, 256, 256);
+
+        String formattedTime = formatTimeLeft(secondsToGo);
         int formattedTimeLength = minecraft.font.width(formattedTime);
 
-        String formattedSeconds = formatSecondsLeft(secondsLeft);
+        String formattedSeconds = formatSecondsLeft(secondsToGo);
         int formattedSecondsLength = minecraft.font.width(formattedSeconds);
 
         String label = new TranslationTextComponent("tip.the_vault.remain").getString();
@@ -72,7 +78,7 @@ public class GlobalTimerScreen extends Screen {
             0xFF_FFFFFF, 0xFF_483121);
         matrixStack.popPose();
 
-        minecraft.getTextureManager().bind(UI_RESOURCE);
+        minecraft.getTextureManager().bind(HUD_RESOURCE);
 
         int hourglassWidth = 12;
         int hourglassHeight = 16;
@@ -82,8 +88,7 @@ public class GlobalTimerScreen extends Screen {
         matrixStack.scale(2, 2, 2);
         matrixStack.translate(- 18, 0, 0);
         matrixStack.mulPose(new Quaternion(0, 0, (System.currentTimeMillis() / 10L) % 360, true));
-        blit(matrixStack, (int) (- hourglassWidth / 2f), (int) (- hourglassHeight / 2f),
-            1, 15, hourglassWidth, hourglassHeight);
+        blit(matrixStack, (int) (- hourglassWidth / 2f), (int) (- hourglassHeight / 2f), 0, 70, hourglassWidth, hourglassHeight);
         matrixStack.popPose();
     }
 

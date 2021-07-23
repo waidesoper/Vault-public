@@ -136,9 +136,10 @@ public class EntityEvents {
                                         if (te instanceof ChestTileEntity) {
                                             ((ChestTileEntity) te).setLootTable(Vault.id("chest/treasure_extra"), 0L);
                                         }
-                                    } else if (s.getBlock() == Blocks.BEDROCK) {
-                                        event.getEntity().level.setBlockAndUpdate(c, ModBlocks.VAULT_BEDROCK.defaultBlockState());
                                     }
+//                                    else if (s.getBlock() == Blocks.BEDROCK) {
+//                                        event.getEntity().level.setBlockAndUpdate(c, ModBlocks.VAULT_BEDROCK.defaultBlockState());
+//                                    }
                                 }
                             }
                         }
@@ -158,11 +159,13 @@ public class EntityEvents {
             //|| !event.getEntity().getTags().contains("vault_obelisk")
         ) return;
 
-        event.getEntityLiving().level.setBlockAndUpdate(event.getEntityLiving().blockPosition(), ModBlocks.OBELISK.defaultBlockState());
+// #Crimson_Fluff, Obelisks now 2 blocks tall, includes VH2 style Obelisk
+        ServerWorld world = (ServerWorld) event.getEntityLiving().level;
+        VaultRaid raid = VaultRaidData.get(world).getAt(event.getEntity().blockPosition());
 
-        // #Crimson_Fluff, obelisk is 2 blocks now
-        event.getEntityLiving().level.setBlockAndUpdate(event.getEntityLiving().blockPosition().above(),
-            ModBlocks.OBELISK.defaultBlockState().setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER));
+        BlockState state = raid.obelisksNeeded != 0 ? ModBlocks.OBELISK_VH2.defaultBlockState() : ModBlocks.OBELISK.defaultBlockState();
+        event.getEntityLiving().level.setBlockAndUpdate(event.getEntityLiving().blockPosition(), state);
+        event.getEntityLiving().level.setBlockAndUpdate(event.getEntityLiving().blockPosition().above(), state.setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER));
 
         event.getEntityLiving().remove();
     }
@@ -484,5 +487,4 @@ public class EntityEvents {
             event.setCanceled(true);
         }
     }
-
 }

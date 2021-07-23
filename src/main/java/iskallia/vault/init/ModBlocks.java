@@ -20,7 +20,6 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import static iskallia.vault.init.ModItems.VAULT_MOD_GROUP;
 
 public class ModBlocks {
-
     public static final VaultPortalBlock VAULT_PORTAL = new VaultPortalBlock();
     public static final FinalVaultPortalBlock FINAL_VAULT_PORTAL = new FinalVaultPortalBlock();
     public static final VaultAltarBlock VAULT_ALTAR = new VaultAltarBlock();
@@ -85,6 +84,8 @@ public class ModBlocks {
     public static final MazeBlock MAZE_BLOCK = new MazeBlock();
     public static final PuzzleRuneBlock PUZZLE_RUNE_BLOCK = new PuzzleRuneBlock();
 
+    public static final Block OBELISK_VH2 = new ObeliskBlockVH2();     // #Crimson_Fluff
+
     /*~~~~~~~~~~ Block Items ~~~~~~~~~~*/
 
     public static final PlayerStatueBlockItem PLAYER_STATUE_BLOCK_ITEM = new PlayerStatueBlockItem();
@@ -100,8 +101,10 @@ public class ModBlocks {
     /*~~~~~~~~~~ Tile Entities ~~~~~~~~~~*/
 
     // #Crimson_Fluff, all this for Tick() method !
-    public static final TileEntityType<ObeliskBlockTileEntity> OBELISK_TILE_ENTITY =
+    public static final TileEntityType<ObeliskBlockTileEntity> OBELISK_BLOCK_TILE_ENTITY =
         TileEntityType.Builder.of(ObeliskBlockTileEntity::new, OBELISK).build(null);
+    public static final TileEntityType<ObeliskBlockVH2TileEntity> OBELISK_BLOCK_VH2_TILE_ENTITY =
+        TileEntityType.Builder.of(ObeliskBlockVH2TileEntity::new, OBELISK_VH2).build(null);
 
     public static final TileEntityType<VaultAltarTileEntity> VAULT_ALTAR_TILE_ENTITY =
         TileEntityType.Builder.of(VaultAltarTileEntity::new, VAULT_ALTAR).build(null);
@@ -193,6 +196,8 @@ public class ModBlocks {
         registerBlock(event, GLOBAL_TRADER, Vault.id("global_trader"));
         registerBlock(event, MAZE_BLOCK, Vault.id("maze_block"));
         registerBlock(event, PUZZLE_RUNE_BLOCK, Vault.id("puzzle_rune_block"));
+
+        registerBlock(event, OBELISK_VH2, Vault.id("obelisk_vh2"));     // #Crimson_Fluff
     }
 
     public static void registerTileEntities(RegistryEvent.Register<TileEntityType<?>> event) {
@@ -209,7 +214,8 @@ public class ModBlocks {
         registerTileEntity(event, CAPACITOR_TILE_ENTITY, Vault.id("capacitor_tile_entity"));
         registerTileEntity(event, GLOBAL_TRADER_TILE_ENTITY, Vault.id("global_trader_tile_entity"));
 
-        registerTileEntity(event, OBELISK_TILE_ENTITY, Vault.id("obelisk_tile_entity"));
+        registerTileEntity(event, OBELISK_BLOCK_TILE_ENTITY, Vault.id("obelisk_block_tile_entity"));            // #Crimson_Fluff
+        registerTileEntity(event, OBELISK_BLOCK_VH2_TILE_ENTITY, Vault.id("obelisk_vh2_block_tile_entity"));    // #Crimson_Fluff
     }
 
     public static void registerTileEntityRenderers() {
@@ -287,6 +293,8 @@ public class ModBlocks {
         registerBlockItem(event, VAULT_DIAMOND_BLOCK);
         registerBlockItem(event, GLOBAL_TRADER, GLOBAL_TRADER_BLOCK_ITEM);
         registerBlockItem(event, PUZZLE_RUNE_BLOCK, PUZZLE_RUNE_BLOCK_ITEM);
+
+        registerBlockItem(event, OBELISK_VH2, 1);       // #Crimson_Fluff
     }
 
     /* --------------------------------------------- */
@@ -337,5 +345,4 @@ public class ModBlocks {
         tallBlockItem.setRegistryName(block.getRegistryName());
         event.getRegistry().register(tallBlockItem);
     }
-
 }

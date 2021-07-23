@@ -6,6 +6,7 @@ import iskallia.vault.init.ModSounds;
 import iskallia.vault.util.VaultRarity;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -92,36 +93,37 @@ public class ItemVaultCrystal extends Item {
                     1f, 1f
                 );
 
-                context.getItemInHand().shrink(1);
-
                 // #Crimson_Fluff
                 // Added Translations. Added vowel check like in VaultRaid.java
                 IFormattableTextComponent text = new StringTextComponent("");
                 text.append(new StringTextComponent(context.getPlayer().getName().getString()).withStyle(TextFormatting.GREEN));
 
-                String rarityName = crystal.getRarity().name();//.toLowerCase();
+                String rarityName = crystal.getRarity().name();
                 char c = rarityName.charAt(0);
                 AtomicBoolean startsWithVowel = new AtomicBoolean(false);
                 startsWithVowel.set(c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U');
                 text.append(new TranslationTextComponent(startsWithVowel.get() ? "tip.the_vault.created_an" : "tip.the_vault.created_a"));
-
                 text.append(new StringTextComponent(rarityName).withStyle(crystal.getRarity().color));
+
+                ListNBT coopsNBT = stack.getOrCreateTag().getList("Coops", Constants.NBT.TAG_STRING);
+                if (coopsNBT.size() != 0) {
+                    coopsNBT.forEach(coop -> {
+                        ServerPlayerEntity player = context.getPlayer().getServer().getPlayerList().getPlayerByName(coop.getAsString());
+                        if (player != null) {
+                            player.displayClientMessage(text, false);
+                        }
+                    });
+
+                    text.append(new StringTextComponent(" CO-OP").withStyle(crystal.getRarity().color));
+
+                } else
+                    context.getPlayer().displayClientMessage(text, false);
+
+
                 text.append(new TranslationTextComponent("tip.the_vault.vault"));
                 // #Crimson_Fluff END
 
-
-//                IFormattableTextComponent text = new StringTextComponent("");
-//                text.append(new StringTextComponent(context.getPlayer().getName().getString()).withStyle(TextFormatting.GREEN));
-//                text.append(new StringTextComponent(" has created a "));
-//                String rarityName = crystal.getRarity().name().toLowerCase();
-//                rarityName = rarityName.substring(0, 1).toUpperCase() + rarityName.substring(1);
-//
-//                text.append(new StringTextComponent(rarityName).withStyle(crystal.getRarity().color));
-//                text.append(new StringTextComponent(" Vault!"));
-
-                context.getLevel().getServer().getPlayerList().broadcastMessage(
-                    text, ChatType.CHAT, context.getPlayer().getUUID()
-                );
+                context.getItemInHand().shrink(1);
 
                 return ActionResultType.CONSUME;
             }
@@ -174,14 +176,14 @@ public class ItemVaultCrystal extends Item {
     }
 
     private boolean tryCreatePortal(ItemVaultCrystal crystal, World world, BlockPos pos, Direction facing, String playerBossName, CrystalData data) {
-        if (world.dimension() != World.OVERWORLD)
-            return false;
+        if (world.dimension() != World.OVERWORLD) return false;
 
         Optional<VaultPortalSize> optional = VaultPortalSize.getPortalSize(world, pos.relative(facing), Direction.Axis.X);
         if (optional.isPresent()) {
             optional.get().placePortalBlocks(crystal, playerBossName, data);
             return true;
         }
+
         return false;
     }
 
@@ -209,21 +211,17 @@ public class ItemVaultCrystal extends Item {
 
         CompoundNBT tag = stack.getOrCreateTag();
         if (tag.getAllKeys().contains("playerBossName"))
-            return name.append(new StringTextComponent(" (" + tag.getString("playerBossName") + ")"));
+            name.append(new StringTextComponent(" (" + tag.getString("playerBossName") + ")"));
 
         if (tag.getAllKeys().contains("Coops"))
-            return new StringTextComponent("CO-OP ").append(name);
+            name = new StringTextComponent("CO-OP ").append(name);
 
         return name.withStyle(item.getRarity().color);
     }
 
-    public VaultRarity getRarity() {
-        return vaultRarity;
-    }
+    public VaultRarity getRarity() { return vaultRarity; }
 
-    public static CrystalData getData(ItemStack stack) {
-        return new CrystalData(stack);
-    }
+    public static CrystalData getData(ItemStack stack) { return new CrystalData(stack); }
 
     @Override
     public void appendHoverText(ItemStack stack, World world, List<ITextComponent> tooltip, ITooltipFlag flag) {

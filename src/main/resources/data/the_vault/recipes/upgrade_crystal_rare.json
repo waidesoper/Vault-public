@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "rrr",
+    "rsr",
+    "rrr"
+  ],
+  "key": {
+    "s": {
+      "item": "the_vault:spark"
+    },
+    "r": {
+      "item": "the_vault:vault_crystal_rare"
+    }
+  },
+  "result": {
+    "item": "the_vault:vault_crystal_epic"
+  }
+}

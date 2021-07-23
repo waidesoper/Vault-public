@@ -20,7 +20,6 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RegistryEvents {
-
     @SubscribeEvent
     public static void onBlockRegister(RegistryEvent.Register<Block> event) {
         ModBlocks.registerBlocks(event);
@@ -69,14 +68,12 @@ public class RegistryEvents {
 
     @SubscribeEvent
     public static void onTileEntityRegister(RegistryEvent.Register<TileEntityType<?>> event) {
-//        ModRecipes.registerRecipes(event);
         ModBlocks.registerTileEntities(event);
     }
 
     @SubscribeEvent
     public static void onRecipeRegister(RegistryEvent.Register<IRecipeSerializer<?>> event) {
         ModRecipes.registerRecipes(event);
-        ModRecipes.Serializer.register(event);
     }
 
     @SubscribeEvent
@@ -88,5 +85,4 @@ public class RegistryEvents {
     public static void onAttributeRegister(RegistryEvent.Register<Attribute> event) {
         ModAttributes.register(event);
     }
-
 }

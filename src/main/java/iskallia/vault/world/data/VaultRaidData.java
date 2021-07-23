@@ -2,9 +2,11 @@ package iskallia.vault.world.data;
 
 import iskallia.vault.Vault;
 import iskallia.vault.init.ModFeatures;
+import iskallia.vault.init.ModNetwork;
 import iskallia.vault.init.ModStructures;
 import iskallia.vault.item.CrystalData;
 import iskallia.vault.item.ItemVaultCrystal;
+import iskallia.vault.network.message.ObeliskVH2OverlayUpdate;
 import iskallia.vault.util.VaultRarity;
 import iskallia.vault.world.raid.VaultRaid;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -27,6 +29,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.network.NetworkDirection;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,7 +39,7 @@ public class VaultRaidData extends WorldSavedData {
 
     protected static final String DATA_NAME = Vault.MOD_ID + "_VaultRaid";
 
-    private Map<UUID, VaultRaid> activeRaids = new HashMap<>();
+    private final Map<UUID, VaultRaid> activeRaids = new HashMap<>();
     private int xOffset = 0;
 
     public VaultRaidData() {
@@ -56,7 +59,7 @@ public class VaultRaidData extends WorldSavedData {
 
         if (v != null) {
             v.ticksLeft = 0;
-            v.finish(server, playerId);
+//            v.finish(server, playerId);
         }
     }
 
@@ -73,8 +76,6 @@ public class VaultRaidData extends WorldSavedData {
     }
 
     public VaultRaid startNew(List<ServerPlayerEntity> players, List<ServerPlayerEntity> spectators, int rarity, String playerBossName, CrystalData data, boolean isFinalVault) {
-//        players.forEach(player -> player.displayClientMessage(new StringTextComponent("Generating vault, please wait...").withStyle(TextFormatting.GREEN), true));
-
         int level = players.stream()
             .map(player -> PlayerVaultStatsData.get(player.getLevel()).getVaultStats(player).getVaultLevel())
             .max(Integer::compareTo).get();
@@ -104,7 +105,6 @@ public class VaultRaidData extends WorldSavedData {
         this.setDirty();
 
         ServerWorld world = players.get(0).getServer().getLevel(Vault.VAULT_KEY);
-        //raid.myGameTime = world.getGameTime();
 
         // #Crimson_Fluff, moved from VaultRaid.start
         // Lag is caused when generating the vault, so put messages here... before the lag
@@ -124,7 +124,7 @@ public class VaultRaidData extends WorldSavedData {
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                     new StringTextComponent(modifier.getName())
                         .setStyle(Style.EMPTY.withColor(Color.fromRgb(modifier.getColor())))
-                        .append(new StringTextComponent("\n\n" + modifier.getDescription()).setStyle(Style.EMPTY.withColor(TextFormatting.WHITE))))));
+                        .append(new StringTextComponent("\n\n" + modifier.getDescription()).withStyle(TextFormatting.WHITE)))));
 
             text.append(s);
 
@@ -133,15 +133,15 @@ public class VaultRaidData extends WorldSavedData {
                 startsWithVowel.set(c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U');
             }
 
-            if (i < raid.modifiers.size() - 1) text.append(", ");
+            text.append(", ");
         });
 
         // if no modifiers then get vowel of Raid Rarity (COMMON, RARE, EPIC, OMEGA)
         if (raid.modifiers.size() == 0) {
             char c = VaultRarity.values()[raid.rarity].name().charAt(0);  // Rarity is UpperCase
             startsWithVowel.set(c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U');
-        } else
-            text.append(new StringTextComponent(" "));
+        }
+//        else text.append(new StringTextComponent(" "));
 
         TranslationTextComponent prefix = new TranslationTextComponent(startsWithVowel.get() ? "tip.the_vault.entered_an" : "tip.the_vault.entered_a");
 
@@ -157,11 +157,8 @@ public class VaultRaidData extends WorldSavedData {
             IFormattableTextComponent playerName = player.getDisplayName().copy();
             playerName.withStyle(TextFormatting.GREEN);
 
-//            player.sendMessage(playerName.append(prefix).append(text), ChatType.CHAT, Util.NIL_UUID);
-//            player.sendMessage(new TranslationTextComponent("tip.the_vault.generating"), ChatType.CHAT, Util.NIL_UUID);
-
-//            world.getServer().getPlayerList().broadcastMessage(playerName.append(prefix).append(text), ChatType.CHAT, Util.NIL_UUID);
             player.displayClientMessage(playerName.append(prefix).append(text), false);
+            ModNetwork.CHANNEL.sendTo(new ObeliskVH2OverlayUpdate(raid.obelisksActivated, raid.obelisksNeeded), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
         });
 
         world.getServer().getPlayerList().broadcastMessage(new TranslationTextComponent("tip.the_vault.generating").setStyle(Style.EMPTY.withColor(Color.fromRgb(0x00_ddd01e))), ChatType.CHAT, Util.NIL_UUID);  // #Crimson_Fluff
@@ -214,9 +211,7 @@ public class VaultRaidData extends WorldSavedData {
 
         tasks.forEach(Runnable::run);
 
-        if (removed || this.activeRaids.size() > 0) {
-            this.setDirty();
-        }
+        if (removed || this.activeRaids.size() > 0) this.setDirty();
     }
 
     @SubscribeEvent
@@ -252,5 +247,4 @@ public class VaultRaidData extends WorldSavedData {
     public static VaultRaidData get(ServerWorld world) {
         return world.getServer().overworld().getDataStorage().computeIfAbsent(VaultRaidData::new, DATA_NAME);
     }
-
 }

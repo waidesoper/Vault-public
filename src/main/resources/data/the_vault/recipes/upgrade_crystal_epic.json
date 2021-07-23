@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "eee",
+    "ese",
+    "eee"
+  ],
+  "key": {
+    "s": {
+      "item": "the_vault:spark"
+    },
+    "e": {
+      "item": "the_vault:vault_crystal_epic"
+    }
+  },
+  "result": {
+    "item": "the_vault:vault_crystal_omega"
+  }
+}

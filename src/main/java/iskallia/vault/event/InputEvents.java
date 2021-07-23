@@ -2,6 +2,7 @@ package iskallia.vault.event;
 
 import iskallia.vault.client.gui.overlay.AbilitiesOverlay;
 import iskallia.vault.client.gui.screen.AbilitySelectionScreen;
+import iskallia.vault.client.gui.screen.GlobalTimerScreen;
 import iskallia.vault.init.ModKeybinds;
 import iskallia.vault.init.ModNetwork;
 import iskallia.vault.network.message.AbilityKeyMessage;
@@ -24,13 +25,7 @@ public class InputEvents {
 
     @SubscribeEvent
     public static void onShiftKey(InputEvent.KeyInputEvent event) {
-        if (event.getKey() == GLFW.GLFW_KEY_LEFT_SHIFT) {
-            if (event.getAction() == GLFW.GLFW_PRESS) {
-                isShiftDown = true;
-            } else if (event.getAction() == GLFW.GLFW_RELEASE) {
-                isShiftDown = false;
-            }
-        }
+        if (event.getKey() == GLFW.GLFW_KEY_LEFT_SHIFT) isShiftDown = event.getAction() == GLFW.GLFW_PRESS;
     }
 
     @SubscribeEvent
@@ -48,21 +43,28 @@ public class InputEvents {
     }
 
     private static void onInput(Minecraft minecraft, int key, int action) {
-        if (minecraft.screen == null && ModKeybinds.abilityWheelKey.getKey().getValue() == key) {
-            if (action != GLFW.GLFW_PRESS) return;
-            if (AbilitiesOverlay.learnedAbilities.size() <= 2) return;
-            minecraft.setScreen(new AbilitySelectionScreen());
-            ModNetwork.CHANNEL.sendToServer(new AbilityKeyMessage(true));
+        if (minecraft.screen == null) {
+            if (ModKeybinds.abilityWheelKey.getKey().getValue() == key) {
+                if (action != GLFW.GLFW_PRESS) return;
+                if (AbilitiesOverlay.learnedAbilities.size() <= 2) return;
 
-        } else if (minecraft.screen == null && ModKeybinds.openAbilityTree.consumeClick()) {
-            ModNetwork.CHANNEL.sendToServer(new OpenSkillTreeMessage());
+                minecraft.setScreen(new AbilitySelectionScreen());
+                ModNetwork.CHANNEL.sendToServer(new AbilityKeyMessage(true));
 
-        } else if (minecraft.screen == null && ModKeybinds.abilityKey.getKey().getValue() == key) {
-            if (action == GLFW.GLFW_RELEASE) {
-                ModNetwork.CHANNEL.sendToServer(new AbilityKeyMessage(true, false, false, false));
+            } else if (ModKeybinds.openAbilityTree.isDown()) {
+                ModNetwork.CHANNEL.sendToServer(new OpenSkillTreeMessage());
 
-            } else if (action == GLFW.GLFW_PRESS) {
-                ModNetwork.CHANNEL.sendToServer(new AbilityKeyMessage(false, true, false, false));
+            } else if (ModKeybinds.globalTimerKey.isDown()) {
+                //ModNetwork.CHANNEL.sendToServer(new OpenSkillTreeMessage());
+                minecraft.setScreen(new GlobalTimerScreen());
+
+            } else if (ModKeybinds.abilityKey.getKey().getValue() == key) {
+                if (action == GLFW.GLFW_RELEASE) {
+                    ModNetwork.CHANNEL.sendToServer(new AbilityKeyMessage(true, false, false, false));
+
+                } else if (action == GLFW.GLFW_PRESS) {
+                    ModNetwork.CHANNEL.sendToServer(new AbilityKeyMessage(false, true, false, false));
+                }
             }
         }
     }

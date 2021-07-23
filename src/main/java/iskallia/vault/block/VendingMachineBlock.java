@@ -1,5 +1,6 @@
 package iskallia.vault.block;
 
+import iskallia.vault.block.entity.VaultPortalTileEntity;
 import iskallia.vault.block.entity.VendingMachineTileEntity;
 import iskallia.vault.container.VendingMachineContainer;
 import iskallia.vault.init.ModBlocks;
@@ -35,7 +36,6 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 
 public class VendingMachineBlock extends Block {
-
     public static final DirectionProperty FACING = HorizontalBlock.FACING;
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
 
@@ -44,7 +44,6 @@ public class VendingMachineBlock extends Block {
             .strength(2.0F, 3600000.0F)
             .sound(SoundType.METAL)
             .noOcclusion());
-
     }
 
     public VendingMachineBlock(Properties properties) {
@@ -123,7 +122,7 @@ public class VendingMachineBlock extends Block {
         if (worldIn.isClientSide) return;
         if (! newState.isAir()) return;
 
-        VendingMachineTileEntity machine = (VendingMachineTileEntity) getBlockTileEntity(worldIn, pos, state);
+        VendingMachineTileEntity machine = (VendingMachineTileEntity) getVendingTileEntity(worldIn, pos, state);
         if (machine == null) return;
 
         if (state.getValue(HALF) == DoubleBlockHalf.LOWER) {
@@ -151,7 +150,7 @@ public class VendingMachineBlock extends Block {
         ItemStack heldStack = player.getItemInHand(hand);
         if (! heldStack.isEmpty()) return ActionResultType.FAIL;
 
-        VendingMachineTileEntity machine = (VendingMachineTileEntity) getBlockTileEntity(world, pos, state);
+        VendingMachineTileEntity machine = (VendingMachineTileEntity) getVendingTileEntity(world, pos, state);
         if (machine == null) return ActionResultType.SUCCESS;
 
         if (player.isShiftKeyDown()) {
@@ -195,12 +194,9 @@ public class VendingMachineBlock extends Block {
         return state.getValue(HALF) == DoubleBlockHalf.UPPER ? pos.below() : pos;
     }
 
-    public static TileEntity getBlockTileEntity(World world, BlockPos pos, BlockState state) {
+    public static TileEntity getVendingTileEntity(World world, BlockPos pos, BlockState state) {
         BlockPos vendingMachinePos = getTileEntityPos(state, pos);
 
-        TileEntity tileEntity = world.getBlockEntity(vendingMachinePos);
-
-        return tileEntity;
+        return world.getBlockEntity(vendingMachinePos);
     }
-
 }

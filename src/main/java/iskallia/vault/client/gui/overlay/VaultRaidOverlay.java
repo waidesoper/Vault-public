@@ -18,12 +18,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @OnlyIn(Dist.CLIENT)
 public class VaultRaidOverlay {
-
-    public static final ResourceLocation RESOURCE = new ResourceLocation(Vault.MOD_ID, "textures/gui/vault-hud.png");
-    public static final ResourceLocation NORMAL_RARITY = new ResourceLocation(Vault.MOD_ID, "textures/gui/modifiers/normal.png");
-    public static final ResourceLocation RARE_RARITY = new ResourceLocation(Vault.MOD_ID, "textures/gui/modifiers/rare.png");
-    public static final ResourceLocation EPIC_RARITY = new ResourceLocation(Vault.MOD_ID, "textures/gui/modifiers/epic.png");
-    public static final ResourceLocation OMEGA_RARITY = new ResourceLocation(Vault.MOD_ID, "textures/gui/modifiers/omega.png");
+    private static final ResourceLocation RESOURCE = new ResourceLocation(Vault.MOD_ID, "textures/gui/vault-hud.png");
+//    public static final ResourceLocation NORMAL_RARITY = new ResourceLocation(Vault.MOD_ID, "textures/gui/modifiers/normal.png");
+//    public static final ResourceLocation RARE_RARITY = new ResourceLocation(Vault.MOD_ID, "textures/gui/modifiers/rare.png");
+//    public static final ResourceLocation EPIC_RARITY = new ResourceLocation(Vault.MOD_ID, "textures/gui/modifiers/epic.png");
+//    public static final ResourceLocation OMEGA_RARITY = new ResourceLocation(Vault.MOD_ID, "textures/gui/modifiers/omega.png");
 
     public static int currentRarity;
 
@@ -36,6 +35,10 @@ public class VaultRaidOverlay {
 
     public static boolean bossSummoned;
     private static int ticksBeforeAmbientSound;
+
+    public static int obelisksNeeded;
+    public static int obelisksActivated;
+
 
     public static void startBossLoop() {
         if (bossLoop != null) stopBossLoop();
@@ -52,10 +55,8 @@ public class VaultRaidOverlay {
     }
 
     @SubscribeEvent
-    public static void
-    onPostRender(RenderGameOverlayEvent.Post event) {
-        if (event.getType() != RenderGameOverlayEvent.ElementType.POTION_ICONS)
-            return; // Render only on HOTBAR
+    public static void onPostRender(RenderGameOverlayEvent.Post event) {
+        if (event.getType() != RenderGameOverlayEvent.ElementType.HOTBAR) return; // Render only on HOTBAR
 
         Minecraft minecraft = Minecraft.getInstance();
 
@@ -67,26 +68,23 @@ public class VaultRaidOverlay {
             return;
         }
 
-        if (remainingTicks == 0)
-            return; // Timed out, stop here
+        if (remainingTicks == 0) return; // Timed out, stop here
 
         MatrixStack matrixStack = event.getMatrixStack();
         int bottom = minecraft.getWindow().getGuiScaledHeight();
         int barWidth = 62;
-        int barHeight = 22;
+//        int barHeight = 22;
         int panicTicks = 30 * 20;
 
         if (! bossSummoned) {
-            if (inVault) stopBossLoop();
+            stopBossLoop();
         } else if (! minecraft.getSoundManager().isActive(bossLoop)) {
-            if (inVault) startBossLoop();
+            startBossLoop();
         }
 
         matrixStack.pushPose();
         matrixStack.translate(barWidth, bottom, 0);
-        FontHelper.drawStringWithBorder(matrixStack,
-            formatTimeString(),
-            18, - 12,
+        FontHelper.drawStringWithBorder(matrixStack, formatTimeString(), 18, - 12,
             remainingTicks < panicTicks
                 && remainingTicks % 10 < 5
                 ? 0xFF_FF0000
@@ -106,36 +104,29 @@ public class VaultRaidOverlay {
         int hourglassHeight = 16;
         matrixStack.translate(- hourglassWidth / 2f, - hourglassHeight / 2f, 0);
 
-        minecraft.gui.blit(matrixStack,
-            0, 0,
-            1, 36,
-            hourglassWidth, hourglassHeight
-        );
+        minecraft.gui.blit(matrixStack, 0, 0, 1, 36, hourglassWidth, hourglassHeight);
 
         matrixStack.popPose();
 
-        if (inVault) {
-            if (bossSummoned && ambientLoop != null && minecraft.getSoundManager().isActive(ambientLoop)) {
-                minecraft.getSoundManager().stop(ambientLoop);
-            }
+        if (bossSummoned && ambientLoop != null && minecraft.getSoundManager().isActive(ambientLoop))
+            minecraft.getSoundManager().stop(ambientLoop);
 
-            if (ambientLoop == null || ! minecraft.getSoundManager().isActive(ambientLoop)) {
-                if (! bossSummoned) {
-                    ambientLoop = SimpleSound.forMusic(ModSounds.VAULT_AMBIENT_LOOP);
-                    minecraft.getSoundManager().play(ambientLoop);
-                }
+        if (ambientLoop == null || ! minecraft.getSoundManager().isActive(ambientLoop)) {
+            if (! bossSummoned) {
+                ambientLoop = SimpleSound.forMusic(ModSounds.VAULT_AMBIENT_LOOP);
+                minecraft.getSoundManager().play(ambientLoop);
             }
-
-            if (ticksBeforeAmbientSound < 0) {
-                if (ambientSound == null || ! minecraft.getSoundManager().isActive(ambientSound)) {
-                    ambientSound = SimpleSound.forAmbientAddition(ModSounds.VAULT_AMBIENT);
-                    minecraft.getSoundManager().play(ambientSound);
-                    ticksBeforeAmbientSound = 60 * 60;
-                }
-            }
-
-            ticksBeforeAmbientSound--;
         }
+
+        if (ticksBeforeAmbientSound < 0) {
+            if (ambientSound == null || ! minecraft.getSoundManager().isActive(ambientSound)) {
+                ambientSound = SimpleSound.forAmbientAddition(ModSounds.VAULT_AMBIENT);
+                minecraft.getSoundManager().play(ambientSound);
+                ticksBeforeAmbientSound = 60 * 60;
+            }
+        }
+
+        ticksBeforeAmbientSound--;
 
         renderVaultModifiers(event);
 
@@ -150,8 +141,7 @@ public class VaultRaidOverlay {
         }
     }
 
-    public static void
-    renderVaultModifiers(RenderGameOverlayEvent.Post event) {
+    public static void renderVaultModifiers(RenderGameOverlayEvent.Post event) {
         if (VaultModifiers.CLIENT == null) return;
 
         Minecraft minecraft = Minecraft.getInstance();
@@ -161,27 +151,25 @@ public class VaultRaidOverlay {
         int bottom = minecraft.getWindow().getGuiScaledHeight();
 
         int rightMargin = 28;
-        int raritySize = 16 + 8;
+//        int raritySize = 16 + 8;
         int modifierSize = 16 + 8;
         int modifierGap = 2;
 
-        int xPosition = right - rightMargin;
+//        int xPosition = right - rightMargin;
 
         matrixStack.pushPose();
 
-        matrixStack.pushPose();
-        matrixStack.translate(right - 1, bottom - 96, 0);
-        minecraft.getTextureManager().bind(
-            currentRarity == 0 ? NORMAL_RARITY
-                : currentRarity == 1 ? RARE_RARITY
-                : currentRarity == 2 ? EPIC_RARITY
-                : currentRarity == 3 ? OMEGA_RARITY
-                : NORMAL_RARITY
-        );
-        AbstractGui.blit(matrixStack,
-            - raritySize, - raritySize - 3,
-            0, 0, raritySize, raritySize, raritySize, raritySize);
-        matrixStack.popPose();
+//        matrixStack.pushPose();
+//        matrixStack.translate(right - 1, bottom - 96, 0);
+//        minecraft.getTextureManager().bind(
+//            currentRarity == 0 ? NORMAL_RARITY
+//                : currentRarity == 1 ? RARE_RARITY
+//                : currentRarity == 2 ? EPIC_RARITY
+//                : currentRarity == 3 ? OMEGA_RARITY
+//                : NORMAL_RARITY
+//        );
+//        AbstractGui.blit(matrixStack, - raritySize, - raritySize - 3, 0, 0, raritySize, raritySize, raritySize, raritySize);
+//        matrixStack.popPose();
 
         VaultModifiers.CLIENT.forEach((index, modifier) -> {
             minecraft.getTextureManager().bind(modifier.getIcon());
@@ -192,6 +180,32 @@ public class VaultRaidOverlay {
         });
 
         matrixStack.popPose();
+
+        if (obelisksNeeded > 0) {
+            int xPos = 0;
+            int yPos = bottom - 60;
+
+            matrixStack.pushPose();
+            minecraft.getTextureManager().bind(RESOURCE);
+            RenderSystem.enableBlend();
+
+            int xx = xPos + 8;
+            for (int a = 0; a < obelisksNeeded; a++) {
+                AbstractGui.blit(matrixStack, xx,yPos + 5 , 65, 85, 17,21,256,256);
+                xx += 16 + 4;   // !! first !!
+            }
+
+            RenderSystem.disableBlend();
+            if (obelisksActivated > 0) {
+                xx = xPos + 8;
+                for (int a = 0; a < obelisksActivated; a++) {
+                    AbstractGui.blit(matrixStack, xx,yPos + 5 , 90, 85, 17,21,256,256);
+                    xx += 16 + 4;   // !! first !!
+                }
+            }
+
+            matrixStack.popPose();
+        }
     }
 
     public static String formatTimeString() {
@@ -199,10 +213,6 @@ public class VaultRaidOverlay {
         int hours = (currentTotal / 3600) % 60;
         int minutes = (currentTotal / 60) % 60;
         int seconds = currentTotal % 60;
-
-//        long seconds = (remainingTicks / 20) % 60;
-//        long minutes = ((remainingTicks / 20) / 60) % 60;
-//        long hours = (((remainingTicks / 20) / 60) / 60) % 60;
 
         if (hours != 0)
             return String.format("%02d:%02d:%02d", hours, minutes, seconds);
